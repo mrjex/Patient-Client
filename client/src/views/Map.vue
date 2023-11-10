@@ -1,6 +1,5 @@
 <template>
   <div class="ui grid">
-    <h4>Yoo MAP</h4>
     <div class="six wide column">
       <form class="ui segment large form">
         <div class="field">
@@ -10,11 +9,12 @@
           </div>
         </div>
 
+        <!-- NOTE: Integrate this with functionality in map.js via latitude and longitude -->
         <div class="field">
           <div class="two fields">
             <div class="field">
               <select v-model="type">
-                <option value="restaurant">Restaurant</option>
+                <option value="dentist">Denstist</option>
               </select>
             </div>
 
@@ -28,14 +28,16 @@
             </div>
           </div>
         </div>
-        <button class="ui button pink" @click.prevent="findCloseBuyButtonPressed">Find CloseBuy</button>
+        <!-- <button class="ui button pink" @click.prevent="findCloseBuyButtonPressed">Find CloseBuy</button> -->
       </form>
     </div>
+
+    <!-- <input id="searchTextField" type="text" size="50" @click.prevent="registerInputSearchField"> -->
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 
 export default {
   name: 'MapPage',
@@ -45,7 +47,9 @@ export default {
       type: '',
       radius: '',
       lat: 0,
-      lng: 0
+      lng: 0,
+      service: '',
+      infoWindow: ''
     }
   },
   created() {
@@ -64,10 +68,21 @@ export default {
         }
       )
     },
+    registerInputSearchField() {
+      /*
+      const inputTest = document.getElementById('searchTextField')
+      console.warn(inputTest)
+
+      // NOTE: Replace 'let' with 'const' if not working
+      let autocomplete = new google.maps.places.Autocomplete(inputTest)
+      autocomplete.bindTo('bounds', document.getElementById('map'))
+      */
+    }
     // NOTE: If this doesn't work, try tutorial on Google Map Platform (which is up to date)
     // NOTE: Refactor by making API key a global variable
 
     // CURRENT: GET request does not work: 403 - Forbidden
+    /*
     findCloseBuyButtonPressed() {
       const URL = `https://cors-anywhere.herokuapp.com/maps.googleapis.com/maps/api/place/nearbysearch/json?location=
       ${this.lat},${this.lng}&type=${this.type}&radius=${this.radius * 1000}&key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y`
@@ -81,6 +96,7 @@ export default {
           console.warn(error.message)
         })
     }
+    */
   },
   computed: {
     // Return latitude and longitude in format (n, m)

@@ -1,8 +1,6 @@
 <html>
   <head>
     <title>DentaNoid</title>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-
     <script>
     const pathArray = window.location.href.split('/')
       const lastSubDomainPath = pathArray[pathArray.length - 1]
@@ -17,10 +15,14 @@
         linkCSS.href = "./map-style.css"
         document.head.prepend(linkCSS)
 
+        const scriptPlaceAPI = document.createElement("script")
+        scriptPlaceAPI.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&libraries=places&callback=initMap"
+        document.head.prepend(scriptPlaceAPI)
+
         // Run 'map.js' that has responsibility for the backend functionality of the API
-        const scriptMap = document.createElement("script")
-        scriptMap.src = "./map.js"
-        document.head.prepend(scriptMap)
+        const scriptMapAPI = document.createElement("script")
+        scriptMapAPI.src = "./map.js"
+        document.head.prepend(scriptMapAPI)
       }
     </script>
 
