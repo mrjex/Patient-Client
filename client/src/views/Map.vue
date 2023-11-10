@@ -1,17 +1,92 @@
+<template>
+  <div class="ui grid">
+    <h4>Yoo MAP</h4>
+    <div class="six wide column">
+      <form class="ui segment large form">
+        <div class="field">
+          <div class= "ui right icon input large">
+            <input type="text" placeholder="Enter your address" v-model="coordinates">
+            <button type="button" class="btn btn-primary" @click.prevent="locatorButtonPressed">Get Your Coordinates</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="two fields">
+            <div class="field">
+              <select v-model="type">
+                <option value="restaurant">Restaurant</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <select v-model="radius">
+                <option value="5">5 KM</option>
+                <option value="10">10 KM</option>
+                <option value="15">15 KM</option>
+                <option value="20">20 KM</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <button class="ui button pink" @click.prevent="findCloseBuyButtonPressed">Find CloseBuy</button>
+      </form>
+    </div>
+  </div>
+</template>
+
 <script>
+import axios from 'axios'
 
 export default {
   name: 'MapPage',
   data() {
     return {
-      currentPosition: ''
+      currentPosition: '',
+      type: '',
+      radius: '',
+      lat: 0,
+      lng: 0
+    }
+  },
+  created() {
+    console.warn('yoo2')
+  },
+  methods: {
+    locatorButtonPressed() {
+      navigator.geolocation.getCurrentPosition(
+        // Success callback: Assign coordinate-values to properties
+        position => {
+          this.lat = position.coords.latitude
+          this.lng = position.coords.longitude
+        },
+        error => {
+          console.warn('Error getting location:' + error.message)
+        }
+      )
+    },
+    // NOTE: If this doesn't work, try tutorial on Google Map Platform (which is up to date)
+    // NOTE: Refactor by making API key a global variable
+
+    // CURRENT: GET request does not work: 403 - Forbidden
+    findCloseBuyButtonPressed() {
+      const URL = `https://cors-anywhere.herokuapp.com/maps.googleapis.com/maps/api/place/nearbysearch/json?location=
+      ${this.lat},${this.lng}&type=${this.type}&radius=${this.radius * 1000}&key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y`
+
+      axios
+        .get(URL)
+        .then(response => {
+          console.warn(response.data)
+        })
+        .catch(error => {
+          console.warn(error.message)
+        })
+    }
+  },
+  computed: {
+    // Return latitude and longitude in format (n, m)
+    coordinates() {
+      return `${this.lat}, ${this.lng}`
     }
   }
 }
 </script>
-
-<template>
-  <div>
-    <h1>Yo</h1>
-  </div>
-</template>
