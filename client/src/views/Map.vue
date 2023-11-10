@@ -80,23 +80,6 @@ export default {
     }
     // NOTE: If this doesn't work, try tutorial on Google Map Platform (which is up to date)
     // NOTE: Refactor by making API key a global variable
-
-    // CURRENT: GET request does not work: 403 - Forbidden
-    /*
-    findCloseBuyButtonPressed() {
-      const URL = `https://cors-anywhere.herokuapp.com/maps.googleapis.com/maps/api/place/nearbysearch/json?location=
-      ${this.lat},${this.lng}&type=${this.type}&radius=${this.radius * 1000}&key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y`
-
-      axios
-        .get(URL)
-        .then(response => {
-          console.warn(response.data)
-        })
-        .catch(error => {
-          console.warn(error.message)
-        })
-    }
-    */
   },
   computed: {
     // Return latitude and longitude in format (n, m)
