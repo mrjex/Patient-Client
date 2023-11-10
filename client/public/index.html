@@ -1,20 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>Bookster-Favicon.ico">
-    <title>Bookster</title>
+    <title>DentaNoid</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 
+    <script>
+    const pathArray = window.location.href.split('/')
+      const lastSubDomainPath = pathArray[pathArray.length - 1]
+
+      // If the user has navigated to the url that is equivalent to the Map.vue page
+      if (lastSubDomainPath === 'map') {
+
+        // Display map frontend styling
+        const linkCSS = document.createElement("link")
+        linkCSS.rel = "stylesheet"
+        linkCSS.type = "text/css"
+        linkCSS.href = "./map-style.css"
+        document.head.prepend(linkCSS)
+
+        // Run 'map.js' that has responsibility for the backend functionality of the API
+        const scriptMap = document.createElement("script")
+        scriptMap.src = "./map.js"
+        document.head.prepend(scriptMap)
+      }
+    </script>
+
+    <link rel="icon" href="<%= BASE_URL %>dentanoid-temp-logo.ico">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
   </head>
   <body>
-    <noscript>
-      <strong>We're sorry but client doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app">
-    </div>
-    <!-- built files will be auto injected -->
+    <div id="map"></div>
+    <script>
+      // Integrate backend APIs enabled from Google Cloud via API key if user is in 'map' page
+      if (lastSubDomainPath === 'map') {        
+        (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+        ({key: "AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y", v: "weekly"});        
+      }
+    </script>
   </body>
 </html>
