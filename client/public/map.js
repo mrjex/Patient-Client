@@ -2,15 +2,19 @@ let map
 let service
 let infowindow
 
+let testVariableUserLocation
+let directionsService
+let directionsRenderer
+
 async function initMap() {
   // NOTE: If 'blinking update' bug continues to grow as program is developed, switch to 'navigator.geolocation.getCurrentPosition()'
-  const watchId = navigator.geolocation.watchPosition(async position => {
+  const watchId = navigator.geolocation.watchPosition(async position => { // NOTE: Fix this bug today: Try walking outside with phone using 'getCurrentPos' for real-time updating
     const { latitude, longitude } = position.coords
     const userGlobalCoordinates = { lat: latitude, lng: longitude }
+    testVariableUserLocation = { lat: latitude, lng: longitude }
 
-    let directionsService = new google.maps.DirectionsService()
-    let directionsRenderer = new google.maps.DirectionsRenderer()
-    let dentistDestination = new google.maps.LatLng(57.695320, 11.990840) // Liseberg
+    directionsService = new google.maps.DirectionsService()
+    directionsRenderer = new google.maps.DirectionsRenderer()
 
     // @ts-ignore
     const { Map } = await google.maps.importLibrary('maps')
@@ -43,8 +47,6 @@ async function initMap() {
       content: userIcon,
       title: 'Your Position'
     })
-
-    calcRoute(userGlobalCoordinates, dentistDestination, directionsService, directionsRenderer)
   })
 }
 
@@ -64,6 +66,9 @@ function createMarker(place) {
 
   // NOTE: This checks when user clicks 'OK' on popup --> Research on how to check when
   google.maps.event.addListener(marker, 'click', function () {
+    const selectedDentalClinicDestination = marker.position
+    calcRoute(testVariableUserLocation, selectedDentalClinicDestination, directionsService, directionsRenderer)
+
     alert(place.name)
     window.open(place.photos[0].getUrl(), '_blank') // NOTE: It only works for a couple of photos (most likely because only PNG is supported) - Conduct further research on this issue later
     infowindow.open(map, this)
@@ -71,7 +76,7 @@ function createMarker(place) {
 }
 
 function calcRoute(userGlobalCoordinates, dentistDestination, directionsService, directionsRenderer) {
-  // var selectedMode = document.getElementById('mode').value; // NOTE: CHANGE TO THIS ONCE I GOT IT WORKING
+  // var selectedMode = document.getElementById('mode').value; // NOTE: Create HTML frontend to select mode
   const request = {
     origin: userGlobalCoordinates,
     destination: dentistDestination,

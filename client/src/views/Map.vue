@@ -53,7 +53,6 @@ export default {
     }
   },
   created() {
-    console.warn('yoo2')
   },
   methods: {
     locatorButtonPressed() {
