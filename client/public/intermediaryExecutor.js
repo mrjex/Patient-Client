@@ -1,6 +1,6 @@
 // NOTE FOR DEVELOPERS: This script's purpose is only to excute or invoke fragments of javascript-files on the occurence of specified events
 
-import { initMap, graphicalMap } from './map.js'
+import { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer } from './map.js'
 let zoomLevel = 7
 
 function updateMap() {
@@ -11,6 +11,10 @@ function updateMap() {
   setTimeout(initMap, 500)
 }
 
+function updateTravelMode() {
+  setTimeout(calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer), 500)
+}
+
 updateMap()
 
-export { updateMap, zoomLevel }
+export { updateMap, zoomLevel, updateTravelMode }

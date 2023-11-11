@@ -23,7 +23,7 @@
 
     <div>
       <strong>Mode of Travel: </strong>
-      <select id="mode" onchange="calcRoute();">
+      <select v-model="currentTravelMode" id="mode" @click.prevent="changeTravelMode">
         <option value="DRIVING">Driving</option>
         <option value="WALKING">Walking</option>
         <option value="BICYCLING">Bicycling</option>
@@ -35,19 +35,21 @@
 
 <script>
 // import axios from 'axios'
-import { updateMap } from '../../public/intermediaryExecutor.js'
+import { updateMap, updateTravelMode } from '../../public/intermediaryExecutor.js'
+// import UtilsComponentVue from '../components/UtilsComponent.vue'
 
 export default {
   name: 'MapPage',
   data() {
     return {
       currentRadius: '',
-      previousRadius: ''
+      previousRadius: '',
+      currentTravelMode: '',
+      previousTravelMode: ''
     }
   },
-  created() {
-  },
   methods: {
+    // NOTE: Refactor this by creating 'UtilsComponent.vue', import it as a component in this vue-script, and call its corresponding method
     changeSearchRange() {
       if (this.currentRadius && this.currentRadius !== this.previousRadius) {
         const radiusArticle = document.getElementById('radius-data')
@@ -55,6 +57,26 @@ export default {
         this.previousRadius = this.currentRadius
         updateMap()
       }
+
+      // NOTE: Refactor later
+      // UtilsComponentVue.methods.modifyHTMLOnVariableChange(this.currentRadius, this.previousRadius, 'radius-data')
+      // updateMap() ---> Must be within if-statement --> Must be invoked in 'UtilsComponent.vue'
+    },
+    changeTravelMode() {
+      if (this.currentTravelMode && this.currentTravelMode !== this.previousTravelMode) {
+        const travelModeArticle = document.getElementById('travel-mode-data')
+        travelModeArticle.innerHTML = this.currentTravelMode
+        this.previousTravelMode = this.currentTravelMode
+
+        // NOTE: Updating the entire map is not smooth and ideal when only wanting to change route
+        // SOLUTION: use intermediaryExecutor.js with 'calcRoute()'
+        // updateMap()
+        updateTravelMode()
+      }
+
+      // NOTE: Refactor later
+      // UtilsComponentVue.methods.modifyHTMLOnVariableChange(this.currentTravelMode, this.previousTravelMode, 'travel-mode-data')
+      // updateTravelMode()
     }
   }
 }

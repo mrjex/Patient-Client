@@ -8,6 +8,7 @@ let service
 let userGlobalCoordinates
 let directionsService
 let directionsRenderer
+let selectedDentalClinicMarker
 
 async function initMap() {
   // PREVIOUS: const watchId = navigator.geolocation.watchPosition(async position => {
@@ -79,8 +80,9 @@ function createMarker(place) {
 
   // NOTE: This checks when user clicks 'OK' on popup --> Research on how to check when
   google.maps.event.addListener(marker, 'click', function () {
-    const selectedDentalClinicDestination = marker.position
-    calcRoute(userGlobalCoordinates, selectedDentalClinicDestination, directionsService, directionsRenderer)
+    selectedDentalClinicMarker = marker.position
+
+    calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
 
     /*
     // Photo feature: An alert with a button that takes the user to a different window that shows a picture of the clinic
@@ -92,12 +94,12 @@ function createMarker(place) {
 }
 
 function calcRoute(userGlobalCoordinates, dentistDestination, directionsService, directionsRenderer) {
-  // var selectedMode = document.getElementById('mode').value; // NOTE: Create HTML frontend to select mode
+  const selectedMode = document.getElementById('travel-mode-data').innerHTML
   const request = {
     origin: userGlobalCoordinates,
     destination: dentistDestination,
-    // travelMode: google.maps.TravelMode[selectedMode]
-    travelMode: 'DRIVING'
+    travelMode: google.maps.TravelMode[selectedMode]
+    // travelMode: 'DRIVING'
   }
   directionsService.route(request, function (response, status) {
     if (status === 'OK') {
@@ -107,4 +109,4 @@ function calcRoute(userGlobalCoordinates, dentistDestination, directionsService,
 }
 
 initMap()
-export { initMap, graphicalMap }
+export { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer }
