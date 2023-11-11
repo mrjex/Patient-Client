@@ -16,11 +16,13 @@
         document.head.prepend(linkCSS)
 
         const scriptPlaceAPI = document.createElement("script")
+        scriptPlaceAPI.type = "module"
         scriptPlaceAPI.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&libraries=places&callback=initMap"
         document.head.prepend(scriptPlaceAPI)
 
         // Run 'map.js' that has responsibility for the backend functionality of the API
         const scriptMapAPI = document.createElement("script")
+        scriptMapAPI.type = "module"
         scriptMapAPI.src = "./map.js"
         document.head.prepend(scriptMapAPI)
       }
@@ -30,6 +32,9 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
   </head>
   <body>
+    <script type='module' src="./test.js"></script>
+    <article id="watch-id-data"></article>
+    <article id="radius-data"></article>
     <div id="map"></div>
     <div id="app"></div>
     <script>
