@@ -13,30 +13,7 @@ async function initMap() {
   const watchId = navigator.geolocation.watchPosition(async position => { // NOTE: Fix this bug today: Try walking outside with phone using 'getCurrentPos' for real-time updating
     const { latitude, longitude } = position.coords
     userGlobalCoordinates = { lat: latitude, lng: longitude }
-
-    /*
-    localStorage.setItem('userGlobalCoordinates', userGlobalCoordinates) //
-    directionsService = new google.maps.DirectionsService()
-    directionsRenderer = new google.maps.DirectionsRenderer()
-
-    drawMap(userGlobalCoordinates)
-    */
   })
-  console.warn('initMap()')
-  localStorage.setItem('userGlobalCoordinates', userGlobalCoordinates) //
-  directionsService = new google.maps.DirectionsService()
-  directionsRenderer = new google.maps.DirectionsRenderer()
-
-  drawMap(userGlobalCoordinates)
-  document.getElementById('watch-id-data').innerHTML = watchId
-}
-
-function exportFunc(position) {
-  console.warn('exportFunc')
-  const { latitude, longitude } = position.coords
-  userGlobalCoordinates = { lat: latitude, lng: longitude }
-
-  localStorage.setItem('userGlobalCoordinates', userGlobalCoordinates) //
   directionsService = new google.maps.DirectionsService()
   directionsRenderer = new google.maps.DirectionsRenderer()
 
@@ -44,7 +21,6 @@ function exportFunc(position) {
 }
 
 async function drawMap(userGlobalCoordinates) {
-  console.warn('drawMap()')
   // @ts-ignore
   const { Map } = await google.maps.importLibrary('maps')
   const { AdvancedMarkerElement } = await google.maps.importLibrary('marker')
@@ -56,17 +32,11 @@ async function drawMap(userGlobalCoordinates) {
   })
 
   directionsRenderer.setMap(map)
-
-  // SOLUTION: Make map refresh like geolocation.watchPosition does
   let selectedRadius = document.getElementById('radius-data').innerHTML
 
   if (!selectedRadius) {
-    selectedRadius = 10000
-    // localStorage.setItem('radius-data', selectedRadius)
+    selectedRadius = 10000 // Default value
   }
-
-  console.warn(selectedRadius)
-  // Previous radius value: '100000'
 
   const request = {
     location: userGlobalCoordinates,
@@ -129,9 +99,5 @@ function calcRoute(userGlobalCoordinates, dentistDestination, directionsService,
   })
 }
 
-function myFunc() {
-  console.warn('YO My function!')
-}
-
 initMap()
-export { initMap, myFunc, exportFunc }
+export { initMap }

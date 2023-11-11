@@ -38,6 +38,7 @@
 
 <script>
 // import axios from 'axios'
+import { updateMap } from '../../public/intermediaryExecutor.js'
 
 export default {
   name: 'MapPage',
@@ -60,9 +61,8 @@ export default {
       if (this.radius) { // NOTE: Avoid scenario where radius is null that occurs at the first interaction since application was started - Set default value to prevent this later
         const radiusArticle = document.getElementById('radius-data')
         radiusArticle.innerHTML = this.radius
-        // navigator.geolocation.clearWatch()
-        // setTimeout(navigator.geolocation.clearWatch(), 10)
-        // navigator.geolocation.clearWatch(document.getElementById('watch-id-data').innerHTML)
+
+        updateMap()
       }
     }
   }
