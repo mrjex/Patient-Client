@@ -7,7 +7,10 @@ async function initMap() {
   const watchId = navigator.geolocation.watchPosition(async position => {
     const { latitude, longitude } = position.coords
     const userGlobalCoordinates = { lat: latitude, lng: longitude }
-    console.warn(userGlobalCoordinates)
+
+    let directionsService = new google.maps.DirectionsService()
+    let directionsRenderer = new google.maps.DirectionsRenderer()
+    let dentistDestination = new google.maps.LatLng(57.695320, 11.990840) // Liseberg
 
     // @ts-ignore
     const { Map } = await google.maps.importLibrary('maps')
@@ -18,6 +21,8 @@ async function initMap() {
       center: userGlobalCoordinates,
       mapId: 'DEMO_MAP_ID'
     })
+
+    directionsRenderer.setMap(map)
 
     const request = {
       location: userGlobalCoordinates,
@@ -38,6 +43,8 @@ async function initMap() {
       content: userIcon,
       title: 'Your Position'
     })
+
+    calcRoute(userGlobalCoordinates, dentistDestination, directionsService, directionsRenderer)
   })
 }
 
@@ -55,10 +62,26 @@ function createMarker(place) {
     position: place.geometry.location
   })
 
+  // NOTE: This checks when user clicks 'OK' on popup --> Research on how to check when
   google.maps.event.addListener(marker, 'click', function () {
     alert(place.name)
     window.open(place.photos[0].getUrl(), '_blank') // NOTE: It only works for a couple of photos (most likely because only PNG is supported) - Conduct further research on this issue later
     infowindow.open(map, this)
+  })
+}
+
+function calcRoute(userGlobalCoordinates, dentistDestination, directionsService, directionsRenderer) {
+  // var selectedMode = document.getElementById('mode').value; // NOTE: CHANGE TO THIS ONCE I GOT IT WORKING
+  const request = {
+    origin: userGlobalCoordinates,
+    destination: dentistDestination,
+    // travelMode: google.maps.TravelMode[selectedMode]
+    travelMode: 'DRIVING'
+  }
+  directionsService.route(request, function (response, status) {
+    if (status == 'OK') {
+      directionsRenderer.setDirections(response)
+    }
   })
 }
 
