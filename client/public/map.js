@@ -1,16 +1,19 @@
-let map
+import { zoomLevel } from './intermediaryExecutor.js'
+
+/* eslint-disable no-undef */
+let graphicalMap
 let service
-let infowindow
+// let infowindow
 
 let userGlobalCoordinates
 let directionsService
 let directionsRenderer
 
 async function initMap() {
-  // const watchId = navigator.geolocation.watchPosition(async position => {
-  // navigator.geolocation.getCurrentPosition(position => {)
+  // PREVIOUS: const watchId = navigator.geolocation.watchPosition(async position => {
+  // POTENTIAL CHANGE: navigator.geolocation.getCurrentPosition(position => {)
   // NOTE: If 'blinking update' bug continues to grow as program is developed, switch to 'navigator.geolocation.getCurrentPosition()'
-  const watchId = navigator.geolocation.watchPosition(async position => { // NOTE: Fix this bug today: Try walking outside with phone using 'getCurrentPos' for real-time updating
+  navigator.geolocation.watchPosition(async position => { // NOTE: Fix this bug today: Try walking outside with phone using 'getCurrentPos' for real-time updating
     const { latitude, longitude } = position.coords
     userGlobalCoordinates = { lat: latitude, lng: longitude }
   })
@@ -25,13 +28,13 @@ async function drawMap(userGlobalCoordinates) {
   const { Map } = await google.maps.importLibrary('maps')
   const { AdvancedMarkerElement } = await google.maps.importLibrary('marker')
 
-  map = new Map(document.getElementById('map'), {
-    zoom: 7,
+  graphicalMap = new Map(document.getElementById('map'), {
+    zoom: zoomLevel,
     center: userGlobalCoordinates,
     mapId: 'DEMO_MAP_ID'
   })
 
-  directionsRenderer.setMap(map)
+  directionsRenderer.setMap(graphicalMap)
   let selectedRadius = document.getElementById('radius-data').innerHTML
 
   if (!selectedRadius) {
@@ -44,7 +47,7 @@ async function drawMap(userGlobalCoordinates) {
     type: ['dentist']
   }
 
-  service = new google.maps.places.PlacesService(map)
+  service = new google.maps.places.PlacesService(graphicalMap)
   service.nearbySearch(request, callback)
 
   const userIcon = document.createElement('img')
@@ -52,16 +55,17 @@ async function drawMap(userGlobalCoordinates) {
 
   // The marker that represents user's current global position
   const marker = new AdvancedMarkerElement({
-    map: map,
+    map: graphicalMap,
     position: userGlobalCoordinates,
     content: userIcon,
     title: 'Your Position'
   })
+  console.log(marker)
 }
 
 function callback(results, status) {
   if (status === google.maps.places.PlacesServiceStatus.OK) {
-    for (var i = 0; i < results.length; i++) {
+    for (let i = 0; i < results.length; i++) {
       createMarker(results[i])
     }
   }
@@ -69,7 +73,7 @@ function callback(results, status) {
 
 function createMarker(place) {
   const marker = new google.maps.Marker({
-    map: map,
+    map: graphicalMap,
     position: place.geometry.location
   })
 
@@ -78,9 +82,12 @@ function createMarker(place) {
     const selectedDentalClinicDestination = marker.position
     calcRoute(userGlobalCoordinates, selectedDentalClinicDestination, directionsService, directionsRenderer)
 
+    /*
+    // Photo feature: An alert with a button that takes the user to a different window that shows a picture of the clinic
     alert(place.name)
     window.open(place.photos[0].getUrl(), '_blank') // NOTE: It only works for a couple of photos (most likely because only PNG is supported) - Conduct further research on this issue later
-    infowindow.open(map, this)
+    infowindow.open(map, this) // This line evokes an error
+    */
   })
 }
 
@@ -100,4 +107,4 @@ function calcRoute(userGlobalCoordinates, dentistDestination, directionsService,
 }
 
 initMap()
-export { initMap }
+export { initMap, graphicalMap }
