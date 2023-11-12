@@ -3,7 +3,7 @@ import { zoomLevel } from './intermediaryExecutor.js'
 /* eslint-disable no-undef */
 let graphicalMap
 let service
-// let infowindow
+let infowindow
 
 let userGlobalCoordinates
 let directionsService
@@ -48,6 +48,7 @@ async function drawMap(userGlobalCoordinates) {
     type: ['dentist']
   }
 
+  infowindow = new google.maps.InfoWindow()
   service = new google.maps.places.PlacesService(graphicalMap)
   service.nearbySearch(request, callback)
 
@@ -82,6 +83,24 @@ function createMarker(place) {
   google.maps.event.addListener(marker, 'click', function () {
     selectedDentalClinicMarker = marker.position
 
+    const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
+    // console.warn(place.user_ratings_total)
+
+    // infowindow.setContent('Yo mr jex')
+    infowindow.setContent(
+      `<strong class="header">${place.name}</strong>
+      <p>
+      Adress: ${place.vicinity} <br>
+      ${ratingString}
+      </p>
+      <style>
+      .header {
+        font-weight: 1000
+      }
+      </style>`
+    )
+    infowindow.open(graphicalMap, marker)
+
     calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
 
     /*
@@ -99,7 +118,6 @@ function calcRoute(userGlobalCoordinates, dentistDestination, directionsService,
     origin: userGlobalCoordinates,
     destination: dentistDestination,
     travelMode: google.maps.TravelMode[selectedMode]
-    // travelMode: 'DRIVING'
   }
   directionsService.route(request, function (response, status) {
     if (status === 'OK') {
