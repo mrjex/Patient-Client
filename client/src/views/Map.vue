@@ -44,7 +44,7 @@
 
 <script>
 // import axios from 'axios'
-import { updateMap, updateTravelMode } from '../../public/intermediaryExecutor.js'
+import { updateMap, updateTravelMode, updateSearchMap } from '../../public/intermediaryExecutor.js'
 // import UtilsComponentVue from '../components/UtilsComponent.vue'
 
 export default {
@@ -85,13 +85,13 @@ export default {
     },
     currentMode() {
       document.getElementById('mode-data').innerHTML = 'NEARBY'
-      // Inactivate search bar here
-      // updateMap()
+      // Inactivate search bar - index.html or Map.vue
+      updateMap()
     },
     discoverMode() {
       document.getElementById('mode-data').innerHTML = 'DISCOVER'
-      // Activate search bar here
-      // updateMap()
+      // Activate search bar - index.html or Map.vue
+      updateSearchMap(200)
     }
   }
 }

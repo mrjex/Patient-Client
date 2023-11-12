@@ -10,6 +10,7 @@ let directionsRenderer
 let selectedDentalClinicMarker
 
 async function initMap() {
+  console.warn('in map.js')
   // PREVIOUS: const watchId = navigator.geolocation.watchPosition(async position => {
   // POTENTIAL CHANGE: navigator.geolocation.getCurrentPosition(position => {)
   // NOTE: If 'blinking update' bug continues to grow as program is developed, switch to 'navigator.geolocation.getCurrentPosition()'
@@ -124,9 +125,6 @@ function assignUserCoordinates(currentGlobalCoordinates) {
   // Display user's current position on map
   if (nearbyModeActivated()) {
     userGlobalCoordinates = currentGlobalCoordinates
-    console.warn('assign coords')
-  } else { // User sets a fictional position on map to discover or search for clinics worldwide
-    console.warn('In development...')
   }
 }
 
