@@ -9,7 +9,7 @@
     const lastSubDomainPath = pathArray[pathArray.length - 1]
 
       // If the user has navigated to the url that is equivalent to the Map.vue page
-      if (lastSubDomainPath === 'map') {
+      if (lastSubDomainPath === 'map') { // NOTE: Refactor this 'subDomainPath' check later
 
         // Display map frontend styling
         const linkCSS = document.createElement("link")
@@ -28,6 +28,11 @@
         scriptMapAPI.type = "module"
         scriptMapAPI.src = "./map.js"
         document.head.prepend(scriptMapAPI)
+
+        const scriptSearchMapAPI = document.createElement("script")
+        scriptMapAPI.type = "module"
+        scriptMapAPI.src = "./search-map.js"
+        document.head.prepend(scriptSearchMapAPI)
       }
     </script>
 
@@ -35,7 +40,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
   </head>
   <body>
-    <aricle id="mode-data">SEARCH</aricle> <!-- Possible values: ('SEARCH', 'NEARBY') that represent the current displayed mode of the map -->
+    <aricle id="mode-data">NEARBY</aricle> <!-- Possible values: ('SEARCH', 'NEARBY') that represent the current displayed mode of the map -->
     <article id="travel-mode-data">DRIVING</article> <!-- Possible values: ('DRIVING', 'WALKING', 'BICYCLING', 'TRANSIT') that represent the current way of calculating the optimal path in 'NEARBY' map-mode -->
     <article id="radius-data"></article> <!-- Stores the current selected radius value in 'NEARBY map-mode' -->
     <div id="map"></div>

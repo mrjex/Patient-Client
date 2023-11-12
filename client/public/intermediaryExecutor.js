@@ -21,6 +21,6 @@ function updateTravelMode() {
 }
 
 updateMap()
-updateSearchMap(1000)
+updateSearchMap(0) // NOTE: If search-UI doesn't show, try fixing/terminating eventListeners
 
 export { updateMap, zoomLevel, updateTravelMode, updateSearchMap }

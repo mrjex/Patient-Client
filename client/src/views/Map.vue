@@ -85,12 +85,10 @@ export default {
     },
     currentMode() {
       document.getElementById('mode-data').innerHTML = 'NEARBY'
-      // Inactivate search bar - index.html or Map.vue
       updateMap()
     },
     discoverMode() {
-      document.getElementById('mode-data').innerHTML = 'DISCOVER'
-      // Activate search bar - index.html or Map.vue
+      document.getElementById('mode-data').innerHTML = 'SEARCH'
       updateSearchMap(200)
     }
   }
