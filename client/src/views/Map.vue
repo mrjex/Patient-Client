@@ -6,6 +6,9 @@
           <div class="two fields">
             <div class="field map-vue-radius-options">
               <select v-model="currentRadius" @click.prevent="changeSearchRange">
+                <option value="500">0.5 KM</option>
+                <option value="1000">1 KM</option>
+                <option value="3000">3 KM</option>
                 <option value="5000">5 KM</option>
                 <option value="10000">10 KM</option>
                 <option value="15000">15 KM</option>
@@ -29,6 +32,12 @@
         <option value="BICYCLING">Bicycling</option>
         <option value="TRANSIT">Transit</option>
       </select>
+    </div>
+
+    <div class="modes">
+      <strong>Modes:</strong>
+      <button type="button" class="btn btn-success" @click.prevent="currentMode">Nearby / Current Position</button>
+      <button type="button" class="btn btn-success" @click.prevent="discoverMode">Discover / Fictional / Optional Position</button>
     </div>
   </div>
 </template>
@@ -67,16 +76,22 @@ export default {
         const travelModeArticle = document.getElementById('travel-mode-data')
         travelModeArticle.innerHTML = this.currentTravelMode
         this.previousTravelMode = this.currentTravelMode
-
-        // NOTE: Updating the entire map is not smooth and ideal when only wanting to change route
-        // SOLUTION: use intermediaryExecutor.js with 'calcRoute()'
-        // updateMap()
         updateTravelMode()
       }
 
       // NOTE: Refactor later
       // UtilsComponentVue.methods.modifyHTMLOnVariableChange(this.currentTravelMode, this.previousTravelMode, 'travel-mode-data')
       // updateTravelMode()
+    },
+    currentMode() {
+      document.getElementById('mode-data').innerHTML = 'NEARBY'
+      // Inactivate search bar here
+      // updateMap()
+    },
+    discoverMode() {
+      document.getElementById('mode-data').innerHTML = 'DISCOVER'
+      // Activate search bar here
+      // updateMap()
     }
   }
 }
