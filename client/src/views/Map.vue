@@ -1,31 +1,25 @@
 <template>
   <div class="ui grid map-vue">
-    <div class="six wide column">
-      <form class="ui segment large form">
-        <div class="field">
-          <div class="two fields">
-            <div class="field map-vue-radius-options">
-              <select v-model="currentRadius" @click.prevent="changeSearchRange">
-                <option value="500">0.5 KM</option>
-                <option value="1000">1 KM</option>
-                <option value="3000">3 KM</option>
-                <option value="5000">5 KM</option>
-                <option value="10000">10 KM</option>
-                <option value="15000">15 KM</option>
-                <option value="20000">20 KM</option>
-                <option value="30000">30 KM</option>
-                <option value="50000">50 KM</option>
-                <option value="100000">100 KM</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <!-- <button class="ui button pink" @click.prevent="findCloseBuyButtonPressed">Find CloseBuy</button> -->
-      </form>
-    </div>
+      <div class="field map-vue-radius-options">
+
+        <!-- TODO: Add place holders in all input fields in this vue file-->
+        <strong>Query Radius:</strong>
+        <select v-model="currentRadius" @click.prevent="changeSearchRange">
+          <option value="500">0.5 KM</option>
+          <option value="1000">1 KM</option>
+          <option value="3000">3 KM</option>
+          <option value="5000">5 KM</option>
+          <option value="10000">10 KM</option>
+          <option value="15000">15 KM</option>
+          <option value="20000">20 KM</option>
+          <option value="30000">30 KM</option>
+          <option value="50000">50 KM</option>
+          <option value="100000">100 KM</option>
+        </select>
+      </div>
 
     <div>
-      <strong>Mode of Travel: </strong>
+      <strong>Travel Mode: </strong>
       <select v-model="currentTravelMode" id="mode" @click.prevent="changeTravelMode">
         <option value="DRIVING">Driving</option>
         <option value="WALKING">Walking</option>
@@ -35,9 +29,66 @@
     </div>
 
     <div class="modes">
-      <strong>Modes:</strong>
-      <button type="button" class="btn btn-success" @click.prevent="currentMode">Nearby / Current Position</button>
-      <button type="button" class="btn btn-success" @click.prevent="discoverMode">Discover / Fictional / Optional Position</button>
+      <strong>Map Mode:</strong>
+      <button type="button" class="btn btn-success" @click.prevent="nearbyMode">NEARBY</button>
+      <button type="button" class="btn btn-success" @click.prevent="searchMode">SEARCH / DISCOVER</button>
+    </div>
+
+    <!-- SEARCH MODE UI-->
+    <div class="map-search-mode" v-if="this.selectedMode === 'SEARCH'">
+      <div class="pac-card" id="pac-card">
+        <div>
+          <div id="title">Search for reference points</div>
+          <div id="type-selector" class="pac-controls">
+            <input
+              type="radio"
+              name="type"
+              id="changetype-all"
+              checked="checked"
+            />
+            <label for="changetype-all">All</label>
+
+            <input type="radio" name="type" id="changetype-establishment" />
+            <label for="changetype-establishment">establishment</label>
+
+            <input type="radio" name="type" id="changetype-address" />
+            <label for="changetype-address">address</label>
+
+            <input type="radio" name="type" id="changetype-geocode" />
+            <label for="changetype-geocode">geocode</label>
+
+            <input type="radio" name="type" id="changetype-cities" />
+            <label for="changetype-cities">(cities)</label>
+
+            <input type="radio" name="type" id="changetype-regions" />
+            <label for="changetype-regions">(regions)</label>
+          </div>
+          <br />
+
+          <div id="strict-bounds-selector" class="pac-controls">
+            <input type="checkbox" id="use-location-bias" value="" checked />
+            <label for="use-location-bias">Bias to map viewport</label>
+
+            <input type="checkbox" id="use-strict-bounds" value="" />
+            <label for="use-strict-bounds">Strict bounds</label>
+          </div>
+        </div>
+        <div id="pac-container">
+          <input id="pac-input" type="text" placeholder="Enter a location" />
+        </div>
+      </div>
+    <div id="infowindow-content">
+      <span id="place-name" class="title"></span><br />
+      <span id="place-address"></span>
+    </div>
+
+    <!--
+      <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&callback=initMap&libraries=places&v=weekly"
+      defer
+    ></script>
+    -->
+    <!-- SEARCH MODE -->
     </div>
   </div>
 </template>
@@ -54,7 +105,8 @@ export default {
       currentRadius: '',
       previousRadius: '',
       currentTravelMode: '',
-      previousTravelMode: ''
+      previousTravelMode: '',
+      selectedMode: 'NEARBY'
     }
   },
   methods: {
@@ -83,13 +135,17 @@ export default {
       // UtilsComponentVue.methods.modifyHTMLOnVariableChange(this.currentTravelMode, this.previousTravelMode, 'travel-mode-data')
       // updateTravelMode()
     },
-    currentMode() {
-      document.getElementById('mode-data').innerHTML = 'NEARBY'
+    nearbyMode() {
+      this.updateMode('NEARBY')
       updateMap()
     },
-    discoverMode() {
-      document.getElementById('mode-data').innerHTML = 'SEARCH'
-      updateSearchMap(200)
+    searchMode() {
+      this.updateMode('SEARCH')
+      updateSearchMap(0)
+    },
+    updateMode(newMode) {
+      document.getElementById('mode-data').innerHTML = newMode
+      this.selectedMode = newMode
     }
   }
 }
