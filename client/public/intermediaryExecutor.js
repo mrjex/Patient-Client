@@ -2,8 +2,7 @@
 
 import { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer } from './map.js'
 import {
-  initSearchMap, calcRouteSearch, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch,
-  updateRadiusSearch, selectedRadius, infowindowContentSearchReference, infowindowSearchReference, markerCoordinates
+  initSearchMap, calcRouteSearch, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch, markerCoordinates, searchReferenceCoordinatesData
 } from './search-map.js'
 let zoomLevel = 12
 
@@ -15,8 +14,8 @@ function updateMap() { // map.js
   setTimeout(initMap, 500)
 }
 
-function updateSearchMap(delay, markerCoordinates) { // search-map.js
-  setTimeout(initSearchMap, delay, markerCoordinates)
+function updateSearchMap(delay) { // search-map.js
+  setTimeout(initSearchMap, delay)
 }
 
 function updateTravelMode() {
@@ -27,11 +26,13 @@ function updateTravelModeSearch() {
   setTimeout(calcRouteSearch(searchedPlace.geometry.location, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch), 500)
 }
 
+/*
 function updateRadiusSearchIntermediary() {
   setTimeout(updateRadiusSearch(selectedRadius, infowindowContentSearchReference, infowindowSearchReference), 500)
 }
+*/
 
 updateMap()
 updateSearchMap(0, -1) // NOTE: If search-UI doesn't show, try fixing/terminating eventListeners
 
-export { updateMap, zoomLevel, updateTravelMode, updateSearchMap, updateTravelModeSearch, updateRadiusSearchIntermediary, markerCoordinates }
+export { updateMap, zoomLevel, updateTravelMode, updateSearchMap, updateTravelModeSearch, markerCoordinates, searchReferenceCoordinatesData }

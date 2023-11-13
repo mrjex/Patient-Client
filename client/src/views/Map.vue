@@ -96,7 +96,7 @@
 
 <script>
 // import axios from 'axios'
-import { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch, updateRadiusSearchIntermediary, markerCoordinates } from '../../public/intermediaryExecutor.js'
+import { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch, markerCoordinates, searchReferenceCoordinatesData } from '../../public/intermediaryExecutor.js'
 // import UtilsComponentVue from '../components/UtilsComponent.vue'
 
 export default {
@@ -121,10 +121,7 @@ export default {
         if (document.getElementById('mode-data').innerHTML === 'NEARBY') { // NOTE: Refactor into seperate .js files later
           updateMap()
         } else {
-          // updateSearchMap()
-          console.warn('update search radius intermediary')
-          updateSearchMap(500, markerCoordinates)
-          // updateRadiusSearchIntermediary()
+          updateSearchMap(500)
         }
       }
 
