@@ -109,6 +109,7 @@ function createMarker(place) {
 }
 
 function calcRoute(userGlobalCoordinates, dentistDestination, directionsService, directionsRenderer) {
+  console.warn('map.js calc')
   const selectedMode = document.getElementById('travel-mode-data').innerHTML
   const request = {
     origin: userGlobalCoordinates,

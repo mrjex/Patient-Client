@@ -1,7 +1,16 @@
+import { userGlobalCoordinates } from './map'
+
 let service //
-let directionsService //
-let directionsRenderer //
-let selectedDentalClinicMarker //
+let directionsServiceSearch //
+let directionsRendererSearch //
+let selectedDentalClinicMarkerSearch //
+
+let userMarker
+let selectedRadius
+let infowindowSearchReference
+let infowindowContentSearchReference
+let markerCoordinates = { lat: 40.749933, lng: -73.98633 }
+
 let map
 let searchedPlace
 
@@ -12,8 +21,9 @@ function initSearchMap() {
   // TODO: Export 'userGlobalCoordinates' from map.js or intermediaryExecutor.js and out it in 'center' attribute below
   if (lastSubDomainPath === 'map' && document.getElementById('mode-data').innerHTML === 'SEARCH') { // NOTE: Refactor this 'subDomainPath' check later
     console.warn('in search-map.js')
+    console.warn(markerCoordinates)
     map = new google.maps.Map(document.getElementById('map'), {
-      center: { lat: 40.749933, lng: -73.98633 },
+      center: markerCoordinates,
       zoom: 13,
       mapTypeControl: false
     })
@@ -27,42 +37,30 @@ function initSearchMap() {
       strictBounds: false
     }
 
-    directionsService = new google.maps.DirectionsService() //
-    directionsRenderer = new google.maps.DirectionsRenderer() //
-    directionsRenderer.setMap(map) //
-    let selectedRadius = document.getElementById('radius-data').innerHTML //
-    if (!selectedRadius) { //
-      selectedRadius = 10000 //
-    }
-
     const autocomplete = new google.maps.places.Autocomplete(input, options)
     autocomplete.bindTo('bounds', map)
 
-    const infowindow = new google.maps.InfoWindow()
-    const infowindowContent = document.getElementById('infowindow-content')
+    infowindowSearchReference = new google.maps.InfoWindow() // The info-window for the marker positioned according to the input of the search-prompt
+    infowindowContentSearchReference = document.getElementById('infowindow-content')
 
-    infowindow.setContent(infowindowContent)
+    infowindowSearchReference.setContent(infowindowContentSearchReference)
 
-    const marker = new google.maps.Marker({
+    userMarker = new google.maps.Marker({
       map,
       anchorPoint: new google.maps.Point(0, -29)
     })
 
+    // When user enters a search command in the search-prompt
     autocomplete.addListener('place_changed', () => {
-      infowindow.close()
-      marker.setVisible(false)
+      infowindowSearchReference.close()
+      userMarker.setVisible(false)
 
       searchedPlace = autocomplete.getPlace()
-      console.warn('search for place!')
+      markerCoordinates = searchedPlace.geometry.location
 
-      //
-      const request = { // TODO: Replace 'location' value to exported 'userGlobalCoordinates
-        location: searchedPlace.geometry.location,
-        radius: selectedRadius,
-        type: ['dentist']
-      }
-      service = new google.maps.places.PlacesService(map) //
-      service.nearbySearch(request, callback) //
+      directionsServiceSearch = new google.maps.DirectionsService() //
+      directionsRendererSearch = new google.maps.DirectionsRenderer() //
+      directionsRendererSearch.setMap(map) //
 
       if (!searchedPlace.geometry || !searchedPlace.geometry.location) {
         // User entered the name of a Place that was not suggested and
@@ -79,14 +77,16 @@ function initSearchMap() {
         map.setZoom(17)
       }
 
-      marker.setPosition(searchedPlace.geometry.location)
-      marker.setVisible(true)
+      userMarker.setPosition(searchedPlace.geometry.location)
+      userMarker.setVisible(true)
 
-      infowindowContent.children['place-name'].textContent = searchedPlace.name
-      infowindowContent.children['place-address'].textContent =
-      searchedPlace.formatted_address
-      infowindow.open(map, marker)
+      infowindowContentSearchReference.children['place-name'].textContent = searchedPlace.name
+      infowindowContentSearchReference.children['place-address'].textContent =
+          searchedPlace.formatted_address
+      infowindowSearchReference.open(map, userMarker)
     })
+
+    updateRadiusSearch() //
 
     // Sets a listener on a radio button to change the filter type on Places
     // Autocomplete.
@@ -156,14 +156,14 @@ function createMarker(place) {
   })
 
   google.maps.event.addListener(marker, 'click', function () {
-    selectedDentalClinicMarker = marker.position
+    selectedDentalClinicMarkerSearch = marker.position
 
     const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
     // console.warn(place.photos[0].getUrl()) // NOTE: Some dentists have pics and some not
 
-    const infowindow = new google.maps.InfoWindow()
+    const selectedDentistInfowindow = new google.maps.InfoWindow()
 
-    infowindow.setContent(
+    selectedDentistInfowindow.setContent(
         `<strong class="header">${place.name}</strong>
         <p>
         Adress: ${place.vicinity} <br>
@@ -175,13 +175,14 @@ function createMarker(place) {
         }
         </style>`
     )
-    infowindow.open(map, marker)
+    selectedDentistInfowindow.open(map, marker)
 
-    calcRoute(searchedPlace.geometry.location, selectedDentalClinicMarker, directionsService, directionsRenderer)
+    calcRouteSearch(searchedPlace.geometry.location, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch)
   })
 }
 
-function calcRoute(searchPlaceCoordinates, dentistDestination, directionsService, directionsRenderer) {
+function calcRouteSearch(searchPlaceCoordinates, dentistDestination, directionsService, directionsRenderer) {
+  console.warn('search-map.js calc')
   const selectedMode = document.getElementById('travel-mode-data').innerHTML
   const request = {
     origin: searchPlaceCoordinates,
@@ -195,5 +196,23 @@ function calcRoute(searchPlaceCoordinates, dentistDestination, directionsService
   })
 }
 
+function updateRadiusSearch() {
+  selectedRadius = document.getElementById('radius-data').innerHTML //
+  if (!selectedRadius) { //
+    selectedRadius = 10000 //
+  }
+
+  const request = {
+    location: markerCoordinates, // searchedPlace.geometry.location
+    radius: selectedRadius,
+    type: ['dentist']
+  }
+  service = new google.maps.places.PlacesService(map) //
+  service.nearbySearch(request, callback)
+}
+
 window.initMap = initSearchMap
-export { initSearchMap }
+export {
+  initSearchMap, calcRouteSearch, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch,
+  updateRadiusSearch, selectedRadius, infowindowContentSearchReference, infowindowSearchReference, markerCoordinates
+}

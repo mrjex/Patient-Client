@@ -5,6 +5,7 @@
         <!-- TODO: Add place holders in all input fields in this vue file-->
         <strong>Query Radius:</strong>
         <select v-model="currentRadius" @click.prevent="changeSearchRange">
+          <option value="250">0.25 KM</option>
           <option value="500">0.5 KM</option>
           <option value="1000">1 KM</option>
           <option value="3000">3 KM</option>
@@ -95,7 +96,7 @@
 
 <script>
 // import axios from 'axios'
-import { updateMap, updateTravelMode, updateSearchMap } from '../../public/intermediaryExecutor.js'
+import { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch, updateRadiusSearchIntermediary, markerCoordinates } from '../../public/intermediaryExecutor.js'
 // import UtilsComponentVue from '../components/UtilsComponent.vue'
 
 export default {
@@ -106,7 +107,7 @@ export default {
       previousRadius: '',
       currentTravelMode: '',
       previousTravelMode: '',
-      selectedMode: 'NEARBY'
+      selectedMode: 'NEARBY' // The necessity in this variable is solely to counteract the error when initializing the program, where there is no instance of 'mode-data' HTML element
     }
   },
   methods: {
@@ -116,7 +117,15 @@ export default {
         const radiusArticle = document.getElementById('radius-data')
         radiusArticle.innerHTML = this.currentRadius
         this.previousRadius = this.currentRadius
-        updateMap()
+
+        if (document.getElementById('mode-data').innerHTML === 'NEARBY') { // NOTE: Refactor into seperate .js files later
+          updateMap()
+        } else {
+          // updateSearchMap()
+          console.warn('update search radius intermediary')
+          updateSearchMap(500, markerCoordinates)
+          // updateRadiusSearchIntermediary()
+        }
       }
 
       // NOTE: Refactor later
@@ -128,7 +137,12 @@ export default {
         const travelModeArticle = document.getElementById('travel-mode-data')
         travelModeArticle.innerHTML = this.currentTravelMode
         this.previousTravelMode = this.currentTravelMode
-        updateTravelMode()
+
+        if (document.getElementById('mode-data').innerHTML === 'NEARBY') { // NOTE: Refactor into a new .js file that supports reusability search-map.js and map.js
+          updateTravelMode()
+        } else {
+          updateTravelModeSearch()
+        }
       }
 
       // NOTE: Refactor later
@@ -141,7 +155,7 @@ export default {
     },
     searchMode() {
       this.updateMode('SEARCH')
-      updateSearchMap(0)
+      updateSearchMap(0, -1)
     },
     updateMode(newMode) {
       document.getElementById('mode-data').innerHTML = newMode
