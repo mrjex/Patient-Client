@@ -15,10 +15,7 @@ async function initMap() {
 
   if (lastSubDomainPath === 'map' && document.getElementById('mode-data').innerHTML === 'NEARBY') { // NOTE: Refactor this 'subDomainPath' check later
     console.warn('in map.js')
-    // PREVIOUS: const watchId = navigator.geolocation.watchPosition(async position => {
-    // POTENTIAL CHANGE: navigator.geolocation.getCurrentPosition(position => {)
-    // NOTE: If 'blinking update' bug continues to grow as program is developed, switch to 'navigator.geolocation.getCurrentPosition()'
-    navigator.geolocation.watchPosition(async position => { // NOTE: Fix this bug today: Try walking outside with phone using 'getCurrentPos' for real-time updating
+    navigator.geolocation.watchPosition(async position => {
       const { latitude, longitude } = position.coords
       // userGlobalCoordinates = { lat: latitude, lng: longitude }
       assignUserCoordinates({ lat: latitude, lng: longitude })
@@ -117,7 +114,6 @@ function calcRoute(userGlobalCoordinates, dentistDestination, directionsService,
     origin: userGlobalCoordinates,
     destination: dentistDestination,
     travelMode: google.maps.TravelMode[selectedMode]
-    // travelMode: 'DRIVING'
   }
   directionsService.route(request, function (response, status) {
     if (status === 'OK') {

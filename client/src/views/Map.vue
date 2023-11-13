@@ -38,7 +38,7 @@
     <div class="map-search-mode" v-if="this.selectedMode === 'SEARCH'">
       <div class="pac-card" id="pac-card">
         <div>
-          <div id="title">Search for reference points</div>
+          <div id="title">Search for reference position</div>
           <div id="type-selector" class="pac-controls">
             <input
               type="radio"
