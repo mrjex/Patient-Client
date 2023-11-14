@@ -110,6 +110,10 @@ export default {
       selectedMode: 'NEARBY' // The necessity in this variable is solely to counteract the error when initializing the program, where there is no instance of 'mode-data' HTML element
     }
   },
+  created() {
+    this.initializePlaceAPI()
+    this.initializeNearbyMap()
+  },
   methods: {
     // NOTE: Refactor this by creating 'UtilsComponent.vue', import it as a component in this vue-script, and call its corresponding method
     changeSearchRange() {
@@ -157,6 +161,28 @@ export default {
     updateMode(newMode) {
       document.getElementById('mode-data').innerHTML = newMode
       this.selectedMode = newMode
+    },
+    // Run 'nearby-map.js' that has responsibility for the backend functionality of the API
+    initializeNearbyMap() {
+      console.warn('G')
+      const scriptMapAPI = document.createElement('script')
+      scriptMapAPI.type = 'module'
+      scriptMapAPI.src = '../../public/maps/map-modes/nearby-map.js'
+      // document.head.prepend(scriptMapAPI)
+    },
+    initializeSearchMap() {
+      if (document.getElementById('mode-data').innerHTML === 'NEARBY') {
+        const scriptSearchMapAPI = document.createElement('script')
+        scriptSearchMapAPI.type = 'module'
+        scriptSearchMapAPI.src = '../../public/maps/map-modes/search-map.js'
+        // document.head.prepend(scriptSearchMapAPI)
+      }
+    },
+    initializePlaceAPI() {
+      const scriptPlaceAPI = document.createElement('script')
+      scriptPlaceAPI.type = 'module'
+      scriptPlaceAPI.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&libraries=places&callback=initMap'
+      document.head.prepend(scriptPlaceAPI)
     }
   }
 }

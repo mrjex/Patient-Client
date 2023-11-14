@@ -17,26 +17,6 @@
         linkCSS.type = "text/css"
         linkCSS.href = "./map-style.css"
         document.head.prepend(linkCSS)
-
-        const scriptPlaceAPI = document.createElement("script")
-        scriptPlaceAPI.type = "module"
-        scriptPlaceAPI.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&libraries=places&callback=initMap"
-        document.head.prepend(scriptPlaceAPI)
-
-        // Run 'map.js' that has responsibility for the backend functionality of the API
-        const scriptMapAPI = document.createElement("script")
-        scriptMapAPI.type = "module"
-        scriptMapAPI.src = "./maps/map-modes/nearby-map.js"
-        document.head.prepend(scriptMapAPI)
-
-        /*
-        if (document.getElementById('mode-data').innerHTML === 'NEARBY') {
-          const scriptSearchMapAPI = document.createElement("script")
-          scriptMapAPI.type = "module"
-          scriptMapAPI.src = "./maps/map-modes/search-map.js"
-          document.head.prepend(scriptSearchMapAPI)
-        }
-        */
       }
     </script>
 

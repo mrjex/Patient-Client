@@ -7,7 +7,8 @@ import { zoomLevel } from '../../intermediaryExecutor.js'
 let graphicalMap = -1
 let service
 
-let userGlobalCoordinates
+let userGlobalCoordinates = -1
+
 let directionsService
 let directionsRenderer
 let selectedDentalClinicMarker
@@ -20,38 +21,19 @@ async function initMap() {
   if (lastSubDomainPath === 'map' && document.getElementById('mode-data').innerHTML === 'NEARBY') { // confirmExecutionConditions('NEARBY')
     console.warn('in nearby-map.js')
 
-    /*
-    if (graphicalMap !== -1) {
-      zoomLevelTest = graphicalMap.zoom
-    }
-    */
-
-    navigator.geolocation.watchPosition(async position => {
+    navigator.geolocation.watchPosition(async position => { // Alternative: '.navigator.geolocation.getCurrentPosition(position => {' for instant retrieval of 'userGlobalCoordinates'
       const { latitude, longitude } = position.coords
       userGlobalCoordinates = { lat: latitude, lng: longitude }
     })
 
-    console.warn('A')
-
-    directionsService = new google.maps.DirectionsService()
-    directionsRenderer = new google.maps.DirectionsRenderer()
-
-    console.warn('B')
-
-    // launchMapUtils(userGlobalCoordinates)
-    drawMap(userGlobalCoordinates) // Try passing directionsService and Renderer here: new google.maps.{service}
+    setTimeout(drawMap, 1000) // Account for the delay to assign/find 'userGlobalCoordinates' in the method above
   }
 }
 
-async function drawMap(userGlobalCoordinates) {
-  console.warn('drawMap()')
+async function drawMap() {
   // @ts-ignore
   const { Map } = await google.maps.importLibrary('maps')
   const { AdvancedMarkerElement } = await google.maps.importLibrary('marker')
-
-  console.warn('C')
-  // console.warn(zoomLevel)
-  console.warn('D')
 
   graphicalMap = new Map(document.getElementById('map'), {
     zoom: zoomLevel, // zoomLevelTest
@@ -59,7 +41,8 @@ async function drawMap(userGlobalCoordinates) {
     mapId: 'DEMO_MAP_ID'
   })
 
-  // --------------------
+  directionsService = new google.maps.DirectionsService()
+  directionsRenderer = new google.maps.DirectionsRenderer()
 
   directionsRenderer.setMap(graphicalMap)
   let selectedRadius = document.getElementById('radius-data').innerHTML
@@ -146,5 +129,5 @@ function calcRoute(userGlobalCoordinates, dentistDestination, directionsService,
   })
 }
 
-initMap() //
+initMap()
 export { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer }

@@ -38,7 +38,7 @@ function updateTravelModeSearch() {
   setTimeout(calcRouteSearch(searchedPlace.geometry.location, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch), 500)
 }
 
-updateMap()
+// updateMap()
 // updateSearchMap(0)
 
 export { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch, markerCoordinates, zoomLevel }
