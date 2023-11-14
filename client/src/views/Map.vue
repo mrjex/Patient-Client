@@ -96,7 +96,7 @@
 
 <script>
 // import axios from 'axios'
-import { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch } from '../../public/intermediaryExecutor.js'
+import { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch, updateRadiusSearch } from '../../public/intermediaryExecutor.js'
 // import UtilsComponentVue from '../components/UtilsComponent.vue'
 
 export default {
@@ -125,7 +125,7 @@ export default {
         if (document.getElementById('mode-data').innerHTML === 'NEARBY') { // NOTE: Refactor into seperate .js files later
           updateMap()
         } else {
-          updateSearchMap(500)
+          updateRadiusSearch()
         }
       }
 
@@ -156,7 +156,7 @@ export default {
     },
     searchMode() {
       this.updateMode('SEARCH')
-      updateSearchMap(0, -1)
+      updateSearchMap(0)
     },
     updateMode(newMode) {
       document.getElementById('mode-data').innerHTML = newMode
@@ -164,7 +164,6 @@ export default {
     },
     // Run 'nearby-map.js' that has responsibility for the backend functionality of the API
     initializeNearbyMap() {
-      console.warn('G')
       const scriptMapAPI = document.createElement('script')
       scriptMapAPI.type = 'module'
       scriptMapAPI.src = '../../public/maps/map-modes/nearby-map.js'

@@ -2,7 +2,7 @@
 import { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer } from './maps/map-modes/nearby-map.js'
 
 import {
-  initSearchMap, calcRouteSearch, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch, markerCoordinates
+  initSearchMap, calcRouteSearch, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch, markerCoordinates, updateRadiusSearch
 } from './maps/map-modes/search-map.js'
 let zoomLevel = 12
 
@@ -41,4 +41,4 @@ function updateTravelModeSearch() {
 // updateMap()
 // updateSearchMap(0)
 
-export { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch, markerCoordinates, zoomLevel }
+export { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch, markerCoordinates, zoomLevel, updateRadiusSearch }
