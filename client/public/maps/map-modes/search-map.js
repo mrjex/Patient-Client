@@ -1,4 +1,4 @@
-import { confirmExecutionConditions } from '../map-utils'
+// import { confirmExecutionConditions } from '../map-utils'
 
 /* eslint-disable no-undef */
 let service //
@@ -18,7 +18,9 @@ let searchedPlace
 
 function initSearchMap() {
   // launchMapUtils(markerCoordinates)
-  if (confirmExecutionConditions('SEARCH')) {
+  const pathArray = window.location.href.split('/')
+  const lastSubDomainPath = pathArray[pathArray.length - 1]
+  if (lastSubDomainPath === 'map' && document.getElementById('mode-data').innerHTML === 'SEARCH') { // confirmExecutionConditions('SEARCH')
     console.warn('in search-map.js')
     directionsServiceSearch = new google.maps.DirectionsService() //
     directionsRendererSearch = new google.maps.DirectionsRenderer() //

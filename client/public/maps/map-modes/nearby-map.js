@@ -1,10 +1,10 @@
 import { zoomLevel } from '../../intermediaryExecutor.js'
-import { confirmExecutionConditions } from '../map-utils.js'
+// import { confirmExecutionConditions } from '../map-utils.js'
 
 // TODO: Export variables from map-utils.js to this script and search-map.js
 
 /* eslint-disable no-undef */
-let graphicalMap
+let graphicalMap = -1
 let service
 
 let userGlobalCoordinates
@@ -12,30 +12,49 @@ let directionsService
 let directionsRenderer
 let selectedDentalClinicMarker
 
+// let zoomLevelTest = 12
+
 async function initMap() {
-  if (confirmExecutionConditions('NEARBY')) {
-    console.warn('in map.js')
+  const pathArray = window.location.href.split('/')
+  const lastSubDomainPath = pathArray[pathArray.length - 1]
+  if (lastSubDomainPath === 'map' && document.getElementById('mode-data').innerHTML === 'NEARBY') { // confirmExecutionConditions('NEARBY')
+    console.warn('in nearby-map.js')
+
+    /*
+    if (graphicalMap !== -1) {
+      zoomLevelTest = graphicalMap.zoom
+    }
+    */
 
     navigator.geolocation.watchPosition(async position => {
       const { latitude, longitude } = position.coords
-      // userGlobalCoordinates = { lat: latitude, lng: longitude }
-      assignUserCoordinates({ lat: latitude, lng: longitude })
+      userGlobalCoordinates = { lat: latitude, lng: longitude }
     })
+
+    console.warn('A')
 
     directionsService = new google.maps.DirectionsService()
     directionsRenderer = new google.maps.DirectionsRenderer()
+
+    console.warn('B')
+
     // launchMapUtils(userGlobalCoordinates)
-    drawMap(userGlobalCoordinates)
+    drawMap(userGlobalCoordinates) // Try passing directionsService and Renderer here: new google.maps.{service}
   }
 }
 
 async function drawMap(userGlobalCoordinates) {
+  console.warn('drawMap()')
   // @ts-ignore
   const { Map } = await google.maps.importLibrary('maps')
   const { AdvancedMarkerElement } = await google.maps.importLibrary('marker')
 
+  console.warn('C')
+  // console.warn(zoomLevel)
+  console.warn('D')
+
   graphicalMap = new Map(document.getElementById('map'), {
-    zoom: zoomLevel,
+    zoom: zoomLevel, // zoomLevelTest
     center: userGlobalCoordinates,
     mapId: 'DEMO_MAP_ID'
   })
@@ -109,6 +128,7 @@ function createMarker(place) {
     infowindow.open(graphicalMap, marker)
 
     calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
+    // calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, google.maps.DirectionsService(), directionsRenderer) // try with 'new' if error
   })
 }
 
@@ -126,16 +146,5 @@ function calcRoute(userGlobalCoordinates, dentistDestination, directionsService,
   })
 }
 
-function assignUserCoordinates(currentGlobalCoordinates) {
-  // Display user's current position on map
-  if (nearbyModeActivated()) {
-    userGlobalCoordinates = currentGlobalCoordinates
-  }
-}
-
-function nearbyModeActivated() {
-  return document.getElementById('mode-data').innerHTML === 'NEARBY'
-}
-
-initMap()
+initMap() //
 export { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer }

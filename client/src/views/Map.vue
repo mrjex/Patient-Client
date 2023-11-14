@@ -114,7 +114,7 @@ export default {
     // NOTE: Refactor this by creating 'UtilsComponent.vue', import it as a component in this vue-script, and call its corresponding method
     changeSearchRange() {
       if (this.currentRadius && this.currentRadius !== this.previousRadius) {
-        const radiusArticle = document.getElementById('radius-data')
+        const radiusArticle = document.getElementById('radius-data') // NOTE: Refactor into a general function 'assignElementX' and reuse in method below
         radiusArticle.innerHTML = this.currentRadius
         this.previousRadius = this.currentRadius
 

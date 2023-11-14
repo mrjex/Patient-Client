@@ -1,6 +1,5 @@
 // This script is the generalization of 'map.js' and 'search-map.js' and is executed at initialization of both scripts
 /* eslint-disable no-undef */
-// import { zoomLevel } from './intermediaryExecutor'
 
 // let graphicalMap
 // let service
@@ -22,6 +21,7 @@ function launchMapUtils(mapMode, markerPosition) {
 
 // Each map-mode script is solely executed under certain conditions
 function confirmExecutionConditions(mapMode) {
+  console.warn('in map-utils.js')
   const pathArray = window.location.href.split('/')
   const lastSubDomainPath = pathArray[pathArray.length - 1]
   return (lastSubDomainPath === 'map' && document.getElementById('mode-data').innerHTML === mapMode)
