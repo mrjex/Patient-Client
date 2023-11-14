@@ -1,9 +1,15 @@
 <template>
   <div id="app">
-      <div class="auth-inner">
-          <b-container class="py-3">
-          <router-view />
-          </b-container>
-        </div>
+    <!-- Your application content -->
+    <router-view/>
   </div>
 </template>
+<script>
+
+export default {
+  name: 'app'
+}
+</script>
+
+<style>
+</style>
