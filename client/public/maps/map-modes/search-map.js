@@ -1,3 +1,6 @@
+import { confirmExecutionConditions } from '../map-utils'
+
+/* eslint-disable no-undef */
 let service //
 let directionsServiceSearch //
 let directionsRendererSearch //
@@ -9,33 +12,16 @@ let selectedRadius = 10000
 let infowindowSearchReference
 let infowindowContentSearchReference
 let markerCoordinates = { lat: 40.749933, lng: -73.98633 }
-let searchReferenceCoordinatesData = { lat: 40.749933, lng: -73.98633 }
 
 let map
 let searchedPlace
 
 function initSearchMap() {
-  const pathArray = window.location.href.split('/')
-  const lastSubDomainPath = pathArray[pathArray.length - 1]
-
-  // TODO: Export 'userGlobalCoordinates' from map.js or intermediaryExecutor.js and out it in 'center' attribute below
-  if (lastSubDomainPath === 'map' && document.getElementById('mode-data').innerHTML === 'SEARCH') { // NOTE: Refactor this 'subDomainPath' check later
+  // launchMapUtils(markerCoordinates)
+  if (confirmExecutionConditions('SEARCH')) {
     console.warn('in search-map.js')
-
-    console.warn(markerCoordinates)
-    console.warn(searchReferenceCoordinatesData)
-
-    /*
-    console.warn(markerCoordinates)
-    console.warn(markerCoordinates.lat)
-
-    if (markerCoordinates.lat) {
-      console.warn(`${markerCoordinates.lat} is valid`)
-    } else {
-      console.warn('markerCoordinates is invalid!')
-    }
-    */
-    // POTENTIAL SOLUTION: Store an array of 2 numerical elements and assign them 'lat', 'lng' manually here
+    directionsServiceSearch = new google.maps.DirectionsService() //
+    directionsRendererSearch = new google.maps.DirectionsRenderer() //
 
     map = new google.maps.Map(document.getElementById('map'), {
       center: markerCoordinates,
@@ -43,7 +29,7 @@ function initSearchMap() {
       mapTypeControl: false
     })
 
-    const card = document.getElementById('pac-card')
+    // const card = document.getElementById('pac-card')
     const input = document.getElementById('pac-input')
     const biasInputElement = document.getElementById('use-location-bias')
     const strictBoundsInputElement = document.getElementById('use-strict-bounds')
@@ -69,9 +55,6 @@ function initSearchMap() {
 
       searchedPlace = autocomplete.getPlace()
       markerCoordinates = searchedPlace.geometry.location
-
-      directionsServiceSearch = new google.maps.DirectionsService() //
-      directionsRendererSearch = new google.maps.DirectionsRenderer() //
       directionsRendererSearch.setMap(map) //
 
       if (!searchedPlace.geometry || !searchedPlace.geometry.location) {
@@ -154,41 +137,18 @@ function initSearchMap() {
 
 function callback(results, status) {
   if (status === google.maps.places.PlacesServiceStatus.OK) {
-    for (let i = 0; i <= results.length; i++) { // NOTE: Potential solution - Make sure max length is 19 and reserve the last spot for userMarker
+    for (let i = 0; i < results.length; i++) {
       createMarker(results, i)
     }
   }
 }
 
 function createMarker(results, i) {
-  let place
-  let marker
-  if (i === results.length) {
-    /*
-    const svgMarker = {
-      path: 'M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z',
-      fillColor: 'blue',
-      fillOpacity: 1,
-      strokeWeight: 0,
-      rotation: 0,
-      scale: 2,
-      anchor: new google.maps.Point(0, 20)
-    }
-
-    marker = new google.maps.Marker({
-      map,
-      icon: svgMarker
-      // Add position: markerCoordinates
-      // anchorPoint: new google.maps.Point(0, -29)
-    })
-    */
-  } else {
-    place = results[i]
-    marker = new google.maps.Marker({
-      map,
-      position: place.geometry.location
-    })
-  }
+  const place = results[i]
+  const marker = new google.maps.Marker({
+    map,
+    position: place.geometry.location
+  })
   google.maps.event.addListener(marker, 'click', function () {
     selectedDentalClinicMarkerSearch = marker.position
 
@@ -211,10 +171,11 @@ function createMarker(results, i) {
     )
     selectedDentistInfowindow.open(map, marker)
 
-    calcRouteSearch(searchedPlace.geometry.location, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch) //
+    // calcRouteSearch(searchedPlace.geometry.location, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch)
   })
 }
 
+// NOTE: Ask group whether or not they can paths to be displayed in this mode as well. ATM its method call is commented
 function calcRouteSearch(searchPlaceCoordinates, dentistDestination, directionsService, directionsRenderer) {
   console.warn('search-map.js calc')
   const selectedMode = document.getElementById('travel-mode-data').innerHTML
@@ -271,5 +232,5 @@ function createReferenceMarker() {
 window.initMap = initSearchMap
 export {
   initSearchMap, calcRouteSearch, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch,
-  markerCoordinates, searchReferenceCoordinatesData
+  markerCoordinates
 }

@@ -1,4 +1,7 @@
-import { zoomLevel } from './intermediaryExecutor.js'
+import { zoomLevel } from '../../intermediaryExecutor.js'
+import { confirmExecutionConditions } from '../map-utils.js'
+
+// TODO: Export variables from map-utils.js to this script and search-map.js
 
 /* eslint-disable no-undef */
 let graphicalMap
@@ -10,19 +13,18 @@ let directionsRenderer
 let selectedDentalClinicMarker
 
 async function initMap() {
-  const pathArray = window.location.href.split('/')
-  const lastSubDomainPath = pathArray[pathArray.length - 1]
-
-  if (lastSubDomainPath === 'map' && document.getElementById('mode-data').innerHTML === 'NEARBY') { // NOTE: Refactor this 'subDomainPath' check later
+  if (confirmExecutionConditions('NEARBY')) {
     console.warn('in map.js')
+
     navigator.geolocation.watchPosition(async position => {
       const { latitude, longitude } = position.coords
       // userGlobalCoordinates = { lat: latitude, lng: longitude }
       assignUserCoordinates({ lat: latitude, lng: longitude })
     })
+
     directionsService = new google.maps.DirectionsService()
     directionsRenderer = new google.maps.DirectionsRenderer()
-
+    // launchMapUtils(userGlobalCoordinates)
     drawMap(userGlobalCoordinates)
   }
 }
@@ -37,6 +39,8 @@ async function drawMap(userGlobalCoordinates) {
     center: userGlobalCoordinates,
     mapId: 'DEMO_MAP_ID'
   })
+
+  // --------------------
 
   directionsRenderer.setMap(graphicalMap)
   let selectedRadius = document.getElementById('radius-data').innerHTML

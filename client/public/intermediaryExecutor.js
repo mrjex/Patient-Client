@@ -1,9 +1,9 @@
 // NOTE FOR DEVELOPERS: This script's purpose is only to excute or invoke fragments of javascript-files on the occurence of specified events
 
-import { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer } from './map.js'
+import { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer } from './maps/map-modes/nearby-map.js'
 import {
-  initSearchMap, calcRouteSearch, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch, markerCoordinates, searchReferenceCoordinatesData
-} from './search-map.js'
+  initSearchMap, calcRouteSearch, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch, markerCoordinates
+} from './maps/map-modes/search-map.js'
 let zoomLevel = 12
 
 function updateMap() { // map.js
@@ -26,13 +26,7 @@ function updateTravelModeSearch() {
   setTimeout(calcRouteSearch(searchedPlace.geometry.location, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch), 500)
 }
 
-/*
-function updateRadiusSearchIntermediary() {
-  setTimeout(updateRadiusSearch(selectedRadius, infowindowContentSearchReference, infowindowSearchReference), 500)
-}
-*/
-
 updateMap()
-updateSearchMap(0, -1) // NOTE: If search-UI doesn't show, try fixing/terminating eventListeners
+updateSearchMap(0)
 
-export { updateMap, zoomLevel, updateTravelMode, updateSearchMap, updateTravelModeSearch, markerCoordinates, searchReferenceCoordinatesData }
+export { updateMap, zoomLevel, updateTravelMode, updateSearchMap, updateTravelModeSearch, markerCoordinates }

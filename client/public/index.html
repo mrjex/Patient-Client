@@ -26,15 +26,17 @@
         // Run 'map.js' that has responsibility for the backend functionality of the API
         const scriptMapAPI = document.createElement("script")
         scriptMapAPI.type = "module"
-        scriptMapAPI.src = "./map.js"
+        scriptMapAPI.src = "./maps/map-modes/nearby-map.js"
         document.head.prepend(scriptMapAPI)
 
+        /*
         if (document.getElementById('mode-data').innerHTML === 'NEARBY') {
           const scriptSearchMapAPI = document.createElement("script")
           scriptMapAPI.type = "module"
-          scriptMapAPI.src = "./search-map.js"
+          scriptMapAPI.src = "./maps/map-modes/search-map.js"
           document.head.prepend(scriptSearchMapAPI)
         }
+        */
       }
     </script>
 

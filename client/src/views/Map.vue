@@ -96,7 +96,7 @@
 
 <script>
 // import axios from 'axios'
-import { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch, markerCoordinates, searchReferenceCoordinatesData } from '../../public/intermediaryExecutor.js'
+import { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch } from '../../public/intermediaryExecutor.js'
 // import UtilsComponentVue from '../components/UtilsComponent.vue'
 
 export default {
