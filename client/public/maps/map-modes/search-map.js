@@ -1,11 +1,11 @@
-// import { confirmExecutionConditions } from '../map-utils'
+import { confirmExecutionConditions } from '../map-utils'
 
 /* eslint-disable no-undef */
-let service //
-let directionsServiceSearch //
-let directionsRendererSearch //
+let service
+let directionsServiceSearch
+let directionsRendererSearch
 
-let selectedDentalClinicMarkerSearch //
+let selectedDentalClinicMarkerSearch
 
 let userMarker
 
@@ -16,124 +16,182 @@ let markerCoordinates = { lat: 40.749933, lng: -73.98633 }
 
 let map
 let searchedPlace
+let autocomplete
+
+let input
+let biasInputElement
+let strictBoundsInputElement
+
+const defaultZoomLevel = 17
 
 function initSearchMap() {
-  // launchMapUtils(markerCoordinates)
-  const pathArray = window.location.href.split('/')
-  const lastSubDomainPath = pathArray[pathArray.length - 1]
-  if (lastSubDomainPath === 'map' && document.getElementById('mode-data').innerHTML === 'SEARCH') { // confirmExecutionConditions('SEARCH')
+  if (confirmExecutionConditions('SEARCH')) {
     console.warn('in search-map.js')
 
     initiateMap()
 
-    // const card = document.getElementById('pac-card')
-    const input = document.getElementById('pac-input')
-    const biasInputElement = document.getElementById('use-location-bias')
-    const strictBoundsInputElement = document.getElementById('use-strict-bounds')
-
-    infowindowSearchReference = new google.maps.InfoWindow() // The info-window for the marker positioned according to the input of the search-prompt
-    infowindowContentSearchReference = document.getElementById('infowindow-content')
-    infowindowSearchReference.setContent(infowindowContentSearchReference)
+    readSearchBarElements()
+    instantiateInfowindow()
 
     updateRadiusSearch()
-    onSearchLocation(input)
-
-    // Sets a listener on a radio button to change the filter type on Places
-    // Autocomplete.
-    function setupClickListener(id, types) {
-      const radioButton = document.getElementById(id)
-
-      if (radioButton) {
-        radioButton.addEventListener('click', () => {
-          autocomplete.setTypes(types)
-          input.value = ''
-        })
-      }
-    }
-
-    setupClickListener('changetype-all', [])
-    setupClickListener('changetype-address', ['address'])
-    setupClickListener('changetype-establishment', ['establishment'])
-    setupClickListener('changetype-geocode', ['geocode'])
-    setupClickListener('changetype-cities', ['(cities)'])
-    setupClickListener('changetype-regions', ['(regions)'])
-
-    if (biasInputElement) {
-      biasInputElement.addEventListener('change', () => {
-        if (biasInputElement.checked) {
-          autocomplete.bindTo('bounds', map)
-        } else {
-          // User wants to turn off location bias, so three things need to happen:
-          // 1. Unbind from map
-          // 2. Reset the bounds to whole world
-          // 3. Uncheck the strict bounds checkbox UI (which also disables strict bounds)
-          autocomplete.unbind('bounds')
-          autocomplete.setBounds({ east: 180, west: -180, north: 90, south: -90 })
-          strictBoundsInputElement.checked = biasInputElement.checked
-        }
-        input.value = ''
-      })
-    }
-
-    // NOTE: All of the Search-UI variables are null on the second instance the 'SEARCH' mode is called
-    if (strictBoundsInputElement) {
-      strictBoundsInputElement.addEventListener('change', () => {
-        autocomplete.setOptions({
-          strictBounds: strictBoundsInputElement.checked
-        })
-        if (strictBoundsInputElement.checked) {
-          biasInputElement.checked = strictBoundsInputElement.checked
-          autocomplete.bindTo('bounds', map)
-        }
-        input.value = ''
-      })
-    }
+    onSearchLocation()
   }
 }
 
-// When user enters a search command in the search-prompt
-function onSearchLocation(input) {
-  const options = {
-    fields: ['formatted_address', 'geometry', 'name'],
-    strictBounds: false
-  }
+// The info-window for the marker positioned according to the input of the search-prompt
+function instantiateInfowindow() {
+  infowindowSearchReference = new google.maps.InfoWindow()
+  infowindowContentSearchReference = document.getElementById('infowindow-content')
+  infowindowSearchReference.setContent(infowindowContentSearchReference)
+}
 
-  const autocomplete = new google.maps.places.Autocomplete(input, options)
-  autocomplete.bindTo('bounds', map)
+function updateInfowindow() {
+  infowindowContentSearchReference.children['place-name'].textContent = searchedPlace.name
+  infowindowContentSearchReference.children['place-address'].textContent =
+          searchedPlace.formatted_address
+  infowindowSearchReference.open(map, userMarker)
+}
+
+// Has responsibility for the functionality of the clickable buttons that restrict the search results
+function runSearchBarButtonListeners() {
+  runRadioButtonListeners()
+  runCheckBoxListeners()
+}
+
+function runRadioButtonListeners() {
+  setupClickListener('changetype-all', [])
+  setupClickListener('changetype-address', ['address'])
+  setupClickListener('changetype-establishment', ['establishment'])
+  setupClickListener('changetype-geocode', ['geocode'])
+  setupClickListener('changetype-cities', ['(cities)'])
+  setupClickListener('changetype-regions', ['(regions)'])
+}
+
+// Sets a listener on a radio button to change the filter type when using the search bar
+function setupClickListener(id, types) {
+  const radioButton = document.getElementById(id)
+
+  if (radioButton) {
+    radioButton.addEventListener('click', () => {
+      autocomplete.setTypes(types)
+      input.value = ''
+    })
+  }
+}
+
+function runCheckBoxListeners() {
+  runBiasInputListener()
+  runStrictBoundsInputListener()
+}
+
+function runBiasInputListener() {
+  if (biasInputElement) {
+    biasInputElement.addEventListener('change', () => {
+      if (biasInputElement.checked) {
+        autocomplete.bindTo('bounds', map)
+      } else {
+        // User wants to turn off location bias, so three things need to happen:
+        // 1. Unbind from map
+        // 2. Reset the bounds to whole world
+        // 3. Uncheck the strict bounds checkbox UI (which also disables strict bounds)
+        autocomplete.unbind('bounds')
+        autocomplete.setBounds({ east: 180, west: -180, north: 90, south: -90 })
+        strictBoundsInputElement.checked = biasInputElement.checked
+      }
+      input.value = ''
+    })
+  }
+}
+
+function runStrictBoundsInputListener() {
+  if (strictBoundsInputElement) {
+    strictBoundsInputElement.addEventListener('change', () => {
+      autocomplete.setOptions({
+        strictBounds: strictBoundsInputElement.checked
+      })
+      if (strictBoundsInputElement.checked) {
+        biasInputElement.checked = strictBoundsInputElement.checked
+        autocomplete.bindTo('bounds', map)
+      }
+      input.value = ''
+    })
+  }
+}
+
+function readSearchBarElements() {
+  input = document.getElementById('pac-input')
+  biasInputElement = document.getElementById('use-location-bias')
+  strictBoundsInputElement = document.getElementById('use-strict-bounds')
+}
+
+// When user enters a search command in the search-prompt
+function onSearchLocation() {
+  instantiateSearchAutoComplete()
 
   autocomplete.addListener('place_changed', () => {
     infowindowSearchReference.close()
-
     searchedPlace = autocomplete.getPlace()
-    markerCoordinates = searchedPlace.geometry.location
-    directionsRendererSearch.setMap(map) //
 
-    if (!searchedPlace.geometry || !searchedPlace.geometry.location) {
-      // User entered the name of a Place that was not suggested and
-      // pressed the Enter key, or the Place Details request failed
-      window.alert("No details available for input: '" + searchedPlace.name + "'")
-      // return
-    }
-
-    // If the place has a geometry, then present it on a map.
-    if (searchedPlace.geometry.viewport) {
-      map.fitBounds(searchedPlace.geometry.viewport)
-    } else {
-      map.setCenter(searchedPlace.geometry.location)
-      map.setZoom(17)
-    }
-
-    userMarker.setPosition(searchedPlace.geometry.location)
-    updateRadiusSearch()
-
-    if (!infowindowContentSearchReference) {
-      console.warn('infowindowContet is null')
-    }
-    infowindowContentSearchReference.children['place-name'].textContent = searchedPlace.name
-    infowindowContentSearchReference.children['place-address'].textContent =
-            searchedPlace.formatted_address
-    infowindowSearchReference.open(map, userMarker)
+    manageSearchResult()
   })
+
+  runSearchBarListeners()
+}
+
+function runSearchBarListeners() {
+  runSearchInputListener()
+  runSearchBarButtonListeners()
+}
+
+function runSearchInputListener() {
+  autocomplete.addListener('place_changed', () => {
+    infowindowSearchReference.close()
+    searchedPlace = autocomplete.getPlace()
+
+    manageSearchResult()
+  })
+}
+
+function getSearchQueryParameters() {
+  return {
+    fields: ['formatted_address', 'geometry', 'name'],
+    strictBounds: false
+  }
+}
+
+function instantiateSearchAutoComplete() {
+  autocomplete = new google.maps.places.Autocomplete(input, getSearchQueryParameters())
+  autocomplete.bindTo('bounds', map)
+}
+
+function manageSearchResult() {
+  // Place found
+  if (searchIsValid()) {
+    markerCoordinates = searchedPlace.geometry.location
+    directionsRendererSearch.setMap(map)
+
+    centerSearchedMarker()
+
+    updateRadiusSearch()
+    updateInfowindow()
+  } else { // Could not find place
+    window.alert("No details available for input: '" + searchedPlace.name + "'")
+  }
+}
+
+// Check if an existing place can be found based on the user's input
+function searchIsValid() {
+  return (searchedPlace.geometry && searchedPlace.geometry.location)
+}
+
+function centerSearchedMarker() {
+  if (searchedPlace.geometry.viewport) {
+    map.fitBounds(searchedPlace.geometry.viewport)
+  } else {
+    map.setCenter(searchedPlace.geometry.location)
+    map.setZoom(defaultZoomLevel)
+  }
+  userMarker.setPosition(searchedPlace.geometry.location)
 }
 
 function callback(results, status) {

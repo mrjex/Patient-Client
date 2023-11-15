@@ -21,7 +21,6 @@ function launchMapUtils(mapMode, markerPosition) {
 
 // Each map-mode script is solely executed under certain conditions
 function confirmExecutionConditions(mapMode) {
-  console.warn('in map-utils.js')
   const pathArray = window.location.href.split('/')
   const lastSubDomainPath = pathArray[pathArray.length - 1]
   return (lastSubDomainPath === 'map' && document.getElementById('mode-data').innerHTML === mapMode)
@@ -53,5 +52,4 @@ async function initializeMap(mapMode, markerPosition) {
   }
 }
 */
-
 export { confirmExecutionConditions }

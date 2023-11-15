@@ -1,4 +1,4 @@
-// import { confirmExecutionConditions } from '../map-utils.js'
+import { confirmExecutionConditions } from '../map-utils.js'
 
 // TODO: Export variables from map-utils.js to this script and search-map.js
 
@@ -17,10 +17,7 @@ const defaultZoomLevel = 12
 // let xObj
 
 async function initMap() {
-  const pathArray = window.location.href.split('/')
-  const lastSubDomainPath = pathArray[pathArray.length - 1]
-
-  if (lastSubDomainPath === 'map' && document.getElementById('mode-data').innerHTML === 'NEARBY') { // confirmExecutionConditions('NEARBY')
+  if (confirmExecutionConditions('NEARBY')) {
     console.warn('in nearby-map.js')
 
     // --------------------------------------
@@ -52,13 +49,14 @@ async function initMap() {
     */
     // --------------------------------------
 
-    navigator.geolocation.watchPosition(async position => { // Alternative: '.navigator.geolocation.getCurrentPosition(position => {' for instant retrieval of 'userGlobalCoordinates'
+    // Alternative to implement for 'GPS' feature in video: navigator.geolocation.watchPosition(async position => {
+    navigator.geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords
       userGlobalCoordinates = { lat: latitude, lng: longitude }
       // xObj.a = { lat: latitude, lng: longitude }
     })
 
-    setTimeout(drawMap, 3000) // Account for the delay to assign/find 'userGlobalCoordinates' in the method above
+    setTimeout(drawMap, 1000) // Account for the delay to assign/find 'userGlobalCoordinates' in the method above
 
     // Current error - SOLUTIONS:
     // 1) Increase the delay value
@@ -109,7 +107,7 @@ function callback(results, status) {
   }
 }
 
-function createMarker(place) {
+function createMarker(place) { // NOTE: Refactor further in this script and in 'search-map.js'
   const marker = new google.maps.Marker({
     map: graphicalMap,
     position: place.geometry.location
@@ -138,7 +136,6 @@ function createMarker(place) {
     infowindow.open(graphicalMap, marker)
 
     calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
-    // calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, google.maps.DirectionsService(), directionsRenderer) // try with 'new' if error
   })
 }
 

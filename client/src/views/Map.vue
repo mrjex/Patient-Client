@@ -32,7 +32,7 @@
     <div class="modes">
       <strong>Map Mode:</strong>
       <button type="button" class="btn btn-success" @click.prevent="nearbyMode">NEARBY</button>
-      <button type="button" class="btn btn-success" @click.prevent="searchMode">SEARCH / DISCOVER</button>
+      <button type="button" class="btn btn-success" @click.prevent="searchMode">SEARCH</button>
     </div>
 
     <!-- SEARCH MODE UI-->
@@ -48,7 +48,6 @@
               checked="checked"
             />
             <label for="changetype-all">All</label>
-            <!-- NOTE: Fix bug in search-map.js, 'autocomplete' not defined
             <input type="radio" name="type" id="changetype-establishment" />
             <label for="changetype-establishment">establishment</label>
 
@@ -63,10 +62,8 @@
 
             <input type="radio" name="type" id="changetype-regions" />
             <label for="changetype-regions">(regions)</label>
-            -->
           </div>
           <br />
-          <!-- NOTE: Fix bug in search-map.js, 'autocomplete' not defined
           <div id="strict-bounds-selector" class="pac-controls">
             <input type="checkbox" id="use-location-bias" value="" checked />
             <label for="use-location-bias">Bias to map viewport</label>
@@ -74,7 +71,6 @@
             <input type="checkbox" id="use-strict-bounds" value="" />
             <label for="use-strict-bounds">Strict bounds</label>
           </div>
-          -->
         </div>
         <div id="pac-container">
           <input id="pac-input" type="text" placeholder="Enter a location" />
