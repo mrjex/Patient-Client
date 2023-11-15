@@ -173,24 +173,6 @@ function createMarker(results, i) {
           </style>`
     )
     selectedDentistInfowindow.open(map, marker)
-
-    // calcRouteSearch(searchedPlace.geometry.location, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch)
-  })
-}
-
-// NOTE: Ask group whether or not they can paths to be displayed in this mode as well. ATM its method call is commented
-function calcRouteSearch(searchPlaceCoordinates, dentistDestination, directionsService, directionsRenderer) {
-  console.warn('search-map.js calc')
-  const selectedMode = document.getElementById('travel-mode-data').innerHTML
-  const request = {
-    origin: searchPlaceCoordinates,
-    destination: dentistDestination,
-    travelMode: google.maps.TravelMode[selectedMode]
-  }
-  directionsService.route(request, function (response, status) {
-    if (status === 'OK') {
-      directionsRenderer.setDirections(response)
-    }
   })
 }
 
@@ -253,6 +235,6 @@ function initiateDirectionsComponents() {
 
 window.initMap = initSearchMap
 export {
-  initSearchMap, calcRouteSearch, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch,
+  initSearchMap, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch,
   markerCoordinates, updateRadiusSearch
 }

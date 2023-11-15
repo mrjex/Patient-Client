@@ -1,4 +1,3 @@
-import { zoomLevel } from '../../intermediaryExecutor.js'
 // import { confirmExecutionConditions } from '../map-utils.js'
 
 // TODO: Export variables from map-utils.js to this script and search-map.js
@@ -14,7 +13,7 @@ let directionsService
 let directionsRenderer
 let selectedDentalClinicMarker
 
-// let zoomLevelTest = 12
+const defaultZoomLevel = 12
 // let xObj
 
 async function initMap() {
@@ -171,16 +170,20 @@ function createUserMarker(AdvancedMarkerElement) {
   console.log(marker)
 }
 
+function getZoomLevel() {
+  return graphicalMap === -1 ? defaultZoomLevel : graphicalMap.zoom
+}
+
 function initiateMap(Map, AdvancedMarkerElement) {
   graphicalMap = new Map(document.getElementById('map'), {
-    zoom: zoomLevel, // zoomLevelTest
+    zoom: getZoomLevel(),
     center: userGlobalCoordinates,
     mapId: 'DEMO_MAP_ID'
   })
 
   createUserMarker(AdvancedMarkerElement)
   initiateDirectionsComponents()
-  updateRadius(Map, AdvancedMarkerElement)
+  updateRadius()
 }
 
 function initiateDirectionsComponents() {
@@ -189,13 +192,11 @@ function initiateDirectionsComponents() {
   directionsRenderer.setMap(graphicalMap)
 }
 
-function updateRadius(Map, AdvancedMarkerElement) {
+function updateRadius() {
   selectedRadius = document.getElementById('radius-data').innerHTML
   if (!selectedRadius) {
     selectedRadius = 10000
   }
-
-  // initiateMap(Map, AdvancedMarkerElement)
 
   service = new google.maps.places.PlacesService(graphicalMap)
   service.nearbySearch(getNearbyRequest(), callback)

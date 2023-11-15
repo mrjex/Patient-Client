@@ -98,7 +98,9 @@
 
 <script>
 // import axios from 'axios'
-import { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch, updateRadiusSearch, drawMap } from '../../public/intermediaryExecutor.js'
+import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawMap, initMap } from '../../public/maps/map-modes/nearby-map.js'
+import { updateRadiusSearch, initSearchMap } from '../../public/maps/map-modes/search-map.js'
+
 // import UtilsComponentVue from '../components/UtilsComponent.vue'
 
 export default {
@@ -135,17 +137,13 @@ export default {
       // UtilsComponentVue.methods.modifyHTMLOnVariableChange(this.currentRadius, this.previousRadius, 'radius-data')
       // updateMap() ---> Must be within if-statement --> Must be invoked in 'UtilsComponent.vue'
     },
-    changeTravelMode() {
+    changeTravelMode() { // Only available in 'NEARBY' mode
       if (this.currentTravelMode && this.currentTravelMode !== this.previousTravelMode) {
         const travelModeArticle = document.getElementById('travel-mode-data')
         travelModeArticle.innerHTML = this.currentTravelMode
         this.previousTravelMode = this.currentTravelMode
 
-        if (document.getElementById('mode-data').innerHTML === 'NEARBY') { // NOTE: Refactor into a new .js file that supports reusability search-map.js and map.js
-          updateTravelMode()
-        } else {
-          updateTravelModeSearch()
-        }
+        calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
       }
 
       // NOTE: Refactor later
@@ -154,11 +152,12 @@ export default {
     },
     nearbyMode() {
       this.updateMode('NEARBY')
-      updateMap()
+      // updateMap()
+      initMap()
     },
     searchMode() {
       this.updateMode('SEARCH')
-      updateSearchMap(0)
+      setTimeout(initSearchMap, 0) // Passing the method as a callback solves the bug of blocking searchbar
     },
     updateMode(newMode) {
       document.getElementById('mode-data').innerHTML = newMode
