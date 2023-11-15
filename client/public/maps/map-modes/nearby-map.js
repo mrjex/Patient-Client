@@ -15,26 +15,90 @@ let directionsRenderer
 let selectedDentalClinicMarker
 
 // let zoomLevelTest = 12
+// let xObj
 
 async function initMap() {
   const pathArray = window.location.href.split('/')
   const lastSubDomainPath = pathArray[pathArray.length - 1]
+
   if (lastSubDomainPath === 'map' && document.getElementById('mode-data').innerHTML === 'NEARBY') { // confirmExecutionConditions('NEARBY')
     console.warn('in nearby-map.js')
+
+    // --------------------------------------
+    /*
+    xObj = {
+      userCoordinatesTest: 10,
+      aListener: function (val) {},
+      set a(val) {
+        this.userCoordinatesTest = val
+        this.aListener(val)
+      },
+      get a() {
+        return this.userCoordinatesTest
+      },
+      registerListener: function (listener) {
+        this.aListener = listener
+      }
+    }
+
+    xObj.registerListener(function (val) {
+      // alert('Value of x.a changed to ' + val)
+      console.warn('-------------')
+      console.warn('value of xObj.a changed to ' + val)
+      console.warn(userGlobalCoordinates)
+      console.warn('-------------')
+    })
+
+    // xObj.a = 28
+    */
+    // --------------------------------------
 
     navigator.geolocation.watchPosition(async position => { // Alternative: '.navigator.geolocation.getCurrentPosition(position => {' for instant retrieval of 'userGlobalCoordinates'
       const { latitude, longitude } = position.coords
       userGlobalCoordinates = { lat: latitude, lng: longitude }
+      // xObj.a = { lat: latitude, lng: longitude }
     })
 
-    setTimeout(drawMap, 1000) // Account for the delay to assign/find 'userGlobalCoordinates' in the method above
+    setTimeout(drawMap, 3000) // Account for the delay to assign/find 'userGlobalCoordinates' in the method above
+
+    // Current error - SOLUTIONS:
+    // 1) Increase the delay value
+    // 2) Wait until 'userGlobalCoordinates' is assigned and then invoke 'drawMap()'
+
+    // 2) Potential solution:
+    // 1) timeInterval() + boolean --> exit once variable is assigned
+    // 2) While loop + check if variable is assigned
+
+    // Variable change listener
+    /*
+    xObj = {
+      userCoordinatesTest: 10,
+      aListener: function (val) {},
+      set a(val) {
+        this.userCoordinatesTest = val
+        this.aListener(val)
+      },
+      get a() {
+        return this.userCoordinatesTest
+      },
+      registerListener: function (listener) {
+        this.aListener = listener
+      }
+    }
+
+    xObj.registerListener(function (val) {
+      // alert('Value of x.a changed to ' + val)
+      console.warn('value of xObj.a changed to ' + val)
+    })
+
+    xObj.a = 21
+    */
   }
 }
 
 async function drawMap() {
   const { Map } = await google.maps.importLibrary('maps')
   const { AdvancedMarkerElement } = await google.maps.importLibrary('marker')
-
   initiateMap(Map, AdvancedMarkerElement)
 }
 
