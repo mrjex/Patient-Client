@@ -8,6 +8,7 @@ let graphicalMap = -1
 let service
 
 let userGlobalCoordinates = -1
+let selectedRadius
 
 let directionsService
 let directionsRenderer
@@ -31,47 +32,10 @@ async function initMap() {
 }
 
 async function drawMap() {
-  // @ts-ignore
   const { Map } = await google.maps.importLibrary('maps')
   const { AdvancedMarkerElement } = await google.maps.importLibrary('marker')
 
-  graphicalMap = new Map(document.getElementById('map'), {
-    zoom: zoomLevel, // zoomLevelTest
-    center: userGlobalCoordinates,
-    mapId: 'DEMO_MAP_ID'
-  })
-
-  directionsService = new google.maps.DirectionsService()
-  directionsRenderer = new google.maps.DirectionsRenderer()
-
-  directionsRenderer.setMap(graphicalMap)
-  let selectedRadius = document.getElementById('radius-data').innerHTML
-
-  if (!selectedRadius) {
-    selectedRadius = 10000 // Default value
-  }
-
-  const request = {
-    location: userGlobalCoordinates,
-    radius: selectedRadius,
-    type: ['dentist']
-  }
-
-  service = new google.maps.places.PlacesService(graphicalMap)
-  service.nearbySearch(request, callback)
-
-  const userIcon = document.createElement('img')
-  userIcon.src = 'https://i.ibb.co/cFB7cMR/User-Marker-Icon.png'
-
-  // The marker that represents user's current global position
-  const marker = new AdvancedMarkerElement({
-    map: graphicalMap,
-    position: userGlobalCoordinates,
-    content: userIcon,
-    title: 'Your Position'
-  })
-
-  console.log(marker)
+  initiateMap(Map, AdvancedMarkerElement)
 }
 
 function callback(results, status) {
@@ -129,5 +93,58 @@ function calcRoute(userGlobalCoordinates, dentistDestination, directionsService,
   })
 }
 
+function createUserMarker(AdvancedMarkerElement) {
+  const userIcon = document.createElement('img') // NOTE: Refactor in map-utils.js
+  userIcon.src = 'https://i.ibb.co/cFB7cMR/User-Marker-Icon.png'
+
+  // The marker that represents user's current global position
+  const marker = new AdvancedMarkerElement({
+    map: graphicalMap,
+    position: userGlobalCoordinates,
+    content: userIcon,
+    title: 'Your Position'
+  })
+  console.log(marker)
+}
+
+function initiateMap(Map, AdvancedMarkerElement) {
+  graphicalMap = new Map(document.getElementById('map'), {
+    zoom: zoomLevel, // zoomLevelTest
+    center: userGlobalCoordinates,
+    mapId: 'DEMO_MAP_ID'
+  })
+
+  createUserMarker(AdvancedMarkerElement)
+  initiateDirectionsComponents()
+  updateRadius(Map, AdvancedMarkerElement)
+}
+
+function initiateDirectionsComponents() {
+  directionsService = new google.maps.DirectionsService()
+  directionsRenderer = new google.maps.DirectionsRenderer()
+  directionsRenderer.setMap(graphicalMap)
+}
+
+function updateRadius(Map, AdvancedMarkerElement) {
+  selectedRadius = document.getElementById('radius-data').innerHTML
+  if (!selectedRadius) {
+    selectedRadius = 10000
+  }
+
+  // initiateMap(Map, AdvancedMarkerElement)
+
+  service = new google.maps.places.PlacesService(graphicalMap)
+  service.nearbySearch(getNearbyRequest(), callback)
+}
+
+// Specify conditions for query of markers
+function getNearbyRequest() {
+  return {
+    location: userGlobalCoordinates,
+    radius: selectedRadius,
+    type: ['dentist']
+  }
+}
+
 initMap()
-export { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer }
+export { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, updateRadius, drawMap }

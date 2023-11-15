@@ -1,13 +1,12 @@
 // NOTE FOR DEVELOPERS: This script's purpose is only to excute or invoke fragments of javascript-files on the occurence of specified events
-import { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer } from './maps/map-modes/nearby-map.js'
+import { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawMap } from './maps/map-modes/nearby-map.js'
 
 import {
   initSearchMap, calcRouteSearch, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch, markerCoordinates, updateRadiusSearch
 } from './maps/map-modes/search-map.js'
 let zoomLevel = 12
 
-function updateMap() { // map.js
-  // SOLUTION: Parallel programming - graphicalMap is not defined yet
+function updateMap() { // nearby-map.js
   console.warn(graphicalMap)
 
   if (graphicalMap !== -1) {
@@ -16,12 +15,6 @@ function updateMap() { // map.js
   } else {
     console.warn('Not initialized')
   }
-
-  /*
-  if (graphicalMap !== undefined) { // The map isn't defined the first time this method is executed
-    zoomLevel = graphicalMap.zoom
-  }
-  */
 
   setTimeout(initMap, 500)
 }
@@ -38,7 +31,4 @@ function updateTravelModeSearch() {
   setTimeout(calcRouteSearch(searchedPlace.geometry.location, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch), 500)
 }
 
-// updateMap()
-// updateSearchMap(0)
-
-export { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch, markerCoordinates, zoomLevel, updateRadiusSearch }
+export { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch, markerCoordinates, zoomLevel, updateRadiusSearch, drawMap }

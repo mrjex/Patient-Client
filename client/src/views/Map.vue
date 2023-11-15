@@ -19,7 +19,7 @@
         </select>
       </div>
 
-    <div>
+    <div v-if="selectedMode === 'NEARBY'">
       <strong>Travel Mode: </strong>
       <select v-model="currentTravelMode" id="mode" @click.prevent="changeTravelMode">
         <option value="DRIVING">Driving</option>
@@ -96,7 +96,7 @@
 
 <script>
 // import axios from 'axios'
-import { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch, updateRadiusSearch } from '../../public/intermediaryExecutor.js'
+import { updateMap, updateTravelMode, updateSearchMap, updateTravelModeSearch, updateRadiusSearch, drawMap } from '../../public/intermediaryExecutor.js'
 // import UtilsComponentVue from '../components/UtilsComponent.vue'
 
 export default {
@@ -123,7 +123,7 @@ export default {
         this.previousRadius = this.currentRadius
 
         if (document.getElementById('mode-data').innerHTML === 'NEARBY') { // NOTE: Refactor into seperate .js files later
-          updateMap()
+          drawMap()
         } else {
           updateRadiusSearch()
         }

@@ -9,7 +9,7 @@ let selectedDentalClinicMarkerSearch //
 
 let userMarker
 
-let selectedRadius = 10000
+let selectedRadius
 let infowindowSearchReference
 let infowindowContentSearchReference
 let markerCoordinates = { lat: 40.749933, lng: -73.98633 }
@@ -23,8 +23,6 @@ function initSearchMap() {
   const lastSubDomainPath = pathArray[pathArray.length - 1]
   if (lastSubDomainPath === 'map' && document.getElementById('mode-data').innerHTML === 'SEARCH') { // confirmExecutionConditions('SEARCH')
     console.warn('in search-map.js')
-    directionsServiceSearch = new google.maps.DirectionsService() //
-    directionsRendererSearch = new google.maps.DirectionsRenderer() //
 
     initiateMap()
 
@@ -197,6 +195,7 @@ function calcRouteSearch(searchPlaceCoordinates, dentistDestination, directionsS
 }
 
 function updateRadiusSearch() { // NOTE: Refactor into map-utils.js later
+  // NOTE: Refactor into 'selectRadius()' function
   selectedRadius = document.getElementById('radius-data').innerHTML //
   if (!selectedRadius) { //
     selectedRadius = 10000 //
@@ -204,6 +203,7 @@ function updateRadiusSearch() { // NOTE: Refactor into map-utils.js later
 
   initiateMap()
 
+  // NOTE: Refactor into a self-contained 'nearbySearch' component
   service = new google.maps.places.PlacesService(map) //
   service.nearbySearch(getNearbyRequest(), callback)
 }
@@ -231,8 +231,7 @@ function createReferenceMarker() {
   userMarker = new google.maps.Marker({
     map,
     icon: svgMarker,
-    position: markerCoordinates // try location:
-    // anchorPoint: new google.maps.Point(0, -29)
+    position: markerCoordinates
   })
 }
 
@@ -244,6 +243,12 @@ function initiateMap() {
   })
 
   createReferenceMarker()
+  initiateDirectionsComponents()
+}
+
+function initiateDirectionsComponents() {
+  directionsServiceSearch = new google.maps.DirectionsService()
+  directionsRendererSearch = new google.maps.DirectionsRenderer()
 }
 
 window.initMap = initSearchMap
