@@ -1,4 +1,4 @@
-import { confirmExecutionConditions } from '../map-utils'
+import { confirmExecutionConditions, currentRadius } from '../map-utils'
 
 /* eslint-disable no-undef */
 let service
@@ -9,7 +9,6 @@ let selectedDentalClinicMarkerSearch
 
 let userMarker
 
-let selectedRadius
 let infowindowSearchReference
 let infowindowContentSearchReference
 let markerCoordinates = { lat: 40.749933, lng: -73.98633 }
@@ -234,13 +233,7 @@ function createMarker(results, i) {
   })
 }
 
-function updateRadiusSearch() { // NOTE: Refactor into map-utils.js later
-  // NOTE: Refactor into 'selectRadius()' function
-  selectedRadius = document.getElementById('radius-data').innerHTML //
-  if (!selectedRadius) { //
-    selectedRadius = 10000 //
-  }
-
+function updateRadiusSearch() { // NOTE: Refactor into map-utils.js
   initiateMap()
 
   // NOTE: Refactor into a self-contained 'nearbySearch' component
@@ -251,7 +244,7 @@ function updateRadiusSearch() { // NOTE: Refactor into map-utils.js later
 function getNearbyRequest() {
   return {
     location: markerCoordinates,
-    radius: selectedRadius,
+    radius: currentRadius,
     type: ['dentist']
   }
 }
@@ -291,8 +284,12 @@ function initiateDirectionsComponents() {
   directionsRendererSearch = new google.maps.DirectionsRenderer()
 }
 
+function changeRadiusSearch(newRadius) {
+  radiusTestSearch = newRadius
+}
+
 window.initMap = initSearchMap
 export {
   initSearchMap, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch,
-  markerCoordinates, updateRadiusSearch
+  markerCoordinates, updateRadiusSearch, changeRadiusSearch
 }

@@ -1,8 +1,8 @@
 <template>
   <div class="ui grid map-vue">
+    <div id="map"></div>
       <div class="field map-vue-radius-options">
 
-        <!-- TODO: Add place holders in all input fields in this vue file-->
         <strong>Query Radius:</strong>
         <select v-model="currentRadius" @click.prevent="changeSearchRange">
           <option value="250">0.25 KM</option>
@@ -36,7 +36,7 @@
     </div>
 
     <!-- SEARCH MODE UI-->
-    <div class="map-search-mode" v-if="this.selectedMode === 'SEARCH'">
+    <div class="map-search-mode" v-if="selectedMode === 'SEARCH'">
       <div class="pac-card" id="pac-card">
         <div>
           <div id="title">Search for reference position</div>
@@ -94,8 +94,9 @@
 
 <script>
 // import axios from 'axios'
-import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawMap, initMap } from '../../public/maps/map-modes/nearby-map.js'
+import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawMap, initMap, changeTravelMode } from '../../public/maps/map-modes/nearby-map.js'
 import { updateRadiusSearch, initSearchMap } from '../../public/maps/map-modes/search-map.js'
+import { changeMapMode, currentMapMode, changeRadius } from '../../public/maps/map-utils.js'
 
 // import UtilsComponentVue from '../components/UtilsComponent.vue'
 
@@ -103,11 +104,11 @@ export default {
   name: 'MapPage',
   data() {
     return {
-      currentRadius: '',
+      currentRadius: 10000,
       previousRadius: '',
-      currentTravelMode: '',
+      currentTravelMode: 'DRIVING',
       previousTravelMode: '',
-      selectedMode: 'NEARBY' // The necessity in this variable is solely to counteract the error when initializing the program, where there is no instance of 'mode-data' HTML element
+      selectedMode: 'NEARBY' // This varible is needed to register current mode in thr HTML above, when 'currentMapMode' from map-utils.js cannot be read at instantiation of app
     }
   },
   created() {
@@ -118,11 +119,10 @@ export default {
     // NOTE: Refactor this by creating 'UtilsComponent.vue', import it as a component in this vue-script, and call its corresponding method
     changeSearchRange() {
       if (this.currentRadius && this.currentRadius !== this.previousRadius) {
-        const radiusArticle = document.getElementById('radius-data') // NOTE: Refactor into a general function 'assignElementX' and reuse in method below
-        radiusArticle.innerHTML = this.currentRadius
+        changeRadius(this.currentRadius)
         this.previousRadius = this.currentRadius
 
-        if (document.getElementById('mode-data').innerHTML === 'NEARBY') { // NOTE: Refactor into seperate .js files later
+        if (currentMapMode === 'NEARBY') { // map-utils.js - confirmExecutionCondition()
           drawMap()
         } else {
           updateRadiusSearch()
@@ -130,15 +130,12 @@ export default {
       }
 
       // NOTE: Refactor later
-      // UtilsComponentVue.methods.modifyHTMLOnVariableChange(this.currentRadius, this.previousRadius, 'radius-data')
+      // UtilsComponentVue.methods.modifyHTMLOnVariableChange(this.currentRadius, this.previousRadius)
       // updateMap() ---> Must be within if-statement --> Must be invoked in 'UtilsComponent.vue'
     },
-    changeTravelMode() { // Only available in 'NEARBY' mode
-      if (this.currentTravelMode && this.currentTravelMode !== this.previousTravelMode) {
-        const travelModeArticle = document.getElementById('travel-mode-data')
-        travelModeArticle.innerHTML = this.currentTravelMode
-        this.previousTravelMode = this.currentTravelMode
-
+    changeTravelMode() {
+      if (this.currentTravelMode && this.currentTravelMode !== this.previousTravelMode) { // TODO: 'previousTravelMode' variable becomes redundant when switching to bootstrap dropdown
+        changeTravelMode(this.currentTravelMode)
         calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
       }
 
@@ -148,7 +145,6 @@ export default {
     },
     nearbyMode() {
       this.updateMode('NEARBY')
-      // updateMap()
       initMap()
     },
     searchMode() {
@@ -156,23 +152,22 @@ export default {
       setTimeout(initSearchMap, 0) // Passing the method as a callback solves the bug of blocking searchbar
     },
     updateMode(newMode) {
-      document.getElementById('mode-data').innerHTML = newMode
       this.selectedMode = newMode
+      changeMapMode(newMode)
     },
     // Run 'nearby-map.js' that has responsibility for the backend functionality of the API
     initializeNearbyMap() {
       const scriptMapAPI = document.createElement('script')
       scriptMapAPI.type = 'module'
       scriptMapAPI.src = '../../public/maps/map-modes/nearby-map.js'
-      // document.head.prepend(scriptMapAPI)
     },
+    // Note for developers: If we want to activate 'SEARCH' mode at start of aplication,
+    // we run this method in 'created()' instead of the method above, and change
+    // 'currentMapMode' in map-utils.js to 'SEARCH
     initializeSearchMap() {
-      if (document.getElementById('mode-data').innerHTML === 'NEARBY') {
-        const scriptSearchMapAPI = document.createElement('script')
-        scriptSearchMapAPI.type = 'module'
-        scriptSearchMapAPI.src = '../../public/maps/map-modes/search-map.js'
-        // document.head.prepend(scriptSearchMapAPI)
-      }
+      const scriptSearchMapAPI = document.createElement('script')
+      scriptSearchMapAPI.type = 'module'
+      scriptSearchMapAPI.src = '../../public/maps/map-modes/search-map.js'
     },
     initializePlaceAPI() {
       const scriptPlaceAPI = document.createElement('script')
@@ -182,5 +177,4 @@ export default {
     }
   }
 }
-
 </script>

@@ -1,4 +1,4 @@
-import { confirmExecutionConditions } from '../map-utils.js'
+import { confirmExecutionConditions, currentRadius } from '../map-utils.js'
 
 // TODO: Export variables from map-utils.js to this script and search-map.js
 
@@ -7,11 +7,13 @@ let graphicalMap = -1
 let service
 
 let userGlobalCoordinates = -1
-let selectedRadius
+// let selectedRadius
 
 let directionsService
 let directionsRenderer
 let selectedDentalClinicMarker
+
+let currentTravelMode = 'DRIVING'
 
 const defaultZoomLevel = 12
 // let xObj
@@ -140,11 +142,10 @@ function createMarker(place) { // NOTE: Refactor further in this script and in '
 }
 
 function calcRoute(userGlobalCoordinates, dentistDestination, directionsService, directionsRenderer) {
-  const selectedMode = document.getElementById('travel-mode-data').innerHTML
   const request = {
     origin: userGlobalCoordinates,
     destination: dentistDestination,
-    travelMode: google.maps.TravelMode[selectedMode]
+    travelMode: google.maps.TravelMode[currentTravelMode]
   }
   directionsService.route(request, function (response, status) {
     if (status === 'OK') {
@@ -190,11 +191,6 @@ function initiateDirectionsComponents() {
 }
 
 function updateRadius() {
-  selectedRadius = document.getElementById('radius-data').innerHTML
-  if (!selectedRadius) {
-    selectedRadius = 10000
-  }
-
   service = new google.maps.places.PlacesService(graphicalMap)
   service.nearbySearch(getNearbyRequest(), callback)
 }
@@ -203,10 +199,14 @@ function updateRadius() {
 function getNearbyRequest() {
   return {
     location: userGlobalCoordinates,
-    radius: selectedRadius,
+    radius: currentRadius, // selectedRadius
     type: ['dentist']
   }
 }
 
+function changeTravelMode(newMode) {
+  currentTravelMode = newMode
+}
+
 initMap()
-export { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, updateRadius, drawMap }
+export { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, updateRadius, drawMap, changeTravelMode }

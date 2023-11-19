@@ -4,37 +4,10 @@
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
     <link rel="stylesheet" type="text/css" href="./style.css" /> <!-- TEMP: Change later -->
 
-    <script>
-    const pathArray = window.location.href.split('/')
-    const lastSubDomainPath = pathArray[pathArray.length - 1]
-
-      // If the user has navigated to the url that is equivalent to the Map.vue page
-      if (lastSubDomainPath === 'map') { // NOTE: Refactor this 'subDomainPath' check later
-
-        // Display map frontend styling
-        const linkCSS = document.createElement("link")
-        linkCSS.rel = "stylesheet"
-        linkCSS.type = "text/css"
-        linkCSS.href = "./map-style.css"
-        document.head.prepend(linkCSS)
-      }
-    </script>
-
     <link rel="icon" href="<%= BASE_URL %>dentanoid-temp-logo.ico">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
   </head>
   <body>
-    <aricle id="mode-data">NEARBY</aricle> <!-- Possible values: ('SEARCH', 'NEARBY') that represent the current displayed mode of the map -->
-    <article id="travel-mode-data">DRIVING</article> <!-- Possible values: ('DRIVING', 'WALKING', 'BICYCLING', 'TRANSIT') that represent the current way of calculating the optimal path in 'NEARBY' map-mode -->
-    <article id="radius-data"></article> <!-- Stores the current selected radius value in 'NEARBY map-mode' -->
-    <div id="map"></div>
     <div id="app"></div>
-    <script>
-      // Integrate backend APIs enabled from Google Cloud via API key if user is in 'map' page
-      if (lastSubDomainPath === 'map') {        
-        (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
-        ({key: "AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y", v: "weekly"});        
-      }
-    </script>
   </body>
 </html>
