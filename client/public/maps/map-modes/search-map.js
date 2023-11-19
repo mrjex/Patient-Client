@@ -27,7 +27,7 @@ function initSearchMap() {
   if (confirmExecutionConditions('SEARCH')) {
     console.warn('in search-map.js')
 
-    initiateMap()
+    drawMap()
 
     readSearchBarElements()
     instantiateInfowindow()
@@ -234,7 +234,7 @@ function createMarker(results, i) {
 }
 
 function updateRadiusSearch() { // NOTE: Refactor into map-utils.js
-  initiateMap()
+  drawMap()
 
   // NOTE: Refactor into a self-contained 'nearbySearch' component
   service = new google.maps.places.PlacesService(map) //
@@ -268,7 +268,7 @@ function createReferenceMarker() {
   })
 }
 
-function initiateMap() {
+function drawMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center: markerCoordinates,
     zoom: 13,

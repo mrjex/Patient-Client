@@ -94,7 +94,7 @@
 
 <script>
 // import axios from 'axios'
-import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawMap, initMap, changeTravelMode } from '../../public/maps/map-modes/nearby-map.js'
+import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawMap, initMap, changeTravelMode, deselectClinicMarker } from '../../public/maps/map-modes/nearby-map.js'
 import { updateRadiusSearch, initSearchMap } from '../../public/maps/map-modes/search-map.js'
 import { changeMapMode, currentMapMode, changeRadius } from '../../public/maps/map-utils.js'
 
@@ -121,6 +121,8 @@ export default {
       if (this.currentRadius && this.currentRadius !== this.previousRadius) {
         changeRadius(this.currentRadius)
         this.previousRadius = this.currentRadius
+
+        deselectClinicMarker()
 
         if (currentMapMode === 'NEARBY') { // map-utils.js - confirmExecutionCondition()
           drawMap()

@@ -7,91 +7,26 @@ let graphicalMap = -1
 let service
 
 let userGlobalCoordinates = -1
-// let selectedRadius
 
 let directionsService
 let directionsRenderer
-let selectedDentalClinicMarker
+let selectedDentalClinicMarker = null
 
 let currentTravelMode = 'DRIVING'
 
 const defaultZoomLevel = 12
-// let xObj
 
 async function initMap() {
   if (confirmExecutionConditions('NEARBY')) {
     console.warn('in nearby-map.js')
 
-    // --------------------------------------
-    /*
-    xObj = {
-      userCoordinatesTest: 10,
-      aListener: function (val) {},
-      set a(val) {
-        this.userCoordinatesTest = val
-        this.aListener(val)
-      },
-      get a() {
-        return this.userCoordinatesTest
-      },
-      registerListener: function (listener) {
-        this.aListener = listener
-      }
-    }
-
-    xObj.registerListener(function (val) {
-      // alert('Value of x.a changed to ' + val)
-      console.warn('-------------')
-      console.warn('value of xObj.a changed to ' + val)
-      console.warn(userGlobalCoordinates)
-      console.warn('-------------')
-    })
-
-    // xObj.a = 28
-    */
-    // --------------------------------------
-
     // Alternative to implement for 'GPS' feature in video: navigator.geolocation.watchPosition(async position => {
     navigator.geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords
       userGlobalCoordinates = { lat: latitude, lng: longitude }
-      // xObj.a = { lat: latitude, lng: longitude }
     })
 
     setTimeout(drawMap, 1000) // Account for the delay to assign/find 'userGlobalCoordinates' in the method above
-
-    // Current error - SOLUTIONS:
-    // 1) Increase the delay value
-    // 2) Wait until 'userGlobalCoordinates' is assigned and then invoke 'drawMap()'
-
-    // 2) Potential solution:
-    // 1) timeInterval() + boolean --> exit once variable is assigned
-    // 2) While loop + check if variable is assigned
-
-    // Variable change listener
-    /*
-    xObj = {
-      userCoordinatesTest: 10,
-      aListener: function (val) {},
-      set a(val) {
-        this.userCoordinatesTest = val
-        this.aListener(val)
-      },
-      get a() {
-        return this.userCoordinatesTest
-      },
-      registerListener: function (listener) {
-        this.aListener = listener
-      }
-    }
-
-    xObj.registerListener(function (val) {
-      // alert('Value of x.a changed to ' + val)
-      console.warn('value of xObj.a changed to ' + val)
-    })
-
-    xObj.a = 21
-    */
   }
 }
 
@@ -142,16 +77,18 @@ function createMarker(place) { // NOTE: Refactor further in this script and in '
 }
 
 function calcRoute(userGlobalCoordinates, dentistDestination, directionsService, directionsRenderer) {
-  const request = {
-    origin: userGlobalCoordinates,
-    destination: dentistDestination,
-    travelMode: google.maps.TravelMode[currentTravelMode]
-  }
-  directionsService.route(request, function (response, status) {
-    if (status === 'OK') {
-      directionsRenderer.setDirections(response)
+  if (dentistDestination !== null) {
+    const request = {
+      origin: userGlobalCoordinates,
+      destination: dentistDestination,
+      travelMode: google.maps.TravelMode[currentTravelMode]
     }
-  })
+    directionsService.route(request, function (response, status) {
+      if (status === 'OK') {
+        directionsRenderer.setDirections(response)
+      }
+    })
+  }
 }
 
 function createUserMarker(AdvancedMarkerElement) {
@@ -208,5 +145,9 @@ function changeTravelMode(newMode) {
   currentTravelMode = newMode
 }
 
+function deselectClinicMarker() {
+  selectedDentalClinicMarker = null
+}
+
 initMap()
-export { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, updateRadius, drawMap, changeTravelMode }
+export { initMap, graphicalMap, calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, updateRadius, drawMap, changeTravelMode, deselectClinicMarker }
