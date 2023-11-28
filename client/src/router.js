@@ -5,6 +5,8 @@ import aboutUs from '@/views/AboutUs.vue'
 import authentication from '@/views/Authentication.vue'
 import clinicSignUp from '@/views/ClinicSignUp.vue'
 import myBookings from '@/views/MyBookings.vue'
+import Notifications from '@/views/Notifications.vue'
+import FindClinics from '@/views/FindClinics.vue'
 
 Vue.use(Router)
 
@@ -21,6 +23,11 @@ export default new Router({
       path: '/aboutus',
       name: 'aboutUsView',
       component: aboutUs
+    },
+    {
+      path: '/clinics',
+      name: 'FindClinics',
+      component: FindClinics
     },
     {
       path: '/authentication',
@@ -40,7 +47,7 @@ export default new Router({
     {
       path: '/notifications',
       name: 'notificationsView',
-      component: myBookings
+      component: Notifications
     }
   ]
 })
