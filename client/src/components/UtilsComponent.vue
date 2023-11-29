@@ -1,9 +1,10 @@
+<template>
+  <div>
+  </div>
+</template>
+
 <script>
 export default {
-  data() {
-    return {
-    }
-  },
   methods: {
     changeSearchRange() {
       if (this.currentRadius && this.currentRadius !== this.previousRadius) {
@@ -32,6 +33,18 @@ export default {
       if (this.confirmVariableChange(variable, previousVariableValue)) {
         this.alterHTMLElementContent(identifier)
         previousVariableValue = variable
+      }
+    },
+    checkIfDropdownPressed(currentMode, previousMode) { // Check if current button or a new button is selected
+      return (currentMode && (currentMode !== previousMode))
+    },
+    createHTMLScriptElement(scriptSource, appendToDOM) {
+      const scriptElement = document.createElement('script')
+      scriptElement.type = 'module'
+      scriptElement.src = scriptSource
+
+      if (appendToDOM === true) {
+        document.head.prepend(scriptElement)
       }
     }
   }

@@ -35,7 +35,6 @@
       <button type="button" class="btn btn-success" @click.prevent="searchMode">SEARCH</button>
     </div>
 
-    <!-- SEARCH MODE UI-->
     <div class="map-search-mode" v-if="selectedMode === 'SEARCH'">
       <div class="pac-card" id="pac-card">
         <div>
@@ -80,25 +79,16 @@
       <span id="place-name" class="title"></span><br />
       <span id="place-address"></span>
     </div>
-
-    <!--
-      <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&callback=initMap&libraries=places&v=weekly"
-      defer
-    ></script>
-    -->
-    <!-- SEARCH MODE -->
     </div>
   </div>
 </template>
 
 <script>
-// import axios from 'axios'
+
 import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawMap, initMap, changeTravelMode, deselectClinicMarker } from '../../public/maps/map-modes/nearby-map.js'
 import { updateRadiusSearch, initSearchMap } from '../../public/maps/map-modes/search-map.js'
 import { changeMapMode, currentMapMode, changeRadius } from '../../public/maps/map-utils.js'
-
-// import UtilsComponentVue from '../components/UtilsComponent.vue'
+import UtilsComponent from '../components/UtilsComponent.vue'
 
 export default {
   name: 'MapPage',
@@ -116,34 +106,25 @@ export default {
     this.initializeNearbyMap()
   },
   methods: {
-    // NOTE: Refactor this by creating 'UtilsComponent.vue', import it as a component in this vue-script, and call its corresponding method
     changeSearchRange() {
-      if (this.currentRadius && this.currentRadius !== this.previousRadius) {
+      if (UtilsComponent.methods.checkIfDropdownPressed(this.currentRadius, this.previousRadius)) {
         changeRadius(this.currentRadius)
         this.previousRadius = this.currentRadius
 
         deselectClinicMarker()
 
-        if (currentMapMode === 'NEARBY') { // map-utils.js - confirmExecutionCondition()
+        if (currentMapMode === 'NEARBY') {
           drawMap()
         } else {
           updateRadiusSearch()
         }
       }
-
-      // NOTE: Refactor later
-      // UtilsComponentVue.methods.modifyHTMLOnVariableChange(this.currentRadius, this.previousRadius)
-      // updateMap() ---> Must be within if-statement --> Must be invoked in 'UtilsComponent.vue'
     },
-    changeTravelMode() {
-      if (this.currentTravelMode && this.currentTravelMode !== this.previousTravelMode) { // TODO: 'previousTravelMode' variable becomes redundant when switching to bootstrap dropdown
+    changeTravelMode() { // User changes travel mode in 'NEARBY' mode
+      if (UtilsComponent.methods.checkIfDropdownPressed(this.currentTravelMode, this.previousTravelMode)) {
         changeTravelMode(this.currentTravelMode)
         calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
       }
-
-      // NOTE: Refactor later
-      // UtilsComponentVue.methods.modifyHTMLOnVariableChange(this.currentTravelMode, this.previousTravelMode, 'travel-mode-data')
-      // updateTravelMode()
     },
     nearbyMode() {
       this.updateMode('NEARBY')
@@ -151,7 +132,7 @@ export default {
     },
     searchMode() {
       this.updateMode('SEARCH')
-      setTimeout(initSearchMap, 0) // Passing the method as a callback solves the bug of blocking searchbar
+      setTimeout(initSearchMap, 0)
     },
     updateMode(newMode) {
       this.selectedMode = newMode
@@ -159,23 +140,19 @@ export default {
     },
     // Run 'nearby-map.js' that has responsibility for the backend functionality of the API
     initializeNearbyMap() {
-      const scriptMapAPI = document.createElement('script')
-      scriptMapAPI.type = 'module'
-      scriptMapAPI.src = '../../public/maps/map-modes/nearby-map.js'
+      UtilsComponent.methods.createHTMLScriptElement('../../public/maps/map-modes/nearby-map.js', false)
     },
-    // Note for developers: If we want to activate 'SEARCH' mode at start of aplication,
-    // we run this method in 'created()' instead of the method above, and change
-    // 'currentMapMode' in map-utils.js to 'SEARCH
+
+    /*
+    Note for developers: If we want to activate 'SEARCH' mode at start of aplication,
+    we run this method in 'created()' instead of the method above, and change
+    'currentMapMode' in map-utils.js to 'SEARCH
+    */
     initializeSearchMap() {
-      const scriptSearchMapAPI = document.createElement('script')
-      scriptSearchMapAPI.type = 'module'
-      scriptSearchMapAPI.src = '../../public/maps/map-modes/search-map.js'
+      UtilsComponent.methods.createHTMLScriptElement('../../public/maps/map-modes/search-map.js', false)
     },
     initializePlaceAPI() {
-      const scriptPlaceAPI = document.createElement('script')
-      scriptPlaceAPI.type = 'module'
-      scriptPlaceAPI.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&libraries=places&callback=initMap'
-      document.head.prepend(scriptPlaceAPI)
+      UtilsComponent.methods.createHTMLScriptElement('https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&libraries=places&callback=initMap', true)
     }
   }
 }
