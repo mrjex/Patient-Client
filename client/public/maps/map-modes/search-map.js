@@ -196,41 +196,51 @@ function centerSearchedMarker() {
 function callback(results, status) {
   if (status === google.maps.places.PlacesServiceStatus.OK) {
     for (let i = 0; i < results.length; i++) {
-      createMarker(results, i)
+      createMarker(results[i])
     }
   }
 }
 
-function createMarker(results, i) {
-  const place = results[i]
-  const marker = new google.maps.Marker({
+function initializeMarker(place) {
+  return new google.maps.Marker({
     map,
     position: place.geometry.location
   })
+}
 
-  // A small window disclosing address and ratings about the dental clinic pops up its associated marker is clicked
+// Display the related information about the clicked dental clinic marker
+function generateInfoWindow(place, marker) {
+  const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
+  // console.warn(place.photos[0].getUrl()) // NOTE: Some dentists have pics and some not
+
+  const selectedDentistInfowindow = new google.maps.InfoWindow()
+
+  selectedDentistInfowindow.setContent(
+        `<strong class="header">${place.name}</strong>
+        <p>
+        Adress: ${place.vicinity} <br>
+        ${ratingString}
+        </p>
+        <style>
+        .header {
+          font-weight: 1000
+        }
+        </style>`
+  )
+  selectedDentistInfowindow.open(map, marker)
+}
+
+// Checks if user clicks on dental clinic marker
+function listenForMarkerClick(marker, place) {
   google.maps.event.addListener(marker, 'click', function () {
     selectedDentalClinicMarkerSearch = marker.position
-
-    const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
-    // console.warn(place.photos[0].getUrl()) // NOTE: Some dentists have pics and some not
-
-    const selectedDentistInfowindow = new google.maps.InfoWindow()
-
-    selectedDentistInfowindow.setContent(
-          `<strong class="header">${place.name}</strong>
-          <p>
-          Adress: ${place.vicinity} <br>
-          ${ratingString}
-          </p>
-          <style>
-          .header {
-            font-weight: 1000
-          }
-          </style>`
-    )
-    selectedDentistInfowindow.open(map, marker)
+    generateInfoWindow(place, marker)
   })
+}
+
+function createMarker(place) {
+  const marker = initializeMarker(place)
+  listenForMarkerClick(marker, place)
 }
 
 function updateRadiusSearch() { // NOTE: Refactor into map-utils.js

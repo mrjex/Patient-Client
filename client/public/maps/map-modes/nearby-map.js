@@ -44,36 +44,46 @@ function callback(results, status) {
   }
 }
 
-function createMarker(place) { // NOTE: Refactor further in this script and in 'search-map.js'
-  const marker = new google.maps.Marker({
+function initializeMarker(place) {
+  return new google.maps.Marker({
     map: graphicalMap,
     position: place.geometry.location
   })
+}
 
+function generateInfoWindow(place, marker) {
+  const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
+  // console.warn(place.photos[0].getUrl()) // NOTE: Some dentists have pics and some not
+
+  const infowindow = new google.maps.InfoWindow()
+
+  infowindow.setContent(
+    `<strong class="header">${place.name}</strong>
+    <p>
+    Adress: ${place.vicinity} <br>
+    ${ratingString}
+    </p>
+    <style>
+    .header {
+      font-weight: 1000
+    }
+    </style>`
+  )
+  infowindow.open(graphicalMap, marker)
+}
+
+function listenForMarkerClick(marker, place) {
   google.maps.event.addListener(marker, 'click', function () {
     selectedDentalClinicMarker = marker.position
 
-    const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
-    // console.warn(place.photos[0].getUrl()) // NOTE: Some dentists have pics and some not
-
-    const infowindow = new google.maps.InfoWindow()
-
-    infowindow.setContent(
-      `<strong class="header">${place.name}</strong>
-      <p>
-      Adress: ${place.vicinity} <br>
-      ${ratingString}
-      </p>
-      <style>
-      .header {
-        font-weight: 1000
-      }
-      </style>`
-    )
-    infowindow.open(graphicalMap, marker)
-
+    generateInfoWindow(place, marker)
     calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
   })
+}
+
+function createMarker(place) {
+  const marker = initializeMarker(place)
+  listenForMarkerClick(marker, place)
 }
 
 function calcRoute(userGlobalCoordinates, dentistDestination, directionsService, directionsRenderer) {
