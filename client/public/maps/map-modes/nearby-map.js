@@ -1,5 +1,4 @@
-import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadiusUtils } from '../map-utils.js'
-// performNearbyQuery
+import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius } from '../map-utils.js'
 
 /* eslint-disable no-undef */
 let nearbyMap = -1
@@ -56,7 +55,7 @@ function calcRoute(userGlobalCoordinates, dentistDestination, directionsService,
   }
 }
 
-function createUserMarker(AdvancedMarkerElement) {
+function createUserPositionMarker(AdvancedMarkerElement) {
   const userIcon = document.createElement('img') // NOTE: Refactor in map-utils.js
   userIcon.src = 'https://i.ibb.co/cFB7cMR/User-Marker-Icon.png'
 
@@ -81,10 +80,10 @@ function initiateMap(Map, AdvancedMarkerElement) {
     mapId: 'DEMO_MAP_ID'
   })
 
-  createUserMarker(AdvancedMarkerElement)
+  createUserPositionMarker(AdvancedMarkerElement)
   initiateDirectionsComponents()
 
-  updateRadiusUtils(service, nearbyMap, userGlobalCoordinates, currentRadius)
+  updateRadius(service, nearbyMap, userGlobalCoordinates, currentRadius)
 }
 
 function initiateDirectionsComponents() {

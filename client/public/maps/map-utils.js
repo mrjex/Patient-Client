@@ -100,7 +100,8 @@ function generateInfoWindowUtils(place, marker) {
   selectedDentistInfowindow.open(searchMap, marker)
 }
 
-function updateRadiusUtils(service, map, centralMarkerCoordinates, currentRadius) {
+// Update radius to query dental clinics in relative to a fixed position (user's pos or search-reference pos)
+function updateRadius(service, map, centralMarkerCoordinates, currentRadius) {
   if (currentMapMode === 'SEARCH') {
     drawSearchMap()
   }
@@ -124,4 +125,4 @@ function getNearbyRequest(centralMarkerCoordinates, selectedRadius) {
 
 integrateAPIKey()
 
-export { confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, callbackUtils, generateInfoWindowUtils, performNearbyQuery, updateRadiusUtils }
+export { confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, callbackUtils, generateInfoWindowUtils, performNearbyQuery, updateRadius, initializeMarker }

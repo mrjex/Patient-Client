@@ -87,8 +87,8 @@
 
 import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawNearbyMap, initMap, changeTravelMode, deselectClinicMarker } from '../../public/maps/map-modes/nearby-map.js'
 import { initSearchMap, service, searchMap, markerCoordinates } from '../../public/maps/map-modes/search-map.js'
-import { changeMapMode, currentMapMode, changeRadius, updateRadiusUtils, currentRadius } from '../../public/maps/map-utils.js'
-import UtilsComponent from '../components/UtilsComponent.vue'
+import { changeMapMode, currentMapMode, changeRadius, updateRadius, currentRadius } from '../../public/maps/map-utils.js'
+import { checkIfDropdownPressed, createHTMLScriptElement } from '../utils.js'
 
 export default {
   name: 'MapPage',
@@ -108,7 +108,7 @@ export default {
   methods: {
     changeSearchRange() {
       // Dropdown button is pressed to change radius of displayed clinics
-      if (UtilsComponent.methods.checkIfDropdownPressed(this.currentRadius, this.previousRadius)) {
+      if (checkIfDropdownPressed(this.currentRadius, this.previousRadius)) {
         changeRadius(this.currentRadius)
         this.previousRadius = this.currentRadius
 
@@ -117,13 +117,13 @@ export default {
         if (currentMapMode === 'NEARBY') {
           drawNearbyMap()
         } else {
-          updateRadiusUtils(service, searchMap, markerCoordinates, currentRadius)
+          updateRadius(service, searchMap, markerCoordinates, currentRadius)
         }
       }
     },
     changeTravelMode() {
     // Dropdown button is pressed to change the display of travel-route types in 'NEARBY' mode
-      if (UtilsComponent.methods.checkIfDropdownPressed(this.currentTravelMode, this.previousTravelMode)) {
+      if (checkIfDropdownPressed(this.changeTravelMode, this.previousTravelMode)) {
         changeTravelMode(this.currentTravelMode)
         calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
       }
@@ -142,7 +142,7 @@ export default {
     },
     // Run 'nearby-map.js'
     initializeNearbyMap() {
-      UtilsComponent.methods.createHTMLScriptElement('../../public/maps/map-modes/nearby-map.js', false)
+      createHTMLScriptElement('../../public/maps/map-modes/nearby-map.js', false)
     },
 
     /*
@@ -151,10 +151,10 @@ export default {
     'currentMapMode' in map-utils.js to 'SEARCH'
     */
     initializeSearchMap() { // Run 'search-map.js'
-      UtilsComponent.methods.createHTMLScriptElement('../../public/maps/map-modes/search-map.js', false)
+      createHTMLScriptElement('../../public/maps/map-modes/search-map.js', false)
     },
     initializePlaceAPI() {
-      UtilsComponent.methods.createHTMLScriptElement('https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&libraries=places&callback=initMap', true)
+      createHTMLScriptElement('https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&libraries=places&callback=initMap', true)
     }
   }
 }

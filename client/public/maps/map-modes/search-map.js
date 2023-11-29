@@ -1,4 +1,4 @@
-import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadiusUtils } from '../map-utils'
+import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius } from '../map-utils'
 
 /* eslint-disable no-undef */
 let service
@@ -30,7 +30,7 @@ function initSearchMap() {
     readSearchBarElements()
     instantiateInfowindow()
 
-    updateRadiusUtils(service, searchMap, markerCoordinates, currentRadius)
+    updateRadius(service, searchMap, markerCoordinates, currentRadius)
     onSearchLocation()
   }
 }
@@ -81,6 +81,7 @@ function runCheckBoxListeners() {
   runStrictBoundsInputListener()
 }
 
+// Register if user wants to use 'bias input' setting in searchbar
 function runBiasInputListener() {
   if (biasInputElement) {
     biasInputElement.addEventListener('change', () => {
@@ -100,6 +101,7 @@ function runBiasInputListener() {
   }
 }
 
+// Register if user wants to use 'strict bounds' in searchbar
 function runStrictBoundsInputListener() {
   if (strictBoundsInputElement) {
     strictBoundsInputElement.addEventListener('change', () => {
@@ -168,7 +170,7 @@ function manageSearchResult() {
     directionsRendererSearch.setMap(searchMap)
 
     centerSearchedMarker()
-    updateRadiusUtils(service, searchMap, markerCoordinates, currentRadius)
+    updateRadius(service, searchMap, markerCoordinates, currentRadius)
     updateInfowindow()
   } else { // Could not find place
     window.alert("No details available for input: '" + searchedPlace.name + "'")
@@ -199,8 +201,8 @@ function listenForMarkerClickSearchMode(marker, place) {
 }
 
 // Create the marker that represents the position in the search-prompt
-function createReferenceMarker() {
-  const svgMarker = {
+function createSearchReferenceMarker() {
+  const svgMarkerIcon = {
     path: 'M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z',
     fillColor: 'blue',
     fillOpacity: 1,
@@ -209,10 +211,20 @@ function createReferenceMarker() {
     scale: 4,
     anchor: new google.maps.Point(0, 20)
   }
-
+  /*
   userMarker = new google.maps.Marker({
     map: searchMap,
-    icon: svgMarker,
+    icon: svgMarkerIcon,
+    position: markerCoordinates
+  })
+  */
+  userMarker = generateReferenceMarker(svgMarkerIcon)
+}
+
+function generateReferenceMarker(svgMarkerIcon) {
+  return new google.maps.Marker({
+    map: searchMap,
+    icon: svgMarkerIcon,
     position: markerCoordinates
   })
 }
@@ -224,7 +236,7 @@ function drawSearchMap() {
     mapTypeControl: false
   })
 
-  createReferenceMarker()
+  createSearchReferenceMarker()
   initiateDirectionsComponents()
 }
 
