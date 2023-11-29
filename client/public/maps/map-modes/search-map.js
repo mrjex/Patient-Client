@@ -1,4 +1,4 @@
-import { confirmExecutionConditions, currentRadius } from '../map-utils'
+import { confirmExecutionConditions, currentRadius, callbackUtils } from '../map-utils'
 
 /* eslint-disable no-undef */
 let service
@@ -13,7 +13,7 @@ let infowindowSearchReference
 let infowindowContentSearchReference
 let markerCoordinates = { lat: 40.749933, lng: -73.98633 }
 
-let map
+let searchMap
 let searchedPlace
 let autocomplete
 
@@ -48,7 +48,7 @@ function updateInfowindow() {
   infowindowContentSearchReference.children['place-name'].textContent = searchedPlace.name
   infowindowContentSearchReference.children['place-address'].textContent =
           searchedPlace.formatted_address
-  infowindowSearchReference.open(map, userMarker)
+  infowindowSearchReference.open(searchMap, userMarker)
 }
 
 // Has responsibility for the functionality of the clickable buttons that restrict the search results
@@ -87,7 +87,7 @@ function runBiasInputListener() {
   if (biasInputElement) {
     biasInputElement.addEventListener('change', () => {
       if (biasInputElement.checked) {
-        autocomplete.bindTo('bounds', map)
+        autocomplete.bindTo('bounds', searchMap)
       } else {
         // User wants to turn off location bias, so three things need to happen:
         // 1. Unbind from map
@@ -110,7 +110,7 @@ function runStrictBoundsInputListener() {
       })
       if (strictBoundsInputElement.checked) {
         biasInputElement.checked = strictBoundsInputElement.checked
-        autocomplete.bindTo('bounds', map)
+        autocomplete.bindTo('bounds', searchMap)
       }
       input.value = ''
     })
@@ -160,14 +160,14 @@ function getSearchQueryParameters() {
 
 function instantiateSearchAutoComplete() {
   autocomplete = new google.maps.places.Autocomplete(input, getSearchQueryParameters())
-  autocomplete.bindTo('bounds', map)
+  autocomplete.bindTo('bounds', searchMap)
 }
 
 function manageSearchResult() {
   // Place found
   if (searchIsValid()) {
     markerCoordinates = searchedPlace.geometry.location
-    directionsRendererSearch.setMap(map)
+    directionsRendererSearch.setMap(searchMap)
 
     centerSearchedMarker()
 
@@ -185,27 +185,12 @@ function searchIsValid() {
 
 function centerSearchedMarker() {
   if (searchedPlace.geometry.viewport) {
-    map.fitBounds(searchedPlace.geometry.viewport)
+    searchMap.fitBounds(searchedPlace.geometry.viewport)
   } else {
-    map.setCenter(searchedPlace.geometry.location)
-    map.setZoom(defaultZoomLevel)
+    searchMap.setCenter(searchedPlace.geometry.location)
+    searchMap.setZoom(defaultZoomLevel)
   }
   userMarker.setPosition(searchedPlace.geometry.location)
-}
-
-function callback(results, status) {
-  if (status === google.maps.places.PlacesServiceStatus.OK) {
-    for (let i = 0; i < results.length; i++) {
-      createMarker(results[i])
-    }
-  }
-}
-
-function initializeMarker(place) {
-  return new google.maps.Marker({
-    map,
-    position: place.geometry.location
-  })
 }
 
 // Display the related information about the clicked dental clinic marker
@@ -227,28 +212,23 @@ function generateInfoWindow(place, marker) {
         }
         </style>`
   )
-  selectedDentistInfowindow.open(map, marker)
+  selectedDentistInfowindow.open(searchMap, marker)
 }
 
 // Checks if user clicks on dental clinic marker
-function listenForMarkerClick(marker, place) {
+function listenForMarkerClickSearchMode(marker, place) {
   google.maps.event.addListener(marker, 'click', function () {
     selectedDentalClinicMarkerSearch = marker.position
     generateInfoWindow(place, marker)
   })
 }
 
-function createMarker(place) {
-  const marker = initializeMarker(place)
-  listenForMarkerClick(marker, place)
-}
-
 function updateRadiusSearch() { // NOTE: Refactor into map-utils.js
   drawMap()
 
   // NOTE: Refactor into a self-contained 'nearbySearch' component
-  service = new google.maps.places.PlacesService(map) //
-  service.nearbySearch(getNearbyRequest(), callback)
+  service = new google.maps.places.PlacesService(searchMap)
+  service.nearbySearch(getNearbyRequest(), callbackUtils) // PREV: ,callback
 }
 
 function getNearbyRequest() {
@@ -272,14 +252,14 @@ function createReferenceMarker() {
   }
 
   userMarker = new google.maps.Marker({
-    map,
+    map: searchMap,
     icon: svgMarker,
     position: markerCoordinates
   })
 }
 
 function drawMap() {
-  map = new google.maps.Map(document.getElementById('map'), {
+  searchMap = new google.maps.Map(document.getElementById('map'), {
     center: markerCoordinates,
     zoom: 13,
     mapTypeControl: false
@@ -301,5 +281,5 @@ function changeRadiusSearch(newRadius) {
 window.initMap = initSearchMap
 export {
   initSearchMap, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch,
-  markerCoordinates, updateRadiusSearch, changeRadiusSearch
+  markerCoordinates, updateRadiusSearch, changeRadiusSearch, listenForMarkerClickSearchMode, searchMap
 }

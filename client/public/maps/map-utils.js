@@ -7,10 +7,16 @@
 // This script is the generalization of 'map.js' and 'search-map.js' and is executed at initialization of both scripts
 /* eslint-disable no-undef */
 
+import { listenForMarkerClickNearbyMode, nearbyMap } from './map-modes/nearby-map'
+import { listenForMarkerClickSearchMode, searchMap } from './map-modes/search-map'
+
 let currentMapMode = 'NEARBY'
 let currentRadius = 10000
 
-// Each map-mode script is solely executed under certain conditions
+/*
+Each map-mode script is solely executed when their respective mode is activated by the user.
+This check is important since the exporting and importing between the map-scripts invokes them in unwanted conditions.
+*/
 function confirmExecutionConditions(mapMode) {
   const pathArray = window.location.href.split('/')
   const lastSubDomainPath = pathArray[pathArray.length - 1]
@@ -31,16 +37,38 @@ function changeRadius(newRadius) {
   currentRadius = newRadius
 }
 
-/*
-function callback(results, status) {
+function callbackUtils(results, status) {
   if (status === google.maps.places.PlacesServiceStatus.OK) {
     for (let i = 0; i < results.length; i++) {
       createMarker(results[i])
     }
   }
 }
-*/
+
+function createMarker(place) {
+  const marker = initializeMarker(place)
+
+  if (currentMapMode === 'NEARBY') {
+    listenForMarkerClickNearbyMode(marker, place)
+  } else {
+    listenForMarkerClickSearchMode(marker, place)
+  }
+}
+
+function initializeMarker(place) {
+  if (currentMapMode === 'NEARBY') {
+    return new google.maps.Marker({
+      map: nearbyMap,
+      position: place.geometry.location
+    })
+  } else {
+    return new google.maps.Marker({
+      map: searchMap,
+      position: place.geometry.location
+    })
+  }
+}
 
 integrateAPIKey()
 
-export { confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius }
+export { confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, callbackUtils }
