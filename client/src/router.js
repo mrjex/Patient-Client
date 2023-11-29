@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Map from './views/Map.vue'
+import MapPage from './views/MapPage.vue'
 
 Vue.use(Router)
 
@@ -12,7 +12,7 @@ const router = new Router({
     {
       name: 'MapPage',
       path: '/map',
-      component: Map
+      component: MapPage
     }
   ]
 })

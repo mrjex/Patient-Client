@@ -14,6 +14,15 @@ let currentMapMode = 'NEARBY'
 let currentRadius = 10000
 
 /*
+  Define pages to integrate MapComponent with.
+  Note that the strings below starts with 'localhost:8080'.
+  Adding a new element 'my/test/page/' would integrate the map
+  functionality at 'localhost:8080/my/test/page/', assuming that you
+  also add MapComponent.vue in its template
+*/
+const integratedVueRoutes = ['map']
+
+/*
 Each map-mode script is solely executed when their respective mode is activated by the user.
 This check is important since the exporting and importing between the map-scripts invokes them in unwanted conditions.
 */
@@ -21,7 +30,9 @@ function confirmExecutionConditions(mapMode) {
   const pathArray = window.location.href.split('/')
   const lastSubDomainPath = pathArray[pathArray.length - 1]
 
-  return (lastSubDomainPath === 'map' && currentMapMode === mapMode)
+  const isAllowedPage = integratedVueRoutes.includes(lastSubDomainPath)
+
+  return (isAllowedPage === true && currentMapMode === mapMode)
 }
 
 function integrateAPIKey() {
