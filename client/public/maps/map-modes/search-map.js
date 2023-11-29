@@ -1,4 +1,4 @@
-import { confirmExecutionConditions, currentRadius, callbackUtils } from '../map-utils'
+import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadiusUtils } from '../map-utils'
 
 /* eslint-disable no-undef */
 let service
@@ -25,14 +25,12 @@ const defaultZoomLevel = 17
 
 function initSearchMap() {
   if (confirmExecutionConditions('SEARCH')) {
-    console.warn('in search-map.js')
-
-    drawMap()
+    drawSearchMap()
 
     readSearchBarElements()
     instantiateInfowindow()
 
-    updateRadiusSearch()
+    updateRadiusUtils(service, searchMap, markerCoordinates, currentRadius)
     onSearchLocation()
   }
 }
@@ -170,8 +168,7 @@ function manageSearchResult() {
     directionsRendererSearch.setMap(searchMap)
 
     centerSearchedMarker()
-
-    updateRadiusSearch()
+    updateRadiusUtils(service, searchMap, markerCoordinates, currentRadius)
     updateInfowindow()
   } else { // Could not find place
     window.alert("No details available for input: '" + searchedPlace.name + "'")
@@ -193,55 +190,17 @@ function centerSearchedMarker() {
   userMarker.setPosition(searchedPlace.geometry.location)
 }
 
-// Display the related information about the clicked dental clinic marker
-function generateInfoWindow(place, marker) {
-  const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
-  // console.warn(place.photos[0].getUrl()) // NOTE: Some dentists have pics and some not
-
-  const selectedDentistInfowindow = new google.maps.InfoWindow()
-
-  selectedDentistInfowindow.setContent(
-        `<strong class="header">${place.name}</strong>
-        <p>
-        Adress: ${place.vicinity} <br>
-        ${ratingString}
-        </p>
-        <style>
-        .header {
-          font-weight: 1000
-        }
-        </style>`
-  )
-  selectedDentistInfowindow.open(searchMap, marker)
-}
-
 // Checks if user clicks on dental clinic marker
 function listenForMarkerClickSearchMode(marker, place) {
   google.maps.event.addListener(marker, 'click', function () {
     selectedDentalClinicMarkerSearch = marker.position
-    generateInfoWindow(place, marker)
+    generateInfoWindowUtils(place, marker)
   })
-}
-
-function updateRadiusSearch() { // NOTE: Refactor into map-utils.js
-  drawMap()
-
-  // NOTE: Refactor into a self-contained 'nearbySearch' component
-  service = new google.maps.places.PlacesService(searchMap)
-  service.nearbySearch(getNearbyRequest(), callbackUtils) // PREV: ,callback
-}
-
-function getNearbyRequest() {
-  return {
-    location: markerCoordinates,
-    radius: currentRadius,
-    type: ['dentist']
-  }
 }
 
 // Create the marker that represents the position in the search-prompt
 function createReferenceMarker() {
-  const svgMarker = { // NOTE: Use picture from map.js and convert it to svg path
+  const svgMarker = {
     path: 'M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z',
     fillColor: 'blue',
     fillOpacity: 1,
@@ -258,7 +217,7 @@ function createReferenceMarker() {
   })
 }
 
-function drawMap() {
+function drawSearchMap() {
   searchMap = new google.maps.Map(document.getElementById('map'), {
     center: markerCoordinates,
     zoom: 13,
@@ -281,5 +240,5 @@ function changeRadiusSearch(newRadius) {
 window.initMap = initSearchMap
 export {
   initSearchMap, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch,
-  markerCoordinates, updateRadiusSearch, changeRadiusSearch, listenForMarkerClickSearchMode, searchMap
+  markerCoordinates, changeRadiusSearch, listenForMarkerClickSearchMode, searchMap, drawSearchMap
 }

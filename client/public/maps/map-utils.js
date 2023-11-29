@@ -8,7 +8,7 @@
 /* eslint-disable no-undef */
 
 import { listenForMarkerClickNearbyMode, nearbyMap } from './map-modes/nearby-map'
-import { listenForMarkerClickSearchMode, searchMap } from './map-modes/search-map'
+import { listenForMarkerClickSearchMode, searchMap, drawSearchMap } from './map-modes/search-map'
 
 let currentMapMode = 'NEARBY'
 let currentRadius = 10000
@@ -69,6 +69,48 @@ function initializeMarker(place) {
   }
 }
 
+// Display the related information about the clicked dental clinic marker in a window positioned at the selected dental clinic marker
+function generateInfoWindowUtils(place, marker) {
+  const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
+  const selectedDentistInfowindow = new google.maps.InfoWindow()
+
+  selectedDentistInfowindow.setContent(
+        `<strong class="header">${place.name}</strong>
+        <p>
+        Adress: ${place.vicinity} <br>
+        ${ratingString}
+        </p>
+        <style>
+        .header {
+          font-weight: 1000
+        }
+        </style>`
+  )
+  selectedDentistInfowindow.open(searchMap, marker)
+}
+
+function updateRadiusUtils(service, map, centralMarkerCoordinates, currentRadius) {
+  if (currentMapMode === 'SEARCH') {
+    drawSearchMap()
+  }
+
+  performNearbyQuery(service, map, centralMarkerCoordinates, currentRadius)
+}
+
+function performNearbyQuery(service, map, centralMarkerCoordinates, selectedRadius) {
+  service = new google.maps.places.PlacesService(map)
+  service.nearbySearch(getNearbyRequest(centralMarkerCoordinates, selectedRadius), callbackUtils)
+}
+
+// Specify conditions for query of markers
+function getNearbyRequest(centralMarkerCoordinates, selectedRadius) {
+  return {
+    location: centralMarkerCoordinates,
+    radius: selectedRadius,
+    type: ['dentist']
+  }
+}
+
 integrateAPIKey()
 
-export { confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, callbackUtils }
+export { confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, callbackUtils, generateInfoWindowUtils, performNearbyQuery, updateRadiusUtils }

@@ -85,9 +85,9 @@
 
 <script>
 
-import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawMap, initMap, changeTravelMode, deselectClinicMarker } from '../../public/maps/map-modes/nearby-map.js'
-import { updateRadiusSearch, initSearchMap } from '../../public/maps/map-modes/search-map.js'
-import { changeMapMode, currentMapMode, changeRadius } from '../../public/maps/map-utils.js'
+import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawNearbyMap, initMap, changeTravelMode, deselectClinicMarker } from '../../public/maps/map-modes/nearby-map.js'
+import { initSearchMap, service, searchMap, markerCoordinates } from '../../public/maps/map-modes/search-map.js'
+import { changeMapMode, currentMapMode, changeRadius, updateRadiusUtils, currentRadius } from '../../public/maps/map-utils.js'
 import UtilsComponent from '../components/UtilsComponent.vue'
 
 export default {
@@ -107,6 +107,7 @@ export default {
   },
   methods: {
     changeSearchRange() {
+      // Dropdown button is pressed to change radius of displayed clinics
       if (UtilsComponent.methods.checkIfDropdownPressed(this.currentRadius, this.previousRadius)) {
         changeRadius(this.currentRadius)
         this.previousRadius = this.currentRadius
@@ -114,13 +115,14 @@ export default {
         deselectClinicMarker()
 
         if (currentMapMode === 'NEARBY') {
-          drawMap()
+          drawNearbyMap()
         } else {
-          updateRadiusSearch()
+          updateRadiusUtils(service, searchMap, markerCoordinates, currentRadius)
         }
       }
     },
-    changeTravelMode() { // User changes travel mode in 'NEARBY' mode
+    changeTravelMode() {
+    // Dropdown button is pressed to change the display of travel-route types in 'NEARBY' mode
       if (UtilsComponent.methods.checkIfDropdownPressed(this.currentTravelMode, this.previousTravelMode)) {
         changeTravelMode(this.currentTravelMode)
         calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
@@ -138,7 +140,7 @@ export default {
       this.selectedMode = newMode
       changeMapMode(newMode)
     },
-    // Run 'nearby-map.js' that has responsibility for the backend functionality of the API
+    // Run 'nearby-map.js'
     initializeNearbyMap() {
       UtilsComponent.methods.createHTMLScriptElement('../../public/maps/map-modes/nearby-map.js', false)
     },
@@ -146,9 +148,9 @@ export default {
     /*
     Note for developers: If we want to activate 'SEARCH' mode at start of aplication,
     we run this method in 'created()' instead of the method above, and change
-    'currentMapMode' in map-utils.js to 'SEARCH
+    'currentMapMode' in map-utils.js to 'SEARCH'
     */
-    initializeSearchMap() {
+    initializeSearchMap() { // Run 'search-map.js'
       UtilsComponent.methods.createHTMLScriptElement('../../public/maps/map-modes/search-map.js', false)
     },
     initializePlaceAPI() {
