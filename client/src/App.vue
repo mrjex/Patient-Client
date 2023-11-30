@@ -5,16 +5,25 @@
     </div>
     <!-- Your application content -->
     <router-view/>
+    <DentanoidFooter class='footer'/>
   </div>
 </template>
 <script>
 
 import DentaNoidHeader from './component/DentaNoidHeader.vue'
+import DentanoidFooter from './component/DentanoidFooter.vue'
 export default {
   name: 'app',
-  components: { DentaNoidHeader }
+  components: { DentanoidFooter, DentaNoidHeader }
 }
 </script>
 
 <style>
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 </style>
