@@ -5,7 +5,7 @@
     </div>
     <!-- Your application content -->
     <router-view/>
-    <DentanoidFooter class='footer'/>
+    <DentanoidFooter/>
   </div>
 </template>
 <script>
