@@ -18,9 +18,9 @@
         </b-navbar-nav>
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
-          <b-nav-item v-if="!isLoggedIn" @click="signInSignOut">Login</b-nav-item>
-          <b-nav-item v-if="!isLoggedIn" @click="signInSignOut">Sign Up</b-nav-item>
-          <b-nav-item v-if="isLoggedIn" @click="signInSignOut">Sign out</b-nav-item>
+          <b-nav-item v-if="!isLoggedIn" @click="signInSignOut()">Login</b-nav-item>
+          <b-nav-item v-if="!isLoggedIn" @click="signInSignOut()">Sign Up</b-nav-item>
+          <b-nav-item v-if="isLoggedIn" @click="signInSignOut()">Sign out</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
@@ -38,16 +38,16 @@ export default {
   methods: {
     signInSignOut() {
       if (!this.isLoggedIn) {
-        localStorage.setItem('loggedIn', true)
         this.isLoggedIn = true
+        localStorage.setItem('isLoggedIn', true)
       } else {
-        localStorage.setItem('loggedIn', false)
         this.isLoggedIn = false
+        localStorage.setItem('isLoggedIn', false)
       }
     }
   },
-  mounted() {
-    this.isLoggedIn = localStorage.getItem('loggedIn')
+  created() {
+    this.isLoggedIn = localStorage.getItem('isLoggedIn')
   }
 }
 </script>
