@@ -1,6 +1,6 @@
 <template>
 <!--Wireframe - https://git.chalmers.se/courses/dit355/2023/student-teams/dit356-2023-20/group-20-distributed-systems/-/wikis/Patient-gui#my-bookings -->
-  <div>My bookings</div>
+  <body>My bookings</body>
 </template>
 
 <script>
