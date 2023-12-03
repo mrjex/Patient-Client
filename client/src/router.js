@@ -8,6 +8,8 @@ import myBookings from '@/views/MyBookings.vue'
 import Notifications from '@/views/Notifications.vue'
 import FindClinics from '@/views/FindClinics.vue'
 
+import MapPage from './views/MapPage.vue'
+
 Vue.use(Router)
 
 export default new Router({
@@ -48,6 +50,11 @@ export default new Router({
       path: '/notifications',
       name: 'notificationsView',
       component: Notifications
+    },
+    {
+      name: 'MapPage',
+      path: '/map',
+      component: MapPage
     }
   ]
 })
