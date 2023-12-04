@@ -30,11 +30,11 @@ async function drawNearbyMap() {
   initiateMap(Map, AdvancedMarkerElement)
 }
 
-function listenForMarkerClickNearbyMode(marker, place) {
+function listenForMarkerClickNearbyMode(marker, clinic) { // PREVIOUS: (marker, place)
   google.maps.event.addListener(marker, 'click', function () {
     selectedDentalClinicMarker = marker.position
 
-    generateInfoWindowUtils(place, marker)
+    generateInfoWindowUtils(clinic, marker, nearbyMap)
     calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
   })
 }

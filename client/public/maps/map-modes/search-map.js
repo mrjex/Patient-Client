@@ -204,10 +204,10 @@ function centerSearchedMarker() {
 }
 
 // Checks if user clicks on dental clinic marker
-function listenForMarkerClickSearchMode(marker, place) {
+function listenForMarkerClickSearchMode(marker, clinic) { // PREVIOUS: (marker, place)
   google.maps.event.addListener(marker, 'click', function () {
     selectedDentalClinicMarkerSearch = marker.position
-    generateInfoWindowUtils(place, marker)
+    generateInfoWindowUtils(clinic, marker, searchMap)
   })
 }
 

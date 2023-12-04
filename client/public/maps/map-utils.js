@@ -61,18 +61,17 @@ function callbackUtils(results, status) {
 
 // NEW FUNCTIONS (In development)
 
-function createMarker2(referenceCoordinates) { // TODO: Replace this method
+function createMarker2(referenceCoordinates, clinic) { // TODO: Replace this method
   const marker = initializeMarker2(referenceCoordinates)
-  console.log(marker)
 
-  /*
   // TODO: Uncomment this and replace 'place' with 'referenceCoordinates'
   if (currentMapMode === 'NEARBY') {
-    listenForMarkerClickNearbyMode(marker, place)
+    // listenForMarkerClickNearbyMode(marker, place) // Previous - WORKS
+    listenForMarkerClickNearbyMode(marker, clinic)
   } else {
-    listenForMarkerClickSearchMode(marker, place)
+    // listenForMarkerClickSearchMode(marker, place) // Previous - WORKS
+    listenForMarkerClickSearchMode(marker, clinic)
   }
-  */
 }
 
 function initializeMarker2(referenceCoordinates) {
@@ -120,10 +119,11 @@ function initializeMarker(place) { // TODO: Replace this method
 // ---------------------------------------------------------------
 
 // Display the related information about the clicked dental clinic marker in a window positioned at the selected dental clinic marker
-function generateInfoWindowUtils(place, marker) {
-  const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
+function generateInfoWindowUtils(clinic, marker, map) { // PREVIOUS: (place, marker)
+  // const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
   const selectedDentistInfowindow = new google.maps.InfoWindow()
 
+  /*
   selectedDentistInfowindow.setContent(
         `<strong class="header">${place.name}</strong>
         <p>
@@ -136,7 +136,23 @@ function generateInfoWindowUtils(place, marker) {
         }
         </style>`
   )
-  selectedDentistInfowindow.open(searchMap, marker)
+  */
+
+  selectedDentistInfowindow.setContent(
+    `<strong class="header">${clinic.clinic_name}</strong>
+    <p>
+    Adress: Adress here <br>
+    Rating here <br>
+    Employees: <br>
+    ${clinic.employees}
+    </p>
+    <style>
+    .header {
+      font-weight: 1000
+    }
+    </style>`
+  )
+  selectedDentistInfowindow.open(map, marker) // searchMap? do if-statement with 'currentMapMode' if error
 }
 
 // Update radius to query dental clinics in relative to a fixed position (user's pos or search-reference pos)
@@ -171,7 +187,7 @@ function performNearbyQuery(service, map, centralMarkerCoordinates, selectedRadi
 
       const positionArray = currentClinic.position.split(',')
       const referenceCoordinates = { lat: parseFloat(positionArray[0]), lng: parseFloat(positionArray[1]) }
-      createMarker2(referenceCoordinates)
+      createMarker2(referenceCoordinates, currentClinic)
     }
   }
 }
