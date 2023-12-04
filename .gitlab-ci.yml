@@ -2,6 +2,7 @@ default:
   image: node:16.16.0
 
 deploy_preview:
+  tags: docker
   stage: deploy
   except:
     - main
@@ -12,6 +13,7 @@ deploy_preview:
     - vercel deploy --prebuilt  --token=$VERCEL_TOKEN
 
 deploy_production:
+  tags: docker
   stage: deploy
   only:
     - main
