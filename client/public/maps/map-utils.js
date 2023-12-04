@@ -12,6 +12,7 @@ import { listenForMarkerClickSearchMode, searchMap, drawSearchMap, referenceMark
 
 let currentMapMode = 'NEARBY'
 let currentRadius = 10000
+let nearbyClinicsQueryData
 
 /*
   Define pages to integrate MapComponent with.
@@ -115,8 +116,21 @@ function getReferencePosition() {
 }
 
 function performNearbyQuery(service, map, centralMarkerCoordinates, selectedRadius) {
+  console.warn(nearbyClinicsQueryData)
+
   service = new google.maps.places.PlacesService(map)
   service.nearbySearch(getNearbyRequest(centralMarkerCoordinates, selectedRadius), callbackUtils)
+
+  // TODO:
+  // 1) Replace the 2 lines above
+  // 2) Export 'data' from MapComponent.vue and print it here
+  // 3) Create markers on the map with 'data' variable
+
+  // createMarker(place) <--- Use this
+}
+
+function setNearbyClinicsQueryData(value) {
+  nearbyClinicsQueryData = value
 }
 
 // Specify conditions for query of markers
@@ -132,5 +146,5 @@ integrateAPIKey()
 
 export {
   confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius,
-  callbackUtils, generateInfoWindowUtils, performNearbyQuery, updateRadius, initializeMarker, getReferencePosition
+  callbackUtils, generateInfoWindowUtils, performNearbyQuery, updateRadius, initializeMarker, getReferencePosition, setNearbyClinicsQueryData
 }

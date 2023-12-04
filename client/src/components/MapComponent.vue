@@ -4,44 +4,46 @@
       <div class="field map-vue-radius-options">
 
         <!-- TODO: Add black background div element to show cohesion of query mode selection -->
-        <div>
-          <b-form-group label="Query Modes:" v-slot="{ ariaDescribedby }">
-          <b-form-radio v-model="selectedNearbyQuery" :aria-describedby="ariaDescribedby" name="some-radios" value="Radius">Radius</b-form-radio>
-          <b-form-radio v-model="selectedNearbyQuery" :aria-describedby="ariaDescribedby" name="some-radios" value="Number">Number</b-form-radio>
-        </b-form-group>
-          <div class="mt-3">Selected: <strong>{{ selectedNearbyQuery }}</strong></div>
-        </div>
+        <div id="nearby-query-panel">
+          <div>
+            <b-form-group label="Nearby Queries:" v-slot="{ ariaDescribedby }" id="query-mode-title">
+            <b-form-radio v-model="selectedNearbyQuery" :aria-describedby="ariaDescribedby" name="some-radios" value="Radius">Radius</b-form-radio>
+            <b-form-radio v-model="selectedNearbyQuery" :aria-describedby="ariaDescribedby" name="some-radios" value="Number">Number</b-form-radio>
+            </b-form-group>
+            <!-- <div class="mt-3">Selected: <strong>{{ selectedNearbyQuery }}</strong></div> -->
+          </div>
 
-        <div v-if="selectedNearbyQuery === 'Radius'">
-          <strong>Query Radius:</strong>
-          <select v-model="currentRadius" @click.prevent="changeSearchRange">
-            <option value="250">0.25 KM</option>
-            <option value="500">0.5 KM</option>
-            <option value="1000">1 KM</option>
-            <option value="3000">3 KM</option>
-            <option value="5000">5 KM</option>
-            <option value="10000">10 KM</option>
-            <option value="15000">15 KM</option>
-            <option value="20000">20 KM</option>
-            <option value="30000">30 KM</option>
-            <option value="50000">50 KM</option>
-            <option value="100000">100 KM</option>
-          </select>
-        </div>
+          <div v-if="selectedNearbyQuery === 'Radius'">
+            <strong>Query Radius:</strong>
+            <select v-model="currentRadius" @click.prevent="changeSearchRange">
+              <option value="250">0.25 KM</option>
+              <option value="500">0.5 KM</option>
+              <option value="1000">1 KM</option>
+              <option value="3000">3 KM</option>
+              <option value="5000">5 KM</option>
+              <option value="10000">10 KM</option>
+              <option value="15000">15 KM</option>
+              <option value="20000">20 KM</option>
+              <option value="30000">30 KM</option>
+              <option value="50000">50 KM</option>
+              <option value="100000">100 KM</option>
+            </select>
+          </div>
 
-        <div v-if="selectedNearbyQuery === 'Number'">
-          <strong>Query Number:</strong>
-          <select v-model="currentNumberQuery" @click.prevent="sendClinicNumberQuery">
-            <option value="1">1</option>
-            <option value="3">3</option>
-            <option value="5">5</option>
-            <option value="7">7</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-            <option value="20">20</option>
-            <option value="30">30</option>
-            <option value="50">50</option>
-          </select>
+          <div v-if="selectedNearbyQuery === 'Number'">
+            <strong>Query Number:</strong>
+            <select v-model="currentNumberQuery" @click.prevent="sendClinicNumberQuery">
+              <option value="1">1</option>
+              <option value="3">3</option>
+              <option value="5">5</option>
+              <option value="7">7</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+              <option value="30">30</option>
+              <option value="50">50</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -113,7 +115,7 @@
 
 import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawNearbyMap, initMap, changeTravelMode, deselectClinicMarker } from '../../public/maps/map-modes/nearby-map.js'
 import { initSearchMap, service, searchMap, markerCoordinates } from '../../public/maps/map-modes/search-map.js'
-import { changeMapMode, currentMapMode, changeRadius, updateRadius, currentRadius, getReferencePosition } from '../../public/maps/map-utils.js'
+import { changeMapMode, currentMapMode, changeRadius, updateRadius, currentRadius, getReferencePosition, setNearbyClinicsQueryData } from '../../public/maps/map-utils.js'
 import { checkIfDropdownPressed, createHTMLScriptElement } from '../utils.js'
 import { Api } from '../Api.js'
 
@@ -143,16 +145,7 @@ export default {
         this.previousRadius = this.currentRadius
 
         deselectClinicMarker()
-
-        // NOTE: Will be refactored during 5th December meeting
-        const { data } = await Api.get(`/maps/radius/${this.currentRadius}/positions/${getReferencePosition()}`)
-        console.warn(data)
-
-        if (currentMapMode === 'NEARBY') {
-          drawNearbyMap()
-        } else {
-          updateRadius(service, searchMap, markerCoordinates, currentRadius)
-        }
+        this.performClinicQuery(`/maps/radius/${this.currentRadius}/positions/${getReferencePosition()}`)
       }
     },
     changeTravelMode() {
@@ -165,9 +158,19 @@ export default {
     async sendClinicNumberQuery() {
       if (checkIfDropdownPressed(this.currentNumberQuery, this.previousNumberQuery)) {
         this.previousNumberQuery = this.currentNumberQuery
-
-        const { data } = await Api.get(`/maps/number/${this.currentNumberQuery}/positions/${getReferencePosition()}`)
-        console.warn(data)
+        this.performClinicQuery(`/maps/number/${this.currentNumberQuery}/positions/${getReferencePosition()}`)
+      }
+    },
+    async performClinicQuery(queryUrl) { // Sends specified query settings to Patient API
+      const { data } = await Api.get(queryUrl)
+      setNearbyClinicsQueryData(data)
+      this.updateMapUI()
+    },
+    updateMapUI() {
+      if (currentMapMode === 'NEARBY') {
+        drawNearbyMap()
+      } else {
+        updateRadius(service, searchMap, markerCoordinates, currentRadius)
       }
     },
     nearbyMode() {
@@ -201,3 +204,17 @@ export default {
   }
 }
 </script>
+
+<style>
+#nearby-query-panel {
+  background-color: rgba(113, 113, 113, 0.784);
+  position: relative;
+  border-radius: 2vw;
+  width: 30vw;
+  left: 35vw;
+}
+
+#query-mode-title {
+  font-weight: 900;
+}
+</style>

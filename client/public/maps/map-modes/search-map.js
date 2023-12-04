@@ -222,13 +222,7 @@ function createSearchReferenceMarker() {
     scale: 4,
     anchor: new google.maps.Point(0, 20)
   }
-  /*
-  userMarker = new google.maps.Marker({
-    map: searchMap,
-    icon: svgMarkerIcon,
-    position: markerCoordinates
-  })
-  */
+
   userMarker = generateReferenceMarker(svgMarkerIcon)
 }
 
