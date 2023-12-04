@@ -136,7 +136,7 @@ export default {
     this.initializeNearbyMap()
   },
   methods: {
-    changeSearchRange() {
+    async changeSearchRange() {
       // Dropdown button is pressed to change radius of displayed clinics
       if (checkIfDropdownPressed(this.currentRadius, this.previousRadius)) {
         changeRadius(this.currentRadius)
@@ -145,11 +145,8 @@ export default {
         deselectClinicMarker()
 
         // NOTE: Will be refactored during 5th December meeting
-
-        Api.post('/maps', { // NOTE: Will be refactored into GET method
-          radius: this.currentRadius / 1000, // Convert Meters to Kilometers (KM is the unit of measure in Clinic Service)
-          reference_position: getReferencePosition()
-        })
+        const { data } = await Api.get(`/maps/radius/${this.currentRadius}/positions/${getReferencePosition()}`)
+        console.warn(data)
 
         if (currentMapMode === 'NEARBY') {
           drawNearbyMap()
@@ -165,14 +162,12 @@ export default {
         calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
       }
     },
-    sendClinicNumberQuery() {
+    async sendClinicNumberQuery() {
       if (checkIfDropdownPressed(this.currentNumberQuery, this.previousNumberQuery)) {
         this.previousNumberQuery = this.currentNumberQuery
 
-        Api.post('/maps/TEMP', { // NOTE: Will be refactored into GET method
-          nearby_clinics_number: this.currentNumberQuery,
-          reference_position: getReferencePosition()
-        })
+        const { data } = await Api.get(`/maps/number/${this.currentNumberQuery}/positions/${getReferencePosition()}`)
+        console.warn(data)
       }
     },
     nearbyMode() {
