@@ -3,7 +3,6 @@
     <div id="map"></div>
       <div class="field map-vue-radius-options">
 
-        <!-- TODO: Add black background div element to show cohesion of query mode selection -->
         <div id="nearby-query-panel">
           <div>
             <b-form-group label="Nearby Queries:" v-slot="{ ariaDescribedby }" id="query-mode-title">
@@ -202,6 +201,9 @@ export default {
     },
     initializePlaceAPI() {
       createHTMLScriptElement('https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&libraries=places&callback=initMap', true)
+    },
+    sendTravelPathNotFoundNotification() {
+      console.warn('Issue Toast Notification: Google API could not generate route to desired destination')
     }
   }
 }

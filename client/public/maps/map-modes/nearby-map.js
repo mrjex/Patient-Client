@@ -1,4 +1,5 @@
 import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius } from '../map-utils.js'
+import MapComponent from '../../../src/components/MapComponent.vue'
 
 /* eslint-disable no-undef */
 let nearbyMap = -1
@@ -49,13 +50,15 @@ function calcRoute(userGlobalCoordinates, dentistDestination, directionsService,
     directionsService.route(request, function (response, status) {
       if (status === 'OK') {
         directionsRenderer.setDirections(response)
+      } else if (status === 'ZERO_RESULTS') {
+        MapComponent.methods.sendTravelPathNotFoundNotification()
       }
     })
   }
 }
 
 function createUserPositionMarker(AdvancedMarkerElement) {
-  const userIcon = document.createElement('img') // NOTE: Refactor in map-utils.js
+  const userIcon = document.createElement('img')
   userIcon.src = 'https://i.ibb.co/cFB7cMR/User-Marker-Icon.png'
 
   // The marker that represents user's current global position
