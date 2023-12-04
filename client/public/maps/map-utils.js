@@ -7,8 +7,8 @@
 // This script is the generalization of 'map.js' and 'search-map.js' and is executed at initialization of both scripts
 /* eslint-disable no-undef */
 
-import { listenForMarkerClickNearbyMode, nearbyMap } from './map-modes/nearby-map'
-import { listenForMarkerClickSearchMode, searchMap, drawSearchMap } from './map-modes/search-map'
+import { listenForMarkerClickNearbyMode, nearbyMap, userGlobalCoordinates } from './map-modes/nearby-map'
+import { listenForMarkerClickSearchMode, searchMap, drawSearchMap, referenceMarkerCoordinates } from './map-modes/search-map'
 
 let currentMapMode = 'NEARBY'
 let currentRadius = 10000
@@ -109,6 +109,11 @@ function updateRadius(service, map, centralMarkerCoordinates, currentRadius) {
   performNearbyQuery(service, map, centralMarkerCoordinates, currentRadius)
 }
 
+function getReferencePosition() {
+  const stringifiedCoordinates = (currentMapMode === 'NEARBY') ? userGlobalCoordinates : referenceMarkerCoordinates
+  return stringifiedCoordinates.lat + ',' + stringifiedCoordinates.lng
+}
+
 function performNearbyQuery(service, map, centralMarkerCoordinates, selectedRadius) {
   service = new google.maps.places.PlacesService(map)
   service.nearbySearch(getNearbyRequest(centralMarkerCoordinates, selectedRadius), callbackUtils)
@@ -125,4 +130,7 @@ function getNearbyRequest(centralMarkerCoordinates, selectedRadius) {
 
 integrateAPIKey()
 
-export { confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, callbackUtils, generateInfoWindowUtils, performNearbyQuery, updateRadius, initializeMarker }
+export {
+  confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius,
+  callbackUtils, generateInfoWindowUtils, performNearbyQuery, updateRadius, initializeMarker, getReferencePosition
+}

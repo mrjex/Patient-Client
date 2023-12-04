@@ -11,7 +11,16 @@ let userMarker
 
 let infowindowSearchReference
 let infowindowContentSearchReference
-let markerCoordinates = { lat: 40.749933, lng: -73.98633 }
+
+let markerCoordinates = { lat: 40.749933, lng: -73.98633 } // Arbitrary start position: New York
+
+/*
+Note for developers:
+The variable below is used only for the purpose of sending 'lat,lng' payload in string format, since
+'markerCoordinates = searchedPlace.geometry.location' invokes Google's
+internal functions and ceases to storing the location as a simple string
+*/
+let referenceMarkerCoordinates = { lat: 40.749933, lng: -73.98633 }
 
 let searchMap
 let searchedPlace
@@ -167,6 +176,8 @@ function manageSearchResult() {
   // Place found
   if (searchIsValid()) {
     markerCoordinates = searchedPlace.geometry.location
+    referenceMarkerCoordinates = { lat: searchedPlace.geometry.viewport.eb.lo, lng: searchedPlace.geometry.viewport.La.lo }
+
     directionsRendererSearch.setMap(searchMap)
 
     centerSearchedMarker()
@@ -252,5 +263,5 @@ function changeRadiusSearch(newRadius) {
 window.initMap = initSearchMap
 export {
   initSearchMap, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch,
-  markerCoordinates, changeRadiusSearch, listenForMarkerClickSearchMode, searchMap, drawSearchMap
+  markerCoordinates, changeRadiusSearch, listenForMarkerClickSearchMode, searchMap, drawSearchMap, referenceMarkerCoordinates
 }
