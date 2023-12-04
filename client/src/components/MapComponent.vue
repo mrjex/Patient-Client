@@ -176,10 +176,12 @@ export default {
     nearbyMode() {
       this.updateMode('NEARBY')
       initMap()
+      // this.performClinicQuery(`/maps/radius/${this.currentRadius}/positions/${getReferencePosition()}`)
     },
     searchMode() {
       this.updateMode('SEARCH')
       setTimeout(initSearchMap, 0)
+      // this.performClinicQuery(`/maps/radius/${this.currentRadius}/positions/${getReferencePosition()}`)
     },
     updateMode(newMode) {
       this.selectedMode = newMode

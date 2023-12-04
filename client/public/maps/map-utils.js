@@ -57,7 +57,43 @@ function callbackUtils(results, status) {
   }
 }
 
-function createMarker(place) {
+// ---------------------------------------------------------------
+
+// NEW FUNCTIONS (In development)
+
+function createMarker2(referenceCoordinates) { // TODO: Replace this method
+  const marker = initializeMarker2(referenceCoordinates)
+  console.log(marker)
+
+  /*
+  // TODO: Uncomment this and replace 'place' with 'referenceCoordinates'
+  if (currentMapMode === 'NEARBY') {
+    listenForMarkerClickNearbyMode(marker, place)
+  } else {
+    listenForMarkerClickSearchMode(marker, place)
+  }
+  */
+}
+
+function initializeMarker2(referenceCoordinates) {
+  if (currentMapMode === 'NEARBY') {
+    return new google.maps.Marker({
+      map: nearbyMap,
+      position: referenceCoordinates
+    })
+  } else {
+    return new google.maps.Marker({
+      map: searchMap,
+      position: referenceCoordinates
+    })
+  }
+}
+
+// ---------------------------------------------------------------
+
+// FUNCTIONS THAT WILL BE REPLACED
+
+function createMarker(place) { // TODO: Replace this method
   const marker = initializeMarker(place)
 
   if (currentMapMode === 'NEARBY') {
@@ -67,7 +103,7 @@ function createMarker(place) {
   }
 }
 
-function initializeMarker(place) {
+function initializeMarker(place) { // TODO: Replace this method
   if (currentMapMode === 'NEARBY') {
     return new google.maps.Marker({
       map: nearbyMap,
@@ -80,6 +116,8 @@ function initializeMarker(place) {
     })
   }
 }
+
+// ---------------------------------------------------------------
 
 // Display the related information about the clicked dental clinic marker in a window positioned at the selected dental clinic marker
 function generateInfoWindowUtils(place, marker) {
@@ -116,17 +154,26 @@ function getReferencePosition() {
 }
 
 function performNearbyQuery(service, map, centralMarkerCoordinates, selectedRadius) {
-  console.warn(nearbyClinicsQueryData)
-
+  /*
+  // WORKS:
   service = new google.maps.places.PlacesService(map)
   service.nearbySearch(getNearbyRequest(centralMarkerCoordinates, selectedRadius), callbackUtils)
+  */
 
-  // TODO:
-  // 1) Replace the 2 lines above
-  // 2) Export 'data' from MapComponent.vue and print it here
-  // 3) Create markers on the map with 'data' variable
+  console.warn(nearbyClinicsQueryData)
 
-  // createMarker(place) <--- Use this
+  if (nearbyClinicsQueryData) { // TODO: Change later so that this variable is assigned when program is launched
+    // TODO:
+    // 1) Display clinic data on info windows
+
+    for (let i = 0; i < nearbyClinicsQueryData.length; i++) {
+      const currentClinic = nearbyClinicsQueryData[i]
+
+      const positionArray = currentClinic.position.split(',')
+      const referenceCoordinates = { lat: parseFloat(positionArray[0]), lng: parseFloat(positionArray[1]) }
+      createMarker2(referenceCoordinates)
+    }
+  }
 }
 
 function setNearbyClinicsQueryData(value) {
@@ -134,6 +181,7 @@ function setNearbyClinicsQueryData(value) {
 }
 
 // Specify conditions for query of markers
+/*
 function getNearbyRequest(centralMarkerCoordinates, selectedRadius) {
   return {
     location: centralMarkerCoordinates,
@@ -141,6 +189,7 @@ function getNearbyRequest(centralMarkerCoordinates, selectedRadius) {
     type: ['dentist']
   }
 }
+*/
 
 integrateAPIKey()
 
