@@ -19,9 +19,8 @@ async function initMap() {
     navigator.geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords
       userGlobalCoordinates = { lat: latitude, lng: longitude }
+      setTimeout(drawNearbyMap, 10)
     })
-
-    setTimeout(drawNearbyMap, 1000) // Account for the delay to assign/find 'userGlobalCoordinates' in the method above
   }
 }
 
