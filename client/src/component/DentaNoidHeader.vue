@@ -18,7 +18,7 @@
         </b-navbar-nav>
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
-          <b-nav-item v-if="!isLoggedIn" @click="signInSignOut()">Login</b-nav-item>
+          <b-nav-item v-if="!isLoggedIn" @click="navLogin">Login</b-nav-item>
           <b-nav-item v-if="!isLoggedIn" @click="signInSignOut()">Sign Up</b-nav-item>
           <b-nav-item v-if="isLoggedIn" @click="signInSignOut()">Sign out</b-nav-item>
         </b-navbar-nav>
@@ -44,6 +44,9 @@ export default {
         this.isLoggedIn = false
         localStorage.setItem('isLoggedIn', false)
       }
+    },
+    navLogin() {
+      this.$router.push('/authentication')
     }
   },
   created() {
