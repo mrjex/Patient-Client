@@ -132,6 +132,7 @@ function getReferencePosition() {
   return stringifiedCoordinates.lat + ',' + stringifiedCoordinates.lng
 }
 
+// Create visual markers of every clinic that was sent in the payload from Clinic Service
 function drawClinicMarkers() {
   console.warn(nearbyClinicsQueryData)
 
@@ -157,7 +158,7 @@ function setSelectedQueryMode(value) {
 }
 
 // Set the numerical value for the N-closest clinics
-function setQueryNumber(value) {
+function setFixedQueryNumber(value) {
   currentQueryNumber = value
 }
 
@@ -170,8 +171,7 @@ function setQueryNumber(value) {
  which is the 'main' script (the origin of the codeflow across all existing map-related scripts in
   this Patient Client component)
 */
-
-// IDEA: The function below sends general information to nearby-map.js
+// TODO: Rename this function
 function performGeneralQuery() { // General: Accounts for both types of queries and looks at user's input to decide what methods to execute
   console.warn('perform general query - in map-utils.js')
   const queryValue = (selectedQueryMode === 'radius') ? currentRadius : currentQueryNumber
@@ -185,5 +185,5 @@ integrateAPIKey()
 export {
   confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius,
   generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition, setNearbyClinicsQueryData,
-  selectedQueryMode, setSelectedQueryMode, performGeneralQuery, currentQueryNumber, setQueryNumber
+  selectedQueryMode, setSelectedQueryMode, performGeneralQuery, currentQueryNumber, setFixedQueryNumber
 }

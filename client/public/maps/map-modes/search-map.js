@@ -1,4 +1,4 @@
-import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius } from '../map-utils'
+import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius, performGeneralQuery } from '../map-utils'
 
 /* eslint-disable no-undef */
 let service
@@ -135,14 +135,6 @@ function readSearchBarElements() {
 // When user enters a search command in the search-prompt
 function onSearchLocation() {
   instantiateSearchAutoComplete()
-
-  autocomplete.addListener('place_changed', () => {
-    infowindowSearchReference.close()
-    searchedPlace = autocomplete.getPlace()
-
-    manageSearchResult()
-  })
-
   runSearchBarListeners()
 }
 
@@ -178,6 +170,7 @@ function manageSearchResult() {
     markerCoordinates = searchedPlace.geometry.location
     referenceMarkerCoordinates = { lat: searchedPlace.geometry.viewport.eb.lo, lng: searchedPlace.geometry.viewport.La.lo }
 
+    performGeneralQuery()
     directionsRendererSearch.setMap(searchMap)
 
     centerSearchedMarker()

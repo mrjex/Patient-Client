@@ -116,7 +116,7 @@ import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, direction
 import { initSearchMap } from '../../public/maps/map-modes/search-map.js'
 import {
   changeMapMode, currentMapMode, changeRadius, updateRadius, getReferencePosition, setNearbyClinicsQueryData,
-  selectedQueryMode, setSelectedQueryMode
+  setSelectedQueryMode, performGeneralQuery, setFixedQueryNumber
 } from '../../public/maps/map-utils.js'
 
 import { checkIfDropdownPressed, createHTMLScriptElement } from '../utils.js'
@@ -153,7 +153,7 @@ export default {
         this.previousRadius = this.currentRadius
 
         deselectClinicMarker()
-        this.performClinicQuery(`/maps/radius/${this.currentRadius}/positions/${getReferencePosition()}`)
+        this.performClinicQueryTest('radius', this.currentRadius)
       }
     },
     changeTravelMode() {
@@ -167,26 +167,18 @@ export default {
       if (checkIfDropdownPressed(this.currentNumberQuery, this.previousNumberQuery)) {
         this.previousNumberQuery = this.currentNumberQuery
         setSelectedQueryMode('number')
-        this.performClinicQuery(`/maps/number/${this.currentNumberQuery}/positions/${getReferencePosition()}`)
+        setFixedQueryNumber(this.currentNumberQuery)
+        this.performClinicQueryTest('number', this.currentNumberQuery)
       }
     },
     // ------------------------------------ IN DEVELOPMENT --------------------------------------------
 
-    async performClinicQuery(queryUrl) { // Sends specified query settings to Patient API
-      const { data } = await Api.get(queryUrl)
-      setNearbyClinicsQueryData(data)
-      this.updateMapUI()
-    },
     async performClinicQueryTest(queryMode, queryValue) { // queryMode = 'radius' or 'number'   queryValue = (fixed number) or (radius in km)
       const queryUrl = `/maps/${queryMode}/${queryValue}/positions/${getReferencePosition()}`
       console.warn(queryUrl)
       const { data } = await Api.get(queryUrl)
       setNearbyClinicsQueryData(data)
       this.updateMapUI()
-    },
-    performGeneralQuery() { // General: Accounts for both types of queries and looks at user's input to decide what methods to execute
-      const queryValue = (selectedQueryMode === 'radius') ? this.currentRadius : this.currentNumberQuery
-      this.performClinicQueryTest(selectedQueryMode, queryValue)
     },
 
     // ------------------------------------ IN DEVELOPMENT --------------------------------------------
@@ -210,7 +202,8 @@ export default {
     connectMap(mapType, initializeMapFunction) {
       this.updateMode(mapType)
       setTimeout(initializeMapFunction, 0)
-      this.performGeneralQuery()
+      performGeneralQuery()
+      // this.performGeneralQuery()
     },
     // Run 'nearby-map.js'
     initializeNearbyMap() {

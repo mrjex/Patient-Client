@@ -1,4 +1,4 @@
-import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius, performGeneralQuery } from '../map-utils.js' // performGeneralQuery
+import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius, performGeneralQuery } from '../map-utils.js'
 import MapComponent from '../../../src/components/MapComponent.vue'
 
 /* eslint-disable no-undef */
@@ -12,7 +12,6 @@ let directionsRenderer
 let selectedDentalClinicMarker = null
 
 let currentTravelMode = 'DRIVING'
-
 const defaultZoomLevel = 12
 
 async function initMap() {
@@ -22,7 +21,6 @@ async function initMap() {
       userGlobalCoordinates = { lat: latitude, lng: longitude }
 
       performGeneralQuery()
-      // setTimeout(drawNearbyMap, 10)
     })
   }
 }
@@ -88,8 +86,6 @@ function initiateMap(Map, AdvancedMarkerElement) {
   initiateDirectionsComponents()
 
   updateRadius(service, nearbyMap, userGlobalCoordinates, currentRadius)
-  // console.warn('G')
-  // MapComponent.methods.performClinicQueryTest('radius', '10000')
 }
 
 function initiateDirectionsComponents() {
