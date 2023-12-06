@@ -1,4 +1,4 @@
-import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius } from '../map-utils.js'
+import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius, performGeneralQuery } from '../map-utils.js' // performGeneralQuery
 import MapComponent from '../../../src/components/MapComponent.vue'
 
 /* eslint-disable no-undef */
@@ -20,7 +20,9 @@ async function initMap() {
     navigator.geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords
       userGlobalCoordinates = { lat: latitude, lng: longitude }
-      setTimeout(drawNearbyMap, 10)
+
+      performGeneralQuery()
+      // setTimeout(drawNearbyMap, 10)
     })
   }
 }
@@ -29,7 +31,6 @@ async function drawNearbyMap() {
   const { Map } = await google.maps.importLibrary('maps')
   const { AdvancedMarkerElement } = await google.maps.importLibrary('marker')
   initiateMap(Map, AdvancedMarkerElement)
-  // MapComponent.methods.performClinicQueryTest('radius', 10000)
 }
 
 function listenForMarkerClickNearbyMode(marker, clinic) {

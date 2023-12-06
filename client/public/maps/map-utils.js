@@ -10,10 +10,15 @@
 import { listenForMarkerClickNearbyMode, nearbyMap, userGlobalCoordinates } from './map-modes/nearby-map'
 import { listenForMarkerClickSearchMode, searchMap, drawSearchMap, referenceMarkerCoordinates } from './map-modes/search-map'
 
-let currentMapMode = 'NEARBY'
-let currentRadius = 10000
-let nearbyClinicsQueryData // TODO: Rename to 'clinicsToDisplayData'
+import MapComponent from '../../src/components/MapComponent.vue'
 
+let currentMapMode = 'NEARBY'
+
+// Two types of clinic quries:
+let currentRadius = 10000 // radius query
+let currentQueryNumber // fixed number query
+
+let nearbyClinicsQueryData // TODO: Rename to 'clinicsToDisplayData'
 let selectedQueryMode = 'radius' // Possible values: 'radius' and 'number'
 
 /*
@@ -146,14 +151,39 @@ function setNearbyClinicsQueryData(value) {
   nearbyClinicsQueryData = value
 }
 
+// Potential values: 'radius' or 'number'
 function setSelectedQueryMode(value) {
   selectedQueryMode = value
 }
+
+// Set the numerical value for the N-closest clinics
+function setQueryNumber(value) {
+  currentQueryNumber = value
+}
+
+// ----------   REFACTOR FROM MapComponent.vue   --------------
+
+/*
+ Note for developers: The data{} variables in MapComponent.vue cannot be read before the scripts
+ initiates the map at the start of the application. Therefore, we use the function below to read
+ the variables that constitute the query-settings to be performed in Clinic Service in this script,
+ which is the 'main' script (the origin of the codeflow across all existing map-related scripts in
+  this Patient Client component)
+*/
+
+// IDEA: The function below sends general information to nearby-map.js
+function performGeneralQuery() { // General: Accounts for both types of queries and looks at user's input to decide what methods to execute
+  console.warn('perform general query - in map-utils.js')
+  const queryValue = (selectedQueryMode === 'radius') ? currentRadius : currentQueryNumber
+  MapComponent.methods.performClinicQueryTest(selectedQueryMode, queryValue)
+}
+
+// -------------------------------------------------------
 
 integrateAPIKey()
 
 export {
   confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius,
   generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition, setNearbyClinicsQueryData,
-  selectedQueryMode, setSelectedQueryMode
+  selectedQueryMode, setSelectedQueryMode, performGeneralQuery, currentQueryNumber, setQueryNumber
 }

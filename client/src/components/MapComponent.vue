@@ -118,7 +118,6 @@ import {
   changeMapMode, currentMapMode, changeRadius, updateRadius, getReferencePosition, setNearbyClinicsQueryData,
   selectedQueryMode, setSelectedQueryMode
 } from '../../public/maps/map-utils.js'
-// drawClinicMarkers
 
 import { checkIfDropdownPressed, createHTMLScriptElement } from '../utils.js'
 import { Api } from '../Api.js'
@@ -140,6 +139,9 @@ export default {
   created() {
     this.initializePlaceAPI()
     this.initializeNearbyMap()
+
+    console.warn('created()')
+    console.warn(this.currentRadius)
   },
   methods: {
     async changeSearchRange() {
