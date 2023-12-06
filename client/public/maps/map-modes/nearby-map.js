@@ -29,10 +29,10 @@ async function drawNearbyMap() {
   const { Map } = await google.maps.importLibrary('maps')
   const { AdvancedMarkerElement } = await google.maps.importLibrary('marker')
   initiateMap(Map, AdvancedMarkerElement)
-  MapComponent.methods.performClinicQueryTest('radius', 10000)
+  // MapComponent.methods.performClinicQueryTest('radius', 10000)
 }
 
-function listenForMarkerClickNearbyMode(marker, clinic) { // PREVIOUS: (marker, place)
+function listenForMarkerClickNearbyMode(marker, clinic) {
   google.maps.event.addListener(marker, 'click', function () {
     selectedDentalClinicMarker = marker.position
 

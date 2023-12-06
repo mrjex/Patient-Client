@@ -12,7 +12,9 @@ import { listenForMarkerClickSearchMode, searchMap, drawSearchMap, referenceMark
 
 let currentMapMode = 'NEARBY'
 let currentRadius = 10000
-let nearbyClinicsQueryData
+let nearbyClinicsQueryData // TODO: Rename to 'clinicsToDisplayData'
+
+let selectedQueryMode = 'radius' // Possible values: 'radius' and 'number'
 
 /*
   Define pages to integrate MapComponent with.
@@ -139,14 +141,19 @@ function drawClinicMarkers() {
   }
 }
 
+// Store the data (clinics to display on map) retrieved in MapComponent.vue from Clinic Service
 function setNearbyClinicsQueryData(value) {
   nearbyClinicsQueryData = value
-  console.warn(nearbyClinicsQueryData)
+}
+
+function setSelectedQueryMode(value) {
+  selectedQueryMode = value
 }
 
 integrateAPIKey()
 
 export {
   confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius,
-  generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition, setNearbyClinicsQueryData
+  generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition, setNearbyClinicsQueryData,
+  selectedQueryMode, setSelectedQueryMode
 }
