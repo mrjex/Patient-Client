@@ -162,8 +162,6 @@ function setFixedQueryNumber(value) {
   currentQueryNumber = value
 }
 
-// ----------   REFACTOR FROM MapComponent.vue   --------------
-
 /*
  Note for developers: The data{} variables in MapComponent.vue cannot be read before the scripts
  initiates the map at the start of the application. Therefore, we use the function below to read
@@ -171,19 +169,15 @@ function setFixedQueryNumber(value) {
  which is the 'main' script (the origin of the codeflow across all existing map-related scripts in
   this Patient Client component)
 */
-// TODO: Rename this function
-function performGeneralQuery() { // General: Accounts for both types of queries and looks at user's input to decide what methods to execute
-  console.warn('perform general query - in map-utils.js')
+function manageNearbyQueryRequest() { // Accounts for both types of queries (radius and N-closest clinics) and looks at user's input to decide what methods to execute
   const queryValue = (selectedQueryMode === 'radius') ? currentRadius : currentQueryNumber
-  MapComponent.methods.performClinicQueryTest(selectedQueryMode, queryValue)
+  MapComponent.methods.sendNearbyQueryRequest(selectedQueryMode, queryValue)
 }
-
-// -------------------------------------------------------
 
 integrateAPIKey()
 
 export {
   confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius,
   generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition, setNearbyClinicsQueryData,
-  selectedQueryMode, setSelectedQueryMode, performGeneralQuery, currentQueryNumber, setFixedQueryNumber
+  selectedQueryMode, setSelectedQueryMode, manageNearbyQueryRequest, currentQueryNumber, setFixedQueryNumber
 }

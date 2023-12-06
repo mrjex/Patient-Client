@@ -1,4 +1,4 @@
-import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius, performGeneralQuery } from '../map-utils'
+import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius, manageNearbyQueryRequest } from '../map-utils'
 
 /* eslint-disable no-undef */
 let service
@@ -170,7 +170,7 @@ function manageSearchResult() {
     markerCoordinates = searchedPlace.geometry.location
     referenceMarkerCoordinates = { lat: searchedPlace.geometry.viewport.eb.lo, lng: searchedPlace.geometry.viewport.La.lo }
 
-    performGeneralQuery()
+    manageNearbyQueryRequest()
     directionsRendererSearch.setMap(searchMap)
 
     centerSearchedMarker()

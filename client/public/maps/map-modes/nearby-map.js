@@ -1,4 +1,4 @@
-import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius, performGeneralQuery } from '../map-utils.js'
+import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius, manageNearbyQueryRequest } from '../map-utils.js'
 import MapComponent from '../../../src/components/MapComponent.vue'
 
 /* eslint-disable no-undef */
@@ -20,7 +20,7 @@ async function initMap() {
       const { latitude, longitude } = position.coords
       userGlobalCoordinates = { lat: latitude, lng: longitude }
 
-      performGeneralQuery()
+      manageNearbyQueryRequest() // Once the application is started, we send a request to query Clinic Service's database to retrieve the clinic-markers to display on the map
     })
   }
 }
