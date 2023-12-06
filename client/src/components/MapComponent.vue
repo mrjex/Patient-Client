@@ -113,8 +113,8 @@
 <script>
 
 import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawNearbyMap, initMap, changeTravelMode, deselectClinicMarker } from '../../public/maps/map-modes/nearby-map.js'
-import { initSearchMap, service, searchMap, markerCoordinates } from '../../public/maps/map-modes/search-map.js'
-import { changeMapMode, currentMapMode, changeRadius, updateRadius, currentRadius, getReferencePosition, setNearbyClinicsQueryData } from '../../public/maps/map-utils.js'
+import { initSearchMap } from '../../public/maps/map-modes/search-map.js'
+import { changeMapMode, currentMapMode, changeRadius, updateRadius, getReferencePosition, setNearbyClinicsQueryData, drawClinicMarkers } from '../../public/maps/map-utils.js'
 import { checkIfDropdownPressed, createHTMLScriptElement } from '../utils.js'
 import { Api } from '../Api.js'
 
@@ -160,6 +160,14 @@ export default {
         this.performClinicQuery(`/maps/number/${this.currentNumberQuery}/positions/${getReferencePosition()}`)
       }
     },
+    async performClinicQueryTest(queryMode, queryValue) { // queryMode = 'radius' or 'number'   queryValue = (fixed number) or (radius in km)
+      const queryUrl = `/maps/${queryMode}/${queryValue}/positions/${getReferencePosition()}`
+      console.warn(queryUrl)
+      const { data } = await Api.get(queryUrl)
+      setNearbyClinicsQueryData(data)
+      drawClinicMarkers()
+      // this.updateMapUI()
+    },
     async performClinicQuery(queryUrl) { // Sends specified query settings to Patient API
       const { data } = await Api.get(queryUrl)
       setNearbyClinicsQueryData(data)
@@ -169,18 +177,17 @@ export default {
       if (currentMapMode === 'NEARBY') {
         drawNearbyMap()
       } else {
-        updateRadius(service, searchMap, markerCoordinates, currentRadius)
+        updateRadius()
       }
     },
     nearbyMode() {
       this.updateMode('NEARBY')
       initMap()
-      // this.performClinicQuery(`/maps/radius/${this.currentRadius}/positions/${getReferencePosition()}`)
+      // this.performClinicQueryTest('radius', '10000') // WORKS
     },
     searchMode() {
       this.updateMode('SEARCH')
       setTimeout(initSearchMap, 0)
-      // this.performClinicQuery(`/maps/radius/${this.currentRadius}/positions/${getReferencePosition()}`)
     },
     updateMode(newMode) {
       this.selectedMode = newMode

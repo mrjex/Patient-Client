@@ -29,6 +29,7 @@ async function drawNearbyMap() {
   const { Map } = await google.maps.importLibrary('maps')
   const { AdvancedMarkerElement } = await google.maps.importLibrary('marker')
   initiateMap(Map, AdvancedMarkerElement)
+  MapComponent.methods.performClinicQueryTest('radius', 10000)
 }
 
 function listenForMarkerClickNearbyMode(marker, clinic) { // PREVIOUS: (marker, place)
@@ -86,6 +87,8 @@ function initiateMap(Map, AdvancedMarkerElement) {
   initiateDirectionsComponents()
 
   updateRadius(service, nearbyMap, userGlobalCoordinates, currentRadius)
+  // console.warn('G')
+  // MapComponent.methods.performClinicQueryTest('radius', '10000')
 }
 
 function initiateDirectionsComponents() {

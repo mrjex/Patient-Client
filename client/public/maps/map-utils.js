@@ -49,32 +49,17 @@ function changeRadius(newRadius) {
   currentRadius = newRadius
 }
 
-function callbackUtils(results, status) {
-  if (status === google.maps.places.PlacesServiceStatus.OK) {
-    for (let i = 0; i < results.length; i++) {
-      createMarker(results[i])
-    }
-  }
-}
+function createMarker(referenceCoordinates, clinic) {
+  const marker = initializeMarker(referenceCoordinates)
 
-// ---------------------------------------------------------------
-
-// NEW FUNCTIONS (In development)
-
-function createMarker2(referenceCoordinates, clinic) { // TODO: Replace this method
-  const marker = initializeMarker2(referenceCoordinates)
-
-  // TODO: Uncomment this and replace 'place' with 'referenceCoordinates'
   if (currentMapMode === 'NEARBY') {
-    // listenForMarkerClickNearbyMode(marker, place) // Previous - WORKS
     listenForMarkerClickNearbyMode(marker, clinic)
   } else {
-    // listenForMarkerClickSearchMode(marker, place) // Previous - WORKS
     listenForMarkerClickSearchMode(marker, clinic)
   }
 }
 
-function initializeMarker2(referenceCoordinates) {
+function initializeMarker(referenceCoordinates) {
   if (currentMapMode === 'NEARBY') {
     return new google.maps.Marker({
       map: nearbyMap,
@@ -87,43 +72,14 @@ function initializeMarker2(referenceCoordinates) {
     })
   }
 }
-
-// ---------------------------------------------------------------
-
-// FUNCTIONS THAT WILL BE REPLACED
-
-function createMarker(place) { // TODO: Replace this method
-  const marker = initializeMarker(place)
-
-  if (currentMapMode === 'NEARBY') {
-    listenForMarkerClickNearbyMode(marker, place)
-  } else {
-    listenForMarkerClickSearchMode(marker, place)
-  }
-}
-
-function initializeMarker(place) { // TODO: Replace this method
-  if (currentMapMode === 'NEARBY') {
-    return new google.maps.Marker({
-      map: nearbyMap,
-      position: place.geometry.location
-    })
-  } else {
-    return new google.maps.Marker({
-      map: searchMap,
-      position: place.geometry.location
-    })
-  }
-}
-
-// ---------------------------------------------------------------
 
 // Display the related information about the clicked dental clinic marker in a window positioned at the selected dental clinic marker
-function generateInfoWindowUtils(clinic, marker, map) { // PREVIOUS: (place, marker)
+function generateInfoWindowUtils(clinic, marker, map) {
   // const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
   const selectedDentistInfowindow = new google.maps.InfoWindow()
 
   /*
+  PREVIOUS:
   selectedDentistInfowindow.setContent(
         `<strong class="header">${place.name}</strong>
         <p>
@@ -152,16 +108,16 @@ function generateInfoWindowUtils(clinic, marker, map) { // PREVIOUS: (place, mar
     }
     </style>`
   )
-  selectedDentistInfowindow.open(map, marker) // searchMap? do if-statement with 'currentMapMode' if error
+  selectedDentistInfowindow.open(map, marker)
 }
 
 // Update radius to query dental clinics in relative to a fixed position (user's pos or search-reference pos)
-function updateRadius(service, map, centralMarkerCoordinates, currentRadius) {
+function updateRadius() {
   if (currentMapMode === 'SEARCH') {
     drawSearchMap()
   }
 
-  performNearbyQuery(service, map, centralMarkerCoordinates, currentRadius)
+  drawClinicMarkers()
 }
 
 function getReferencePosition() {
@@ -169,47 +125,28 @@ function getReferencePosition() {
   return stringifiedCoordinates.lat + ',' + stringifiedCoordinates.lng
 }
 
-function performNearbyQuery(service, map, centralMarkerCoordinates, selectedRadius) {
-  /*
-  // WORKS:
-  service = new google.maps.places.PlacesService(map)
-  service.nearbySearch(getNearbyRequest(centralMarkerCoordinates, selectedRadius), callbackUtils)
-  */
-
+function drawClinicMarkers() {
   console.warn(nearbyClinicsQueryData)
 
-  if (nearbyClinicsQueryData) { // TODO: Change later so that this variable is assigned when program is launched
-    // TODO:
-    // 1) Display clinic data on info windows
-
+  if (nearbyClinicsQueryData) {
     for (let i = 0; i < nearbyClinicsQueryData.length; i++) {
       const currentClinic = nearbyClinicsQueryData[i]
 
       const positionArray = currentClinic.position.split(',')
       const referenceCoordinates = { lat: parseFloat(positionArray[0]), lng: parseFloat(positionArray[1]) }
-      createMarker2(referenceCoordinates, currentClinic)
+      createMarker(referenceCoordinates, currentClinic)
     }
   }
 }
 
 function setNearbyClinicsQueryData(value) {
   nearbyClinicsQueryData = value
+  console.warn(nearbyClinicsQueryData)
 }
-
-// Specify conditions for query of markers
-/*
-function getNearbyRequest(centralMarkerCoordinates, selectedRadius) {
-  return {
-    location: centralMarkerCoordinates,
-    radius: selectedRadius,
-    type: ['dentist']
-  }
-}
-*/
 
 integrateAPIKey()
 
 export {
   confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius,
-  callbackUtils, generateInfoWindowUtils, performNearbyQuery, updateRadius, initializeMarker, getReferencePosition, setNearbyClinicsQueryData
+  generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition, setNearbyClinicsQueryData
 }
