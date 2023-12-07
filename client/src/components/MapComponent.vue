@@ -111,6 +111,7 @@
 
 <script>
 
+// Import necessary data from the map scripts (map-utils.js, nearby-map.js and search-map.js)
 import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawNearbyMap, initMap, changeTravelMode, deselectClinicMarker } from '../../public/maps/map-modes/nearby-map.js'
 import { initSearchMap } from '../../public/maps/map-modes/search-map.js'
 import {
@@ -118,6 +119,7 @@ import {
   setSelectedQueryMode, manageNearbyQueryRequest, setFixedQueryNumber
 } from '../../public/maps/map-utils.js'
 
+// Import necessary data from other scripts that are not related to the map functionalities
 import { checkIfDropdownPressed, createHTMLScriptElement } from '../utils.js'
 import { Api } from '../Api.js'
 
@@ -125,13 +127,24 @@ export default {
   name: 'MapPage',
   data() {
     return {
-      currentRadius: 10000,
-      previousRadius: 10000,
+      /*
+       'CURRENT' variables:
+       These variables stores the current state of the application.
+       Many of these are synchronized with variables in map-utils.js.
+      */
       currentTravelMode: 'DRIVING',
-      previousTravelMode: '',
+      currentRadius: 10000,
       selectedMode: 'NEARBY', // This varible is needed to register current mode in thr HTML above, when 'currentMapMode' from map-utils.js cannot be read at instantiation of app
       selectedNearbyQuery: 'Radius',
       currentNumberQuery: '5',
+
+      /*
+      'PREVIOUS' variables:
+       These variables are needed to make sure that the user's
+       interaction with the dropdowns are satisfying.
+      */
+      previousTravelMode: '',
+      previousRadius: 10000,
       previousNumberQuery: '5'
     }
   },
@@ -175,8 +188,8 @@ export default {
     */
     async sendNearbyQueryRequest(queryMode, queryValue) { // Sends the query-request to Patient API
       const queryUrl = `/maps/${queryMode}/${queryValue}/positions/${getReferencePosition()}`
-      console.warn(queryUrl)
       const { data } = await Api.get(queryUrl)
+
       setNearbyClinicsQueryData(data)
       this.updateMapUI()
     },
@@ -205,7 +218,7 @@ export default {
     },
     // Run 'nearby-map.js'
     initializeNearbyMap() {
-      createHTMLScriptElement('../../public/maps/map-modes/nearby-map.js', false)
+      createHTMLScriptElement(this.getPathToMapModeScript('nearby-map.js'), false)
     },
 
     /*
@@ -214,13 +227,16 @@ export default {
     'currentMapMode' in map-utils.js to 'SEARCH'
     */
     initializeSearchMap() { // Run 'search-map.js'
-      createHTMLScriptElement('../../public/maps/map-modes/search-map.js', false)
+      createHTMLScriptElement(this.getPathToMapModeScript('search-map.js'), false)
     },
     initializePlaceAPI() {
       createHTMLScriptElement('https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&libraries=places&callback=initMap', true)
     },
     sendTravelPathNotFoundNotification() {
       console.warn('Issue Toast Notification: Google API could not generate route to desired destination')
+    },
+    getPathToMapModeScript(mapScript) { // The path from this component to the desired map-mode script (nearby-map.js or searchmap.js)
+      return `../../public/maps/map-modes/${mapScript}`
     }
   }
 }
