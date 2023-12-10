@@ -7,11 +7,19 @@
 // This script is the generalization of 'map.js' and 'search-map.js' and is executed at initialization of both scripts
 /* eslint-disable no-undef */
 
-import { listenForMarkerClickNearbyMode, nearbyMap } from './map-modes/nearby-map'
-import { listenForMarkerClickSearchMode, searchMap, drawSearchMap } from './map-modes/search-map'
+import { listenForMarkerClickNearbyMode, nearbyMap, userGlobalCoordinates } from './map-modes/nearby-map'
+import { listenForMarkerClickSearchMode, searchMap, drawSearchMap, referenceMarkerCoordinates } from './map-modes/search-map'
 
-let currentMapMode = 'NEARBY'
-let currentRadius = 10000
+import MapComponent from '../../src/components/MapComponent.vue'
+
+let currentMapMode = 'Nearby'
+
+// Two types of clinic quries:
+let currentRadius = 10000 // radius query
+let currentQueryNumber // fixed number query
+
+let nearbyClinicsQueryData // TODO: Rename to 'clinicsToDisplayData'
+let selectedQueryMode = 'radius' // Possible values: 'radius' and 'number'
 
 /*
   Define pages to integrate MapComponent with.
@@ -48,43 +56,37 @@ function changeRadius(newRadius) {
   currentRadius = newRadius
 }
 
-function callbackUtils(results, status) {
-  if (status === google.maps.places.PlacesServiceStatus.OK) {
-    for (let i = 0; i < results.length; i++) {
-      createMarker(results[i])
-    }
-  }
-}
+function createMarker(referenceCoordinates, clinic) {
+  const marker = initializeMarker(referenceCoordinates)
 
-function createMarker(place) {
-  const marker = initializeMarker(place)
-
-  if (currentMapMode === 'NEARBY') {
-    listenForMarkerClickNearbyMode(marker, place)
+  if (currentMapMode === 'Nearby') {
+    listenForMarkerClickNearbyMode(marker, clinic)
   } else {
-    listenForMarkerClickSearchMode(marker, place)
+    listenForMarkerClickSearchMode(marker, clinic)
   }
 }
 
-function initializeMarker(place) {
-  if (currentMapMode === 'NEARBY') {
+function initializeMarker(referenceCoordinates) {
+  if (currentMapMode === 'Nearby') {
     return new google.maps.Marker({
       map: nearbyMap,
-      position: place.geometry.location
+      position: referenceCoordinates
     })
   } else {
     return new google.maps.Marker({
       map: searchMap,
-      position: place.geometry.location
+      position: referenceCoordinates
     })
   }
 }
 
 // Display the related information about the clicked dental clinic marker in a window positioned at the selected dental clinic marker
-function generateInfoWindowUtils(place, marker) {
-  const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
+function generateInfoWindowUtils(clinic, marker, map) {
+  // const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
   const selectedDentistInfowindow = new google.maps.InfoWindow()
 
+  /*
+  PREVIOUS:
   selectedDentistInfowindow.setContent(
         `<strong class="header">${place.name}</strong>
         <p>
@@ -97,32 +99,85 @@ function generateInfoWindowUtils(place, marker) {
         }
         </style>`
   )
-  selectedDentistInfowindow.open(searchMap, marker)
+  */
+
+  selectedDentistInfowindow.setContent(
+    `<strong class="header">${clinic.clinic_name}</strong>
+    <p>
+    Adress: Adress here <br>
+    Rating here <br>
+    Employees: <br>
+    ${clinic.employees}
+    </p>
+    <style>
+    .header {
+      font-weight: 1000
+    }
+    </style>`
+  )
+  selectedDentistInfowindow.open(map, marker)
 }
 
 // Update radius to query dental clinics in relative to a fixed position (user's pos or search-reference pos)
-function updateRadius(service, map, centralMarkerCoordinates, currentRadius) {
-  if (currentMapMode === 'SEARCH') {
+function updateRadius() {
+  if (currentMapMode === 'Search') {
     drawSearchMap()
   }
 
-  performNearbyQuery(service, map, centralMarkerCoordinates, currentRadius)
+  drawClinicMarkers()
 }
 
-function performNearbyQuery(service, map, centralMarkerCoordinates, selectedRadius) {
-  service = new google.maps.places.PlacesService(map)
-  service.nearbySearch(getNearbyRequest(centralMarkerCoordinates, selectedRadius), callbackUtils)
+function getReferencePosition() {
+  const stringifiedCoordinates = (currentMapMode === 'Nearby') ? userGlobalCoordinates : referenceMarkerCoordinates
+  return stringifiedCoordinates.lat + ',' + stringifiedCoordinates.lng
 }
 
-// Specify conditions for query of markers
-function getNearbyRequest(centralMarkerCoordinates, selectedRadius) {
-  return {
-    location: centralMarkerCoordinates,
-    radius: selectedRadius,
-    type: ['dentist']
+// Create visual markers of every clinic that was sent in the payload from Clinic Service
+function drawClinicMarkers() {
+  console.warn(nearbyClinicsQueryData)
+
+  if (nearbyClinicsQueryData) {
+    for (let i = 0; i < nearbyClinicsQueryData.length; i++) {
+      const currentClinic = nearbyClinicsQueryData[i]
+
+      const positionArray = currentClinic.position.split(',')
+      const referenceCoordinates = { lat: parseFloat(positionArray[0]), lng: parseFloat(positionArray[1]) }
+      createMarker(referenceCoordinates, currentClinic)
+    }
   }
+}
+
+// Store the data (clinics to display on map) retrieved in MapComponent.vue from Clinic Service
+function setNearbyClinicsQueryData(value) {
+  nearbyClinicsQueryData = value
+}
+
+// Potential values: 'radius' or 'number'
+function setSelectedQueryMode(value) {
+  selectedQueryMode = value
+}
+
+// Set the numerical value for the N-closest clinics
+function setFixedQueryNumber(value) {
+  currentQueryNumber = value
+}
+
+/*
+ Note for developers: The data{} variables in MapComponent.vue cannot be read before the scripts
+ initiates the map at the start of the application. Therefore, we use the function below to read
+ the variables that constitute the query-settings to be performed in Clinic Service in this script,
+ which is the 'main' script (the origin of the codeflow across all existing map-related scripts in
+  this Patient Client component)
+*/
+function manageNearbyQueryRequest() { // Accounts for both types of queries (radius and N-closest clinics) and looks at user's input to decide what methods to execute
+  const queryValue = (selectedQueryMode === 'radius') ? currentRadius : currentQueryNumber
+  MapComponent.methods.sendNearbyQueryRequest(selectedQueryMode, queryValue)
 }
 
 integrateAPIKey()
 
-export { confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, callbackUtils, generateInfoWindowUtils, performNearbyQuery, updateRadius, initializeMarker }
+export {
+  confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius,
+  generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition, setNearbyClinicsQueryData,
+  selectedQueryMode, setSelectedQueryMode, manageNearbyQueryRequest, currentQueryNumber, setFixedQueryNumber
+}
