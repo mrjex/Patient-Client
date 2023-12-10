@@ -33,7 +33,7 @@ let strictBoundsInputElement
 const defaultZoomLevel = 17
 
 function initSearchMap() {
-  if (confirmExecutionConditions('SEARCH')) {
+  if (confirmExecutionConditions('Search')) {
     drawSearchMap()
 
     readSearchBarElements()
@@ -147,7 +147,6 @@ function runSearchInputListener() {
   autocomplete.addListener('place_changed', () => {
     infowindowSearchReference.close()
     searchedPlace = autocomplete.getPlace()
-
     manageSearchResult()
   })
 }

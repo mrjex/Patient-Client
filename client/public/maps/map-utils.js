@@ -12,7 +12,7 @@ import { listenForMarkerClickSearchMode, searchMap, drawSearchMap, referenceMark
 
 import MapComponent from '../../src/components/MapComponent.vue'
 
-let currentMapMode = 'NEARBY'
+let currentMapMode = 'Nearby'
 
 // Two types of clinic quries:
 let currentRadius = 10000 // radius query
@@ -59,7 +59,7 @@ function changeRadius(newRadius) {
 function createMarker(referenceCoordinates, clinic) {
   const marker = initializeMarker(referenceCoordinates)
 
-  if (currentMapMode === 'NEARBY') {
+  if (currentMapMode === 'Nearby') {
     listenForMarkerClickNearbyMode(marker, clinic)
   } else {
     listenForMarkerClickSearchMode(marker, clinic)
@@ -67,7 +67,7 @@ function createMarker(referenceCoordinates, clinic) {
 }
 
 function initializeMarker(referenceCoordinates) {
-  if (currentMapMode === 'NEARBY') {
+  if (currentMapMode === 'Nearby') {
     return new google.maps.Marker({
       map: nearbyMap,
       position: referenceCoordinates
@@ -120,7 +120,7 @@ function generateInfoWindowUtils(clinic, marker, map) {
 
 // Update radius to query dental clinics in relative to a fixed position (user's pos or search-reference pos)
 function updateRadius() {
-  if (currentMapMode === 'SEARCH') {
+  if (currentMapMode === 'Search') {
     drawSearchMap()
   }
 
@@ -128,7 +128,7 @@ function updateRadius() {
 }
 
 function getReferencePosition() {
-  const stringifiedCoordinates = (currentMapMode === 'NEARBY') ? userGlobalCoordinates : referenceMarkerCoordinates
+  const stringifiedCoordinates = (currentMapMode === 'Nearby') ? userGlobalCoordinates : referenceMarkerCoordinates
   return stringifiedCoordinates.lat + ',' + stringifiedCoordinates.lng
 }
 

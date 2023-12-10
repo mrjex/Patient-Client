@@ -11,11 +11,11 @@ let directionsService
 let directionsRenderer
 let selectedDentalClinicMarker = null
 
-let currentTravelMode = 'DRIVING'
+let currentTravelMode = 'Driving'
 const defaultZoomLevel = 12
 
 async function initMap() {
-  if (confirmExecutionConditions('NEARBY')) {
+  if (confirmExecutionConditions('Nearby')) {
     navigator.geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords
       userGlobalCoordinates = { lat: latitude, lng: longitude }
@@ -45,7 +45,7 @@ function calcRoute(userGlobalCoordinates, dentistDestination, directionsService,
     const request = {
       origin: userGlobalCoordinates,
       destination: dentistDestination,
-      travelMode: google.maps.TravelMode[currentTravelMode]
+      travelMode: google.maps.TravelMode[currentTravelMode.toUpperCase()]
     }
     directionsService.route(request, function (response, status) {
       if (status === 'OK') {
