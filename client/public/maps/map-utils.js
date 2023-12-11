@@ -8,7 +8,7 @@
 /* eslint-disable no-undef */
 
 import { listenForMarkerClickNearbyMode, nearbyMap, userGlobalCoordinates } from './map-modes/nearby-map'
-import { listenForMarkerClickSearchMode, searchMap, drawSearchMap, referenceMarkerCoordinates } from './map-modes/search-map'
+import { listenForMarkerClickSearchMode, searchMap, drawSearchMap, markerCoordinates } from './map-modes/search-map'
 
 import MapComponent from '../../src/components/MapComponent.vue'
 
@@ -20,6 +20,9 @@ let currentQueryNumber // fixed number query
 
 let nearbyClinicsQueryData // TODO: Rename to 'clinicsToDisplayData'
 let selectedQueryMode = 'radius' // Possible values: 'radius' and 'number'
+let selectedDentistInfowindow
+
+const defaultZoomLevel = 12
 
 /*
   Define pages to integrate MapComponent with.
@@ -56,6 +59,12 @@ function changeRadius(newRadius) {
   currentRadius = newRadius
 }
 
+// Restore most recent zoom level every time the map is loaded
+function getZoomLevel() {
+  const map = currentMapMode === 'Nearby' ? nearbyMap : searchMap
+  return map === -1 ? defaultZoomLevel : map.zoom
+}
+
 function createMarker(referenceCoordinates, clinic) {
   const marker = initializeMarker(referenceCoordinates)
 
@@ -82,11 +91,16 @@ function initializeMarker(referenceCoordinates) {
 
 // Display the related information about the clicked dental clinic marker in a window positioned at the selected dental clinic marker
 function generateInfoWindowUtils(clinic, marker, map) {
-  // const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
-  const selectedDentistInfowindow = new google.maps.InfoWindow()
+  // If any infowindow is currently open, then close it before the newly clicked clinic's infowindow pops up
+  if (selectedDentistInfowindow) {
+    selectedDentistInfowindow.close()
+  }
+
+  selectedDentistInfowindow = new google.maps.InfoWindow()
 
   /*
   PREVIOUS:
+  // const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
   selectedDentistInfowindow.setContent(
         `<strong class="header">${place.name}</strong>
         <p>
@@ -128,7 +142,8 @@ function updateRadius() {
 }
 
 function getReferencePosition() {
-  const stringifiedCoordinates = (currentMapMode === 'Nearby') ? userGlobalCoordinates : referenceMarkerCoordinates
+  // const stringifiedCoordinates = (currentMapMode === 'Nearby') ? userGlobalCoordinates : referenceMarkerCoordinates
+  const stringifiedCoordinates = (currentMapMode === 'Nearby') ? userGlobalCoordinates : markerCoordinates
   return stringifiedCoordinates.lat + ',' + stringifiedCoordinates.lng
 }
 
@@ -137,7 +152,6 @@ function drawClinicMarkers() {
   // eslint-disable-next-line no-eval
   const clinicsDataResponse = eval(nearbyClinicsQueryData.clinics)
   console.warn(clinicsDataResponse)
-  console.warn(clinicsDataResponse.length)
 
   if (clinicsDataResponse) {
     for (let i = 0; i < clinicsDataResponse.length; i++) {
@@ -180,7 +194,8 @@ function manageNearbyQueryRequest() { // Accounts for both types of queries (rad
 integrateAPIKey()
 
 export {
-  confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius,
+  confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, getZoomLevel,
   generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition, setNearbyClinicsQueryData,
-  selectedQueryMode, setSelectedQueryMode, manageNearbyQueryRequest, currentQueryNumber, setFixedQueryNumber
+  selectedQueryMode, setSelectedQueryMode, manageNearbyQueryRequest, currentQueryNumber, setFixedQueryNumber,
+  defaultZoomLevel
 }

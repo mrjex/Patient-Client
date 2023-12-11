@@ -85,8 +85,13 @@
 <script>
 
 // Import necessary data from the map scripts (map-utils.js, nearby-map.js and search-map.js)
-import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawNearbyMap, initMap, changeTravelMode, deselectClinicMarker } from '../../public/maps/map-modes/nearby-map.js'
+import {
+  calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer,
+  drawNearbyMap, initMap, changeTravelMode, deselectClinicMarker
+} from '../../public/maps/map-modes/nearby-map.js'
+
 import { initSearchMap } from '../../public/maps/map-modes/search-map.js'
+
 import {
   changeMapMode, currentMapMode, changeRadius, updateRadius, getReferencePosition, setNearbyClinicsQueryData,
   setSelectedQueryMode, manageNearbyQueryRequest, setFixedQueryNumber

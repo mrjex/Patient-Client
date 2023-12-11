@@ -1,4 +1,4 @@
-import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius, manageNearbyQueryRequest } from '../map-utils.js'
+import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius, manageNearbyQueryRequest, getZoomLevel } from '../map-utils.js'
 import MapComponent from '../../../src/components/MapComponent.vue'
 
 /* eslint-disable no-undef */
@@ -12,7 +12,6 @@ let directionsRenderer
 let selectedDentalClinicMarker = null
 
 let currentTravelMode = 'Driving'
-const defaultZoomLevel = 12
 
 async function initMap() {
   if (confirmExecutionConditions('Nearby')) {
@@ -69,10 +68,6 @@ function createUserPositionMarker(AdvancedMarkerElement) {
     title: 'Your Position'
   })
   console.log(marker)
-}
-
-function getZoomLevel() {
-  return nearbyMap === -1 ? defaultZoomLevel : nearbyMap.zoom
 }
 
 function initiateMap(Map, AdvancedMarkerElement) {
