@@ -4,7 +4,7 @@
             <b-button block v-b-toggle="accordionID" variant="info">
                 {{ formatStartTime }} - {{ formatEndTime }}
             </b-button>
-            <b-collapse :id="accordionID" visible accordion="timeslot-accordion" role="tabpanel">
+            <b-collapse :id="accordionID" :visible="false" accordion="timeslot-accordion" role="tabpanel">
                 <b-card-body>
 
                     <b-card-text><strong>Dentist:</strong> Place Holderson</b-card-text>
@@ -30,23 +30,23 @@ import dateFormat, { masks } from 'dateformat'
 export default {
   name: 'timeslotCard',
   props: {
-    timeslot: {
+    availableTime: {
       type: Object,
       required: true
     }
   },
   computed: {
     accordionID() {
-      return 'accordion' + this.timeslot.ID
+      return 'accordion' + this.availableTime._id
     },
     createBookingModalID() {
-      return 'modalBooking' + this.timeslot.ID
+      return 'modalBooking' + this.availableTime._id
     },
     formatStartTime() {
-      return dateFormat(this.timeslot.Start_time, 'dddd, mmmm dS, h:MM TT')
+      return dateFormat(this.availableTime.Start_time, 'dddd, mmmm dS, h:MM TT')
     },
     formatEndTime() {
-      return dateFormat(this.timeslot.End_time, 'dddd, mmmm dS, h:MM TT')
+      return dateFormat(this.availableTime.End_time, 'dddd, mmmm dS, h:MM TT')
     }
   }
 }

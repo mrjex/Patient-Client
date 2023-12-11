@@ -1,7 +1,7 @@
 <template>
     <div class="flex-container">
         <div class="m-2"><h1>Available times</h1></div>
-        <timeslotAccordion>
+        <timeslotAccordion :dentist_id="'6571f7e4d2aa12850db4e11f'" >
 
         </timeslotAccordion>
     </div>

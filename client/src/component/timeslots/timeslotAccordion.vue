@@ -1,38 +1,44 @@
 <template>
-    <div class="container-fluid">
-        <div class="input-div">
-            <b-form-input class="input-box m-3" v-model="dentistID" placeholder="Enter dentistID">
-            </b-form-input>
-            <b-button class="mb-3" @click="getDentistTimeslots">Get timeslots</b-button>
-        </div>
-
-        <timeslotCard v-for="timeslot in timeslots" :key="timeslot._id" :timeslot="timeslot">
-
+    <div class="container-fluid text-center">
+            <b-spinner variant="success" v-if="!finishedLoading">
+            </b-spinner>
+        <timeslotCard v-for="availableTime in availableTimes" :key="availableTime._id" :availableTime="availableTime">
         </timeslotCard>
     </div>
 </template>
 
 <script>
+/* This component expects a dentist_id passed to it as a prop, it will then display all available times for that dentist */
 import timeslotCard from './timeslotCard.vue'
 import { getFreeTimeslots } from '@/utility/timeslotUtils.js'
 export default {
   name: 'timeslotAccordion',
+  props: {
+    dentist_id: {
+      type: String,
+      required: true
+    }
+  },
   components: {
     timeslotCard
   },
   data() {
     return {
-      timeslots: [],
-      dentistID: ''
+      availableTimes: [],
+      finishedLoading: false
     }
+  },
+  mounted() {
+    this.getDentistTimeslots()
   },
   methods: {
     async getDentistTimeslots() {
       try {
-        const res = await getFreeTimeslots(this.dentistID)
+        const res = await getFreeTimeslots(this.dentist_id)
 
-        this.timeslots = res.data.AvailableTimes
-        console.log(this.timeslots)
+        this.availableTimes = res.data.availabletimes
+        console.log(this.availableTimes)
+        this.finishedLoading = true
       } catch (err) {
         console.error(err)
       }
@@ -42,13 +48,9 @@ export default {
 </script>
 
 <style scoped>
-.input-div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+
+.spinner-container {
+
 }
-.input-box {
-    width: 20vw;
-}
+
 </style>

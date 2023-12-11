@@ -1,8 +1,8 @@
 import { Api } from '../Api'
 
-export async function getFreeTimeslots(dentistID) {
+export async function getFreeTimeslots(dentistId) {
   try {
-    const res = await Api.get('timeslots/dentists/' + dentistID)
+    const res = await Api.get('availabletimes/dentists/' + dentistId)
     if (res.status === 200) {
       return res
     }
