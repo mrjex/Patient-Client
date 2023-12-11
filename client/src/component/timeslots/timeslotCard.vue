@@ -12,7 +12,7 @@
                     <b-card-text><strong>Adress:</strong> Lindholmen </b-card-text>
 
                     <div class="d-flex justify-content-center">
-                        <b-button v-b-modal="createBookingModalID">
+                        <b-button @click="createBooking">
                             Make appointment
                         </b-button>
                     </div>
@@ -20,13 +20,14 @@
             </b-collapse>
         </b-card>
         <!----make appointment modal---->
-        <b-modal :id="createBookingModalID">This doesn't work yet</b-modal>
+        <b-modal :id="bookingModalID">This doesn't work yet</b-modal>
     </div>
 </template>
 
 <script>
 // eslint-disable-next-line no-unused-vars
 import dateFormat, { masks } from 'dateformat'
+import { bookAppointment } from '@/utility/timeslotUtils.js'
 export default {
   name: 'timeslotCard',
   props: {
@@ -39,7 +40,7 @@ export default {
     accordionID() {
       return 'accordion' + this.availableTime._id
     },
-    createBookingModalID() {
+    bookingModalID() {
       return 'modalBooking' + this.availableTime._id
     },
     formatStartTime() {
@@ -47,6 +48,27 @@ export default {
     },
     formatEndTime() {
       return dateFormat(this.availableTime.End_time, 'dddd, mmmm dS, h:MM TT')
+    }
+  },
+  data() {
+    return {
+      bookingOutcomeText: ''
+    }
+  },
+  methods: {
+    async createBooking() {
+      try {
+        const res = await bookAppointment(this.availableTime._id)
+
+        if (res.status === 201) {
+          this.$bvModal.show(this.bookingModalID)
+          this.bookingOutcomeText = 'Booking succesfully created'
+        } else {
+          this.bookingOutcomeText = 'Could not book this appointment'
+        }
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 }
