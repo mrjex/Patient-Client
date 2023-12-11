@@ -106,7 +106,7 @@ export default {
        Many of these are synchronized with variables in map-utils.js.
       */
       currentTravelMode: 'Driving',
-      currentRadius: 10000,
+      currentRadius: 10,
       selectedMode: 'Nearby', // This varible is needed to register current mode in thr HTML above, when 'currentMapMode' from map-utils.js cannot be read at instantiation of app
       selectedNearbyQuery: 'radius',
       currentNumberQuery: '5',
@@ -117,7 +117,7 @@ export default {
        interaction with the dropdowns are satisfying.
       */
       previousTravelMode: '',
-      previousRadius: 10000,
+      previousRadius: 10,
       previousNumberQuery: '5',
       options: [
         { value: 0.25, text: '0.25 KM' },

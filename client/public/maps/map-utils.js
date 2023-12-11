@@ -15,7 +15,7 @@ import MapComponent from '../../src/components/MapComponent.vue'
 let currentMapMode = 'Nearby'
 
 // Two types of clinic quries:
-let currentRadius = 10000 // radius query
+let currentRadius = 10 // radius query
 let currentQueryNumber // fixed number query
 
 let nearbyClinicsQueryData // TODO: Rename to 'clinicsToDisplayData'
@@ -134,11 +134,14 @@ function getReferencePosition() {
 
 // Create visual markers of every clinic that was sent in the payload from Clinic Service
 function drawClinicMarkers() {
-  console.warn(nearbyClinicsQueryData)
+  // eslint-disable-next-line no-eval
+  const clinicsDataResponse = eval(nearbyClinicsQueryData.clinics)
+  console.warn(clinicsDataResponse)
+  console.warn(clinicsDataResponse.length)
 
-  if (nearbyClinicsQueryData) {
-    for (let i = 0; i < nearbyClinicsQueryData.length; i++) {
-      const currentClinic = nearbyClinicsQueryData[i]
+  if (clinicsDataResponse) {
+    for (let i = 0; i < clinicsDataResponse.length; i++) {
+      const currentClinic = clinicsDataResponse[i]
 
       const positionArray = currentClinic.position.split(',')
       const referenceCoordinates = { lat: parseFloat(positionArray[0]), lng: parseFloat(positionArray[1]) }
