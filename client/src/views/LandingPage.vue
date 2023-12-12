@@ -14,17 +14,17 @@
         @sliding-start='onSlideStart'
         @sliding-end='onSlideEnd'
       >
-        <b-carousel-slide img-src='https://az820503.vo.msecnd.net/images/89630.jpg'> <!--Select dental img -->
+        <b-carousel-slide img-src='https://targetjobs.co.uk/static/01e55a23e7aaab33f877f4b0260a5986/e3554/dentist_1140x350.webp'> <!--Select dental img -->
           <h2>Need to consult a specialist?</h2>
           <b-btn pill variant='success' href='/'>Book</b-btn>
         </b-carousel-slide>
 
-        <b-carousel-slide img-src='https://az820503.vo.msecnd.net/images/89630.jpg'><!--Select dental img -->
+        <b-carousel-slide img-src='https://targetjobs.co.uk/static/01e55a23e7aaab33f877f4b0260a5986/e3554/dentist_1140x350.webp'><!--Select dental img -->
           <h2>Find clinics near you!</h2>
           <b-btn pill variant='success' href='/clinics'>Clinics</b-btn>
         </b-carousel-slide>
 
-        <b-carousel-slide img-src='https://az820503.vo.msecnd.net/images/89630.jpg'><!--Select dental img -->
+        <b-carousel-slide img-src='https://targetjobs.co.uk/static/01e55a23e7aaab33f877f4b0260a5986/e3554/dentist_1140x350.webp'><!--Select dental img -->
           <h2>Who are we?</h2>
           <b-btn pill variant='success' href='/aboutus'>About us</b-btn>
         </b-carousel-slide>
