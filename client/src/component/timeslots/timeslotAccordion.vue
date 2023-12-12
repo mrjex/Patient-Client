@@ -1,7 +1,12 @@
 <template>
     <div class="container-fluid text-center">
-            <b-spinner variant="success" v-if="!finishedLoading">
-            </b-spinner>
+        <b-spinner variant="success" v-if="!finishedLoading">
+        </b-spinner>
+        <b-card-body>
+
+            <b-card-text v-if="!availableTimes"><strong>No available times found </strong></b-card-text>
+
+        </b-card-body>
         <timeslotCard v-for="availableTime in availableTimes" :key="availableTime._id" :availableTime="availableTime">
         </timeslotCard>
     </div>
@@ -48,9 +53,5 @@ export default {
 </script>
 
 <style scoped>
-
-.spinner-container {
-
-}
-
+.spinner-container {}
 </style>
