@@ -46,10 +46,10 @@ export default {
       return 'accordion' + this.availableTime._id
     },
     formatStartTime() {
-      return dateFormat(this.availableTime.Start_time, 'dddd, mmmm dS, h:MM TT')
+      return dateFormat(this.availableTime.start_time, 'dddd, mmmm dS, yyyy, h:MM TT')
     },
     formatEndTime() {
-      return dateFormat(this.availableTime.End_time, 'dddd, mmmm dS, h:MM TT')
+      return dateFormat(this.availableTime.start_time, 'dddd, mmmm dS, yyyy, h:MM TT')
     }
   },
   methods: {
