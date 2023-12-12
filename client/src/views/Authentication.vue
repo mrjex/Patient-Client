@@ -42,9 +42,6 @@ Wireframes:
 
       </b-form>
 
-      <p>Form:</p>
-      <p>{{form.username}}</p>
-      <p>{{form.password}}</p>
     </b-container>
   </body>
 </template>
@@ -68,8 +65,6 @@ export default {
     onSubmit() {
       event.preventDefault()
       this.errorMessage = ''
-      console.log(this.form.username)
-      console.log(this.form.password)
 
       const body = {
         username: this.form.username,
