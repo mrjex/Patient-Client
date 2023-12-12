@@ -1,4 +1,5 @@
-import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius } from '../map-utils.js'
+import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius, manageNearbyQueryRequest } from '../map-utils.js'
+import MapComponent from '../../../src/components/MapComponent.vue'
 
 /* eslint-disable no-undef */
 let nearbyMap = -1
@@ -10,18 +11,17 @@ let directionsService
 let directionsRenderer
 let selectedDentalClinicMarker = null
 
-let currentTravelMode = 'DRIVING'
-
+let currentTravelMode = 'Driving'
 const defaultZoomLevel = 12
 
 async function initMap() {
-  if (confirmExecutionConditions('NEARBY')) {
+  if (confirmExecutionConditions('Nearby')) {
     navigator.geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords
       userGlobalCoordinates = { lat: latitude, lng: longitude }
-    })
 
-    setTimeout(drawNearbyMap, 1000) // Account for the delay to assign/find 'userGlobalCoordinates' in the method above
+      manageNearbyQueryRequest() // Once the application is started, we send a request to query Clinic Service's database to retrieve the clinic-markers to display on the map
+    })
   }
 }
 
@@ -31,11 +31,11 @@ async function drawNearbyMap() {
   initiateMap(Map, AdvancedMarkerElement)
 }
 
-function listenForMarkerClickNearbyMode(marker, place) {
+function listenForMarkerClickNearbyMode(marker, clinic) {
   google.maps.event.addListener(marker, 'click', function () {
     selectedDentalClinicMarker = marker.position
 
-    generateInfoWindowUtils(place, marker)
+    generateInfoWindowUtils(clinic, marker, nearbyMap)
     calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
   })
 }
@@ -45,18 +45,20 @@ function calcRoute(userGlobalCoordinates, dentistDestination, directionsService,
     const request = {
       origin: userGlobalCoordinates,
       destination: dentistDestination,
-      travelMode: google.maps.TravelMode[currentTravelMode]
+      travelMode: google.maps.TravelMode[currentTravelMode.toUpperCase()]
     }
     directionsService.route(request, function (response, status) {
       if (status === 'OK') {
         directionsRenderer.setDirections(response)
+      } else if (status === 'ZERO_RESULTS') {
+        MapComponent.methods.sendTravelPathNotFoundNotification()
       }
     })
   }
 }
 
 function createUserPositionMarker(AdvancedMarkerElement) {
-  const userIcon = document.createElement('img') // NOTE: Refactor in map-utils.js
+  const userIcon = document.createElement('img')
   userIcon.src = 'https://i.ibb.co/cFB7cMR/User-Marker-Icon.png'
 
   // The marker that represents user's current global position

@@ -1,4 +1,4 @@
-import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius } from '../map-utils'
+import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius, manageNearbyQueryRequest } from '../map-utils'
 
 /* eslint-disable no-undef */
 let service
@@ -11,7 +11,16 @@ let userMarker
 
 let infowindowSearchReference
 let infowindowContentSearchReference
-let markerCoordinates = { lat: 40.749933, lng: -73.98633 }
+
+let markerCoordinates = { lat: 40.749933, lng: -73.98633 } // Arbitrary start position: New York
+
+/*
+Note for developers:
+The variable below is used only for the purpose of sending 'lat,lng' payload in string format, since
+'markerCoordinates = searchedPlace.geometry.location' invokes Google's
+internal functions and ceases to storing the location as a simple string
+*/
+let referenceMarkerCoordinates = { lat: 40.749933, lng: -73.98633 }
 
 let searchMap
 let searchedPlace
@@ -24,7 +33,7 @@ let strictBoundsInputElement
 const defaultZoomLevel = 17
 
 function initSearchMap() {
-  if (confirmExecutionConditions('SEARCH')) {
+  if (confirmExecutionConditions('Search')) {
     drawSearchMap()
 
     readSearchBarElements()
@@ -126,14 +135,6 @@ function readSearchBarElements() {
 // When user enters a search command in the search-prompt
 function onSearchLocation() {
   instantiateSearchAutoComplete()
-
-  autocomplete.addListener('place_changed', () => {
-    infowindowSearchReference.close()
-    searchedPlace = autocomplete.getPlace()
-
-    manageSearchResult()
-  })
-
   runSearchBarListeners()
 }
 
@@ -146,7 +147,6 @@ function runSearchInputListener() {
   autocomplete.addListener('place_changed', () => {
     infowindowSearchReference.close()
     searchedPlace = autocomplete.getPlace()
-
     manageSearchResult()
   })
 }
@@ -167,6 +167,9 @@ function manageSearchResult() {
   // Place found
   if (searchIsValid()) {
     markerCoordinates = searchedPlace.geometry.location
+    referenceMarkerCoordinates = { lat: searchedPlace.geometry.viewport.eb.lo, lng: searchedPlace.geometry.viewport.La.lo }
+
+    manageNearbyQueryRequest()
     directionsRendererSearch.setMap(searchMap)
 
     centerSearchedMarker()
@@ -193,10 +196,10 @@ function centerSearchedMarker() {
 }
 
 // Checks if user clicks on dental clinic marker
-function listenForMarkerClickSearchMode(marker, place) {
+function listenForMarkerClickSearchMode(marker, clinic) { // PREVIOUS: (marker, place)
   google.maps.event.addListener(marker, 'click', function () {
     selectedDentalClinicMarkerSearch = marker.position
-    generateInfoWindowUtils(place, marker)
+    generateInfoWindowUtils(clinic, marker, searchMap)
   })
 }
 
@@ -211,13 +214,7 @@ function createSearchReferenceMarker() {
     scale: 4,
     anchor: new google.maps.Point(0, 20)
   }
-  /*
-  userMarker = new google.maps.Marker({
-    map: searchMap,
-    icon: svgMarkerIcon,
-    position: markerCoordinates
-  })
-  */
+
   userMarker = generateReferenceMarker(svgMarkerIcon)
 }
 
@@ -252,5 +249,5 @@ function changeRadiusSearch(newRadius) {
 window.initMap = initSearchMap
 export {
   initSearchMap, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch,
-  markerCoordinates, changeRadiusSearch, listenForMarkerClickSearchMode, searchMap, drawSearchMap
+  markerCoordinates, changeRadiusSearch, listenForMarkerClickSearchMode, searchMap, drawSearchMap, referenceMarkerCoordinates
 }
