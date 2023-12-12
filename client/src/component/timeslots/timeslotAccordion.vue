@@ -7,7 +7,8 @@
             <b-card-text v-if="!availableTimes"><strong>No available times found </strong></b-card-text>
 
         </b-card-body>
-        <timeslotCard v-for="availableTime in availableTimes" :key="availableTime._id" :availableTime="availableTime">
+        <timeslotCard v-for="availableTime in availableTimes" :key="availableTime._id" :availableTime="availableTime"
+        :dentistName="dentistName" :clinicName="clinicName">
         </timeslotCard>
     </div>
 </template>
@@ -20,6 +21,14 @@ export default {
   name: 'timeslotAccordion',
   props: {
     dentist_id: {
+      type: String,
+      required: true
+    },
+    dentistName: {
+      type: String,
+      required: true
+    },
+    clinicName: {
       type: String,
       required: true
     }
