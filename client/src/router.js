@@ -7,6 +7,7 @@ import clinicSignUp from '@/views/ClinicSignUp.vue'
 import myBookings from '@/views/MyBookings.vue'
 import Notifications from '@/views/Notifications.vue'
 import FindClinics from '@/views/FindClinics.vue'
+import SignUp from '@/views/SignUp.vue'
 
 import MapPage from './views/MapPage.vue'
 
@@ -55,6 +56,12 @@ export default new Router({
       name: 'MapPage',
       path: '/map',
       component: MapPage
+    },
+    {
+      name: 'SignUp',
+      path: '/signup',
+      component: SignUp
     }
+
   ]
 })
