@@ -7,9 +7,18 @@
             <b-card-text v-if="!availableTimes"><strong>No available times found </strong></b-card-text>
 
         </b-card-body>
-        <timeslotCard v-for="availableTime in availableTimes" :key="availableTime._id" :availableTime="availableTime"
-        :dentistName="dentistName" :clinicName="clinicName" @bookedAppointment="deleteAvailableTimes">
+        <timeslotCard v-for="availableTime in availableTimes"
+        :key="availableTime._id"
+        :availableTime="availableTime"
+        :dentistName="dentistName"
+        :clinicName="clinicName"
+        @bookedAppointment="deleteAvailableTimes"
+        @bookingFailed="$bvModal.show('failedModal')">
         </timeslotCard>
+
+        <!----booking outcome modal---->
+        <b-modal :id="'successModal'" ok-only title="Success"> <p>Appointment created</p>  </b-modal>
+        <b-modal :id="'failedModal'" ok-only title="Request failed"> <p>Unable to book appointment</p></b-modal>
     </div>
 </template>
 
@@ -51,7 +60,6 @@ export default {
         const res = await getFreeTimeslots(this.dentist_id)
 
         this.availableTimes = res.data.availabletimes
-        console.log(this.availableTimes)
         this.finishedLoading = true
       } catch (err) {
         console.error(err)
@@ -63,6 +71,7 @@ export default {
       } catch (err) {
         console.error(err)
       }
+      this.$bvModal.show('successModal')
     }
   }
 }

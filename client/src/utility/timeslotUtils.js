@@ -16,7 +16,7 @@ export async function bookAppointment(availableTimeId) {
   try {
     const messageBody = { availableTime_id: availableTimeId }
     const res = await Api.post('appointments/', messageBody)
-    if (res.status === 201) {
+    if (res.status === 200 || res.status === 201) {
       return { success: true }
     }
   } catch (err) {

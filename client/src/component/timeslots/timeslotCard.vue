@@ -18,8 +18,6 @@
                 </b-card-body>
             </b-collapse>
         </b-card>
-        <!----make appointment modal---->
-        <b-modal :id="bookingModalID">{{ bookingOutcomeText }}</b-modal>
     </div>
 </template>
 
@@ -47,19 +45,11 @@ export default {
     accordionID() {
       return 'accordion' + this.availableTime._id
     },
-    bookingModalID() {
-      return 'modalBooking' + this.availableTime._id
-    },
     formatStartTime() {
       return dateFormat(this.availableTime.Start_time, 'dddd, mmmm dS, h:MM TT')
     },
     formatEndTime() {
       return dateFormat(this.availableTime.End_time, 'dddd, mmmm dS, h:MM TT')
-    }
-  },
-  data() {
-    return {
-      bookingOutcomeText: ''
     }
   },
   methods: {
@@ -68,12 +58,9 @@ export default {
         const res = await bookAppointment(this.availableTime._id)
 
         if (res.success === true) {
-          this.$bvModal.show(this.bookingModalID)
-          this.bookingOutcomeText = 'Booking succesfully created'
           this.$emit('bookedAppointment', this.availableTime._id)
         } else {
-          this.$bvModal.show(this.bookingModalID)
-          this.bookingOutcomeText = 'Could not book this appointment'
+          this.$emit('bookingFailed')
         }
       } catch (err) {
         console.error(err)
