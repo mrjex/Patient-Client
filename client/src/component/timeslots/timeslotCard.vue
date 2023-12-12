@@ -70,6 +70,7 @@ export default {
         if (res.status === 201 || res.status === 200) {
           this.$bvModal.show(this.bookingModalID)
           this.bookingOutcomeText = 'Booking succesfully created'
+          this.$emit('bookedAppointment', this.availableTime._id)
         } else {
           this.bookingOutcomeText = 'Could not book this appointment'
         }

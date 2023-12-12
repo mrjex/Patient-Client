@@ -8,7 +8,7 @@
 
         </b-card-body>
         <timeslotCard v-for="availableTime in availableTimes" :key="availableTime._id" :availableTime="availableTime"
-        :dentistName="dentistName" :clinicName="clinicName">
+        :dentistName="dentistName" :clinicName="clinicName" @bookedAppointment="deleteAvailableTimes">
         </timeslotCard>
     </div>
 </template>
@@ -53,6 +53,13 @@ export default {
         this.availableTimes = res.data.availabletimes
         console.log(this.availableTimes)
         this.finishedLoading = true
+      } catch (err) {
+        console.error(err)
+      }
+    },
+    async deleteAvailableTimes(availableTimeId) {
+      try {
+        this.availableTimes = this.availableTimes.filter(item => item._id !== availableTimeId)
       } catch (err) {
         console.error(err)
       }
