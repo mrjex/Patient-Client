@@ -7,9 +7,8 @@
             <b-collapse :id="accordionID" :visible="false" accordion="timeslot-accordion" role="tabpanel">
                 <b-card-body>
 
-                    <b-card-text><strong>Dentist:</strong> Place Holderson</b-card-text>
-                    <b-card-text><strong>Clinic:</strong> Working from home </b-card-text>
-                    <b-card-text><strong>Adress:</strong> Lindholmen </b-card-text>
+                    <b-card-text><strong>Dentist:</strong> {{ dentistName }}</b-card-text>
+                    <b-card-text><strong>Clinic:</strong> {{ clinicName }} </b-card-text>
 
                     <div class="d-flex justify-content-center">
                         <b-button @click="createBooking">
@@ -20,7 +19,7 @@
             </b-collapse>
         </b-card>
         <!----make appointment modal---->
-        <b-modal :id="bookingModalID">This doesn't work yet</b-modal>
+        <b-modal :id="bookingModalID">{{ bookingOutcomeText }}</b-modal>
     </div>
 </template>
 
@@ -33,6 +32,14 @@ export default {
   props: {
     availableTime: {
       type: Object,
+      required: true
+    },
+    dentistName: {
+      type: String,
+      required: true
+    },
+    clinicName: {
+      type: String,
       required: true
     }
   },
@@ -60,7 +67,7 @@ export default {
       try {
         const res = await bookAppointment(this.availableTime._id)
 
-        if (res.status === 201) {
+        if (res.status === 201 || res.status === 200) {
           this.$bvModal.show(this.bookingModalID)
           this.bookingOutcomeText = 'Booking succesfully created'
         } else {
