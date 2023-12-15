@@ -1,7 +1,9 @@
 <template>
-  <div>
+  <body>
+      <div>
     <MapComponent/>
-  </div>
+    </div>
+  </body>
 </template>
 
 <script>

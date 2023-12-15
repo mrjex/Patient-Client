@@ -115,13 +115,23 @@ function generateInfoWindowUtils(clinic, marker, map) {
   )
   */
 
-  selectedDentistInfowindow.setContent(
+  let clinicEmployees = ''
+  clinic.employees.forEach((element) => clinicEmployees += element.dentist_name + '<br>') // PREV: '/n'  // WORKS: '<br>'
+
+  console.warn(clinicEmployees)
+
+  // console.warn(clinic.employees[3].dentist_name) // clinic.employees[i].dentist_name
+
+  selectedDentistInfowindow.setContent( // PREVIOUS: ${clinic.employees}
     `<strong class="header">${clinic.clinic_name}</strong>
     <p>
     Adress: Adress here <br>
     Rating here <br>
-    Employees: <br>
-    ${clinic.employees}
+    <br>
+
+    <strong>Employees:</strong>
+    <br>
+    ${clinicEmployees}
     </p>
     <style>
     .header {
@@ -151,7 +161,6 @@ function getReferencePosition() {
 function drawClinicMarkers() {
   // eslint-disable-next-line no-eval
   const clinicsDataResponse = eval(nearbyClinicsQueryData.clinics)
-  console.warn(clinicsDataResponse)
 
   if (clinicsDataResponse) {
     for (let i = 0; i < clinicsDataResponse.length; i++) {
