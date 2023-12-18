@@ -185,7 +185,7 @@ export default {
      queryValue = { value with corresponding unit of measure of the specified queryMode ('radius' --> kilometers, 'number' --> N closest clinics) }
     */
     async sendNearbyQueryRequest(queryMode, queryValue) { // Sends the query-request to Patient API
-      const queryUrl = `/maps/${queryMode}/${queryValue}/positions/${getReferencePosition()}`
+      const queryUrl = `/clinics/${queryMode}/positions?${queryMode}=${queryValue}&coordinates=${getReferencePosition()}`
       const { data } = await Api.get(queryUrl)
 
       setNearbyClinicsQueryData(data)

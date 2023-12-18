@@ -116,13 +116,9 @@ function generateInfoWindowUtils(clinic, marker, map) {
   */
 
   let clinicEmployees = ''
-  clinic.employees.forEach((element) => clinicEmployees += element.dentist_name + '<br>') // PREV: '/n'  // WORKS: '<br>'
+  clinic.employees.forEach((element) => clinicEmployees += element.dentist_name + '<br>')
 
-  console.warn(clinicEmployees)
-
-  // console.warn(clinic.employees[3].dentist_name) // clinic.employees[i].dentist_name
-
-  selectedDentistInfowindow.setContent( // PREVIOUS: ${clinic.employees}
+  selectedDentistInfowindow.setContent(
     `<strong class="header">${clinic.clinic_name}</strong>
     <p>
     Adress: Adress here <br>
