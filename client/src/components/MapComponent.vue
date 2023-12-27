@@ -77,6 +77,7 @@
       </b-col>
       <b-col>
         <div id="map"></div>
+        <InfoWindowComponent id="testId"/>
       </b-col>
     </b-row>
   </b-container>
@@ -100,9 +101,10 @@ import {
 // Import necessary data from other scripts that are not related to the map functionalities
 import { createHTMLScriptElement } from '../utils.js'
 import { Api } from '../Api.js'
+import InfoWindowComponent from './InfoWindowComponent.vue'
 
 export default {
-  name: 'MapPage',
+  name: 'MapComponent',
   data() {
     return {
       /*
@@ -254,6 +256,9 @@ export default {
     currentTravelMode: function () {
       this.toggleTravelMode()
     }
+  },
+  components: {
+    InfoWindowComponent
   }
 }
 </script>

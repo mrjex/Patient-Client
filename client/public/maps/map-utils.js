@@ -98,36 +98,35 @@ function generateInfoWindowUtils(clinic, marker, map) {
 
   selectedDentistInfowindow = new google.maps.InfoWindow()
 
-  /*
-  PREVIOUS:
-  // const ratingString = place.rating ? 'Rating: ' + place.rating + ` by ${place.user_ratings_total} users` : ''
-  selectedDentistInfowindow.setContent(
-        `<strong class="header">${place.name}</strong>
-        <p>
-        Adress: ${place.vicinity} <br>
-        ${ratingString}
-        </p>
-        <style>
-        .header {
-          font-weight: 1000
-        }
-        </style>`
-  )
-  */
-
   let clinicEmployees = ''
   clinic.employees.forEach((element) => clinicEmployees += element.dentist_name + '<br>')
+
+  // const contentString = '<button class="btn">Press me!</button>' // WORKS
+  // const contentString = '<h4>This works</h4>' // WORKS
+
+  // TODO: Find a way so that .setContent() reads <b-form-rating> as a tag
+  const contentString = '<b-form-rating inline value="3.5" variant="warning"></b-form-rating>'
+
+  selectedDentistInfowindow.setContent(contentString)
+
+  /*
+  let ratingsString = 'No ratings available'
+
+  if (clinic.ratings) {
+    ratingsString = '<br>Ratings: ' + clinic.ratings
+  }
 
   selectedDentistInfowindow.setContent(
     `<strong class="header">${clinic.clinic_name}</strong>
     <p>
     Adress: Adress here <br>
-    Rating here <br>
+    Ratings here <br>
     <br>
 
     <strong>Employees:</strong>
     <br>
     ${clinicEmployees}
+    ${ratingsString}
     </p>
     <style>
     .header {
@@ -135,6 +134,11 @@ function generateInfoWindowUtils(clinic, marker, map) {
     }
     </style>`
   )
+  */
+
+  // console.log(InfoWindowComponent)
+  // console.log(InfoWindowComponent.compile()) // Parameter: template-string
+
   selectedDentistInfowindow.open(map, marker)
 }
 
@@ -155,6 +159,7 @@ function getReferencePosition() {
 
 // Create visual markers of every clinic that was sent in the payload from Clinic Service
 function drawClinicMarkers() {
+  console.warn(nearbyClinicsQueryData.clinics)
   // eslint-disable-next-line no-eval
   const clinicsDataResponse = eval(nearbyClinicsQueryData.clinics)
 
