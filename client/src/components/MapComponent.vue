@@ -77,30 +77,32 @@
       </b-col>
       <b-col>
         <div id="map"></div>
-        <InfoWindowComponent id="testId"/>
+        <InfoWindowComponent id="infowindow" :key="componentKey"/>
+        <!-- <InfoWindowComponent :key="componentKey"/> -->
       </b-col>
     </b-row>
   </b-container>
 </template>
 
 <script>
-
 // Import necessary data from the map scripts (map-utils.js, nearby-map.js and search-map.js)
 import {
   calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer,
-  drawNearbyMap, initMap, changeTravelMode, deselectClinicMarker
+  initMap, changeTravelMode, deselectClinicMarker
 } from '../../public/maps/map-modes/nearby-map.js'
+// drawNearbyMap
 
 import { initSearchMap } from '../../public/maps/map-modes/search-map.js'
 
 import {
-  changeMapMode, currentMapMode, changeRadius, updateRadius, getReferencePosition, setNearbyClinicsQueryData,
+  changeMapMode, changeRadius, sendNearbyQueryRequest,
   setSelectedQueryMode, manageNearbyQueryRequest, setFixedQueryNumber
 } from '../../public/maps/map-utils.js'
+// currentMapMode, updateRadius, getReferencePosition, setNearbyClinicsQueryData
 
 // Import necessary data from other scripts that are not related to the map functionalities
 import { createHTMLScriptElement } from '../utils.js'
-import { Api } from '../Api.js'
+// import { Api } from '../Api.js'
 import InfoWindowComponent from './InfoWindowComponent.vue'
 
 export default {
@@ -153,53 +155,42 @@ export default {
       ],
       queryModes: ['number', 'radius'],
       travelModes: ['Driving', 'Walking', 'Bicycling', 'Transit'],
-      searchModes: ['Nearby', 'Search']
+      searchModes: ['Nearby', 'Search'],
+      componentKey: 0,
+      myTestVariable: 0.0,
+      myTestVariable2: 'myTest',
+      myTestV: 26
     }
   },
   created() {
     this.initializePlaceAPI()
     this.initializeNearbyMap()
+    console.log(this.myTestV)
+    localStorage.setItem('componentKey', '0')
   },
   methods: {
-    async changeSearchRange() {
-      // Dropdown button is pressed to change radius of displayed clinics
+    /*
+     The methods 5 methods below represent on-click events
+     directly connected to the interaction with a front-end element.
+    */
+    async changeSearchRange() { // Dropdown button is pressed to change radius of displayed clinics
       changeRadius(this.currentRadius)
       setSelectedQueryMode('radius')
       this.previousRadius = this.currentRadius
       deselectClinicMarker()
-      this.sendNearbyQueryRequest('radius', this.currentRadius)
+      sendNearbyQueryRequest('radius', this.currentRadius)
     },
-    toggleTravelMode() {
-      // Dropdown button is pressed to change the display of travel-route types in 'NEARBY' mode
+    toggleTravelMode() { // Dropdown button is pressed to change the display of travel-route types available in 'NEARBY' mode
       changeTravelMode(this.currentTravelMode)
       calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
+
+      this.forceRerender() // TEMPORARY
     },
     async sendClinicNumberQuery() {
       this.previousNumberQuery = this.currentNumberQuery
       setSelectedQueryMode('number')
       setFixedQueryNumber(this.currentNumberQuery)
-      this.sendNearbyQueryRequest('number', this.currentNumberQuery)
-    },
-
-    /*
-     Note for developers:
-     queryMode = 'radius' OR 'number'
-     queryValue = { value with corresponding unit of measure of the specified queryMode ('radius' --> kilometers, 'number' --> N closest clinics) }
-    */
-    async sendNearbyQueryRequest(queryMode, queryValue) { // Sends the query-request to Patient API
-      const queryUrl = `/clinics/${queryMode}/positions?${queryMode}=${queryValue}&coordinates=${getReferencePosition()}`
-      const { data } = await Api.get(queryUrl)
-
-      setNearbyClinicsQueryData(data)
-      this.updateMapUI()
-    },
-
-    updateMapUI() {
-      if (currentMapMode === 'Nearby') {
-        drawNearbyMap()
-      } else {
-        updateRadius()
-      }
+      sendNearbyQueryRequest('number', this.currentNumberQuery)
     },
     nearbyMode() {
       this.connectMap('Nearby')
@@ -207,6 +198,10 @@ export default {
     searchMode() {
       this.connectMap('Search')
     },
+    /*
+     The methods below are indirectly connected to the interactions of
+     front-end elements, meaning that they are invoked by the methods above.
+    */
     updateMode(newMode) {
       this.selectedMode = newMode
       changeMapMode(newMode)
@@ -241,7 +236,11 @@ export default {
     },
     getPathToMapModeScript(mapScript) { // The path from this component to the desired map-mode script (nearby-map.js or searchmap.js)
       return `../../public/maps/map-modes/${mapScript}`
-    }
+    },
+    forceRerender() { // PROBLEM: This method works perfectly fine except for the case where it is called from map-utils.js. Find a way to export a method correctly from a .vue file
+      this.componentKey += 1
+      // PROBLEM: When calling this method from map-utils.js, no other data nor methods are accessible. A solution is to rerender a .vue file outside of the parent component
+    } // NOTE: Try creating the method outside export default {} so that it is declares 'function forceRerender() {}' and export/import with map-utils.js
   },
   watch: {
     currentNumberQuery: function () {
@@ -280,5 +279,10 @@ export default {
 .full-height {
   min-height: 80%;
   height: 80%;
+}
+
+#infowindow {
+  display: flex;
+  justify-content: flex-start;
 }
 </style>

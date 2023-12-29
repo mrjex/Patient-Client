@@ -2,7 +2,7 @@
   <body>
       <div>
         <MapComponent/>
-        <!-- <InfoWindowComponent /> -->
+        <!-- <InfoWindowComponent id="infowindow"/> -->
     </div>
   </body>
 </template>
@@ -13,6 +13,14 @@ import MapComponent from '../components/MapComponent.vue'
 
 export default {
   name: 'MapPage',
+  data() {
+    return {
+      testVariable: 23
+    }
+  },
+  created() {
+    console.log(this.testVariable)
+  },
   components: {
     MapComponent
     // InfoWindowComponent
@@ -20,3 +28,10 @@ export default {
 }
 
 </script>
+
+<style scoped>
+#infowindow {
+  display: flex;
+  justify-content: flex-start;
+}
+</style>

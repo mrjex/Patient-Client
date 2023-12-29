@@ -7,10 +7,13 @@
 // This script is the generalization of 'map.js' and 'search-map.js' and is executed at initialization of both scripts
 /* eslint-disable no-undef */
 
-import { listenForMarkerClickNearbyMode, nearbyMap, userGlobalCoordinates } from './map-modes/nearby-map'
+import { listenForMarkerClickNearbyMode, nearbyMap, userGlobalCoordinates, drawNearbyMap } from './map-modes/nearby-map'
 import { listenForMarkerClickSearchMode, searchMap, drawSearchMap, markerCoordinates } from './map-modes/search-map'
+import { Api } from '../../src/Api.js'
 
-import MapComponent from '../../src/components/MapComponent.vue'
+// import MapComponent from '../../src/components/MapComponent.vue'
+
+// import InfoWindowComponent from '../../src/components/InfoWindowComponent.vue'
 
 let currentMapMode = 'Nearby'
 
@@ -20,8 +23,8 @@ let currentQueryNumber // fixed number query
 
 let nearbyClinicsQueryData // TODO: Rename to 'clinicsToDisplayData'
 let selectedQueryMode = 'radius' // Possible values: 'radius' and 'number'
-let selectedDentistInfowindow
-
+// let selectedDentistInfowindow
+const clinicStatisticsMap = new Map()
 const defaultZoomLevel = 12
 
 /*
@@ -91,6 +94,11 @@ function initializeMarker(referenceCoordinates) {
 
 // Display the related information about the clicked dental clinic marker in a window positioned at the selected dental clinic marker
 function generateInfoWindowUtils(clinic, marker, map) {
+  const clinicRatings = clinic.ratings ? clinic.ratings : '-1'
+  clinicStatisticsMap.set('ratings', clinicRatings)
+
+  // MapComponent.methods.forceRerender() // POTENTIAL SOLUTION: Add eventListener in MapComponent.vue and set a variable to true in this script, if true --> forceRerender()
+  /*
   // If any infowindow is currently open, then close it before the newly clicked clinic's infowindow pops up
   if (selectedDentistInfowindow) {
     selectedDentistInfowindow.close()
@@ -101,15 +109,6 @@ function generateInfoWindowUtils(clinic, marker, map) {
   let clinicEmployees = ''
   clinic.employees.forEach((element) => clinicEmployees += element.dentist_name + '<br>')
 
-  // const contentString = '<button class="btn">Press me!</button>' // WORKS
-  // const contentString = '<h4>This works</h4>' // WORKS
-
-  // TODO: Find a way so that .setContent() reads <b-form-rating> as a tag
-  const contentString = '<b-form-rating inline value="3.5" variant="warning"></b-form-rating>'
-
-  selectedDentistInfowindow.setContent(contentString)
-
-  /*
   let ratingsString = 'No ratings available'
 
   if (clinic.ratings) {
@@ -134,12 +133,8 @@ function generateInfoWindowUtils(clinic, marker, map) {
     }
     </style>`
   )
-  */
-
-  // console.log(InfoWindowComponent)
-  // console.log(InfoWindowComponent.compile()) // Parameter: template-string
-
   selectedDentistInfowindow.open(map, marker)
+  */
 }
 
 // Update radius to query dental clinics in relative to a fixed position (user's pos or search-reference pos)
@@ -198,7 +193,29 @@ function setFixedQueryNumber(value) {
 */
 function manageNearbyQueryRequest() { // Accounts for both types of queries (radius and N-closest clinics) and looks at user's input to decide what methods to execute
   const queryValue = (selectedQueryMode === 'radius') ? currentRadius : currentQueryNumber
-  MapComponent.methods.sendNearbyQueryRequest(selectedQueryMode, queryValue)
+  // MapComponent.methods.sendNearbyQueryRequest(selectedQueryMode, queryValue)
+  sendNearbyQueryRequest(selectedQueryMode, queryValue)
+}
+
+/*
+  Note for developers:
+  queryMode = 'radius' OR 'number'
+  queryValue = { value with corresponding unit of measure of the specified queryMode ('radius' --> kilometers, 'number' --> N closest clinics) }
+*/
+async function sendNearbyQueryRequest(queryMode, queryValue) { // Sends the query-request to Patient API
+  const queryUrl = `/clinics/${queryMode}/positions?${queryMode}=${queryValue}&coordinates=${getReferencePosition()}`
+  const { data } = await Api.get(queryUrl)
+
+  setNearbyClinicsQueryData(data)
+  updateMapUI()
+}
+
+function updateMapUI() {
+  if (currentMapMode === 'Nearby') {
+    drawNearbyMap()
+  } else {
+    updateRadius()
+  }
 }
 
 integrateAPIKey()
@@ -207,5 +224,5 @@ export {
   confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, getZoomLevel,
   generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition, setNearbyClinicsQueryData,
   selectedQueryMode, setSelectedQueryMode, manageNearbyQueryRequest, currentQueryNumber, setFixedQueryNumber,
-  defaultZoomLevel
+  defaultZoomLevel, clinicStatisticsMap, sendNearbyQueryRequest
 }
