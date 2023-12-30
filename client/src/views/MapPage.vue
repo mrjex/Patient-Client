@@ -15,11 +15,9 @@ export default {
   name: 'MapPage',
   data() {
     return {
-      testVariable: 23
     }
   },
   created() {
-    console.log(this.testVariable)
   },
   components: {
     MapComponent

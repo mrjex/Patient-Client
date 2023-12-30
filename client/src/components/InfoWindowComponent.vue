@@ -10,7 +10,6 @@
               <b-form-rating v-model="valueA" variant="warning" class="mb-2"></b-form-rating>
             </div>
             <h4>Rating is {{ ratingValue }}</h4>
-            <h4>testG: {{ testG }}</h4>
           </b-container>
        </div>
     </div>
@@ -27,10 +26,6 @@ export default {
       total_user_ratings: 69
     }
   },
-  created() {
-    console.log('created()')
-    localStorage.setItem('testG', '0')
-  },
   methods: {
     myMethod() {
       // console.warn('myMethod')
@@ -42,12 +37,6 @@ export default {
     ratingValue: function () {
       // console.warn('getRatingValue')
       return this.myMethod()
-    },
-    testG: function () {
-      let value = localStorage.getItem('testG')
-      value++
-      localStorage.setItem('testG', value)
-      return value
     }
   }
 }

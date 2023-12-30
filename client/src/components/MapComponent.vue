@@ -1,5 +1,5 @@
 <template>
-  <b-container class="fluid full-height">
+  <b-container class="fluid full-height" ref="myComponentRef">
     <b-row class="full-height">
       <b-col md="4">
         <b-container id="map-options" class="p-4 rounded shadow">
@@ -77,8 +77,9 @@
       </b-col>
       <b-col>
         <div id="map"></div>
-        <InfoWindowComponent id="infowindow" :key="componentKey"/>
-        <!-- <InfoWindowComponent :key="componentKey"/> -->
+        <h4>{{ this.$myGlobalVariable }}</h4>
+        <!-- <InfoWindowComponent id="infowindow" :key="componentKey"/> --> <!-- TODO RESEARCH: Global variable in html: this.$myGlobalVariable -->
+        <InfoWindowComponent id="infowindow" :key="this.$myGlobalVariable"/> <!-- If this doesn't work, research on how to express it inside html "" -->
       </b-col>
     </b-row>
   </b-container>
@@ -90,7 +91,6 @@ import {
   calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer,
   initMap, changeTravelMode, deselectClinicMarker
 } from '../../public/maps/map-modes/nearby-map.js'
-// drawNearbyMap
 
 import { initSearchMap } from '../../public/maps/map-modes/search-map.js'
 
@@ -98,12 +98,15 @@ import {
   changeMapMode, changeRadius, sendNearbyQueryRequest,
   setSelectedQueryMode, manageNearbyQueryRequest, setFixedQueryNumber
 } from '../../public/maps/map-utils.js'
-// currentMapMode, updateRadius, getReferencePosition, setNearbyClinicsQueryData
 
 // Import necessary data from other scripts that are not related to the map functionalities
 import { createHTMLScriptElement } from '../utils.js'
-// import { Api } from '../Api.js'
 import InfoWindowComponent from './InfoWindowComponent.vue'
+
+/*
+  IDEA: Declare external variable here, assign 'componentKey' in data { return {}} and export the external variable tp map-utils.js.
+  Add a listener in this script. If the external variable has changed, then change 'componentKey'
+*/
 
 export default {
   name: 'MapComponent',
@@ -157,15 +160,12 @@ export default {
       travelModes: ['Driving', 'Walking', 'Bicycling', 'Transit'],
       searchModes: ['Nearby', 'Search'],
       componentKey: 0,
-      myTestVariable: 0.0,
-      myTestVariable2: 'myTest',
-      myTestV: 26
+      message: 'Hello, World!'
     }
   },
   created() {
     this.initializePlaceAPI()
     this.initializeNearbyMap()
-    console.log(this.myTestV)
     localStorage.setItem('componentKey', '0')
   },
   methods: {
@@ -184,7 +184,8 @@ export default {
       changeTravelMode(this.currentTravelMode)
       calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
 
-      this.forceRerender() // TEMPORARY
+      // this.message = 'Mr. G'
+      // this.forceRerender() // TEMPORARY
     },
     async sendClinicNumberQuery() {
       this.previousNumberQuery = this.currentNumberQuery
@@ -238,7 +239,13 @@ export default {
       return `../../public/maps/map-modes/${mapScript}`
     },
     forceRerender() { // PROBLEM: This method works perfectly fine except for the case where it is called from map-utils.js. Find a way to export a method correctly from a .vue file
+      /*
       this.componentKey += 1
+      console.log(this.$myGlobalVariable)
+      this.$myGlobalVariable = this.componentKey
+      console.log(this.$myGlobalVariable)
+      */
+      this.$myGlobalVariable += 1
       // PROBLEM: When calling this method from map-utils.js, no other data nor methods are accessible. A solution is to rerender a .vue file outside of the parent component
     } // NOTE: Try creating the method outside export default {} so that it is declares 'function forceRerender() {}' and export/import with map-utils.js
   },
@@ -254,6 +261,14 @@ export default {
     },
     currentTravelMode: function () {
       this.toggleTravelMode()
+    },
+    message: {
+      immediate: true,
+      handler: function (newVal, oldVal) {
+        console.log('Message changed from',
+          oldVal, 'to', newVal)
+        this.forceRerender()
+      }
     }
   },
   components: {
