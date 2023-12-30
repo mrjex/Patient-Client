@@ -111,6 +111,8 @@ function generateInfoWindowUtils(clinic, marker, map) {
 
   selectedDentistInfowindow = new google.maps.InfoWindow()
 
+  // ----------------- CALCULATE ATTRIBUTES (Refactor later) -------------------
+
   let clinicEmployees = ''
   clinic.employees.forEach((element) => clinicEmployees += element.dentist_name + '<br>')
 
@@ -120,24 +122,38 @@ function generateInfoWindowUtils(clinic, marker, map) {
     ratingsString = '<br>Ratings: ' + clinic.ratings
   }
 
-  selectedDentistInfowindow.setContent(
-    `<strong class="header">${clinic.clinic_name}</strong>
+  let displayedStarsString = ''
 
-    '<div style="float:left; width:20%;"><img src=${clinic.photoURL} width="120" height="80"/></div>'
-    '<div style="float:right; width:80%;margin-top: -19px;">'
+  for (let i = parseFloat(clinic.ratings); i > 0; i--) {
+    if (i < 1 && i > 0.4) { // Add half star
+      displayedStarsString += '<i class="fa-solid fa-star-half"></i>'
+    } else if (i >= 1) { // Add full star
+      displayedStarsString += '<i class="fa-solid fa-star"></i>'
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+
+  selectedDentistInfowindow.setContent(
+    `<strong class="header"><i class="fa-solid fa-tooth"></i> ${clinic.clinic_name}</strong>
+
+    <div style="float:right; width:20%;"><img src=${clinic.photoURL} width="120" height="80"/></div>
+    <div style="float:right; width:80%;margin-top: -19px;">
 
     <p>
-    Adress: Adress here <br>
-    Ratings here <br>
     <br>
+    <i class="fa-solid fa-location-dot"></i> Adress: ${clinic.address}
+    <br>
+    Ratings here <br>
 
-    <strong>Employees:</strong>
+    <strong> <i class="fa-solid fa-users"></i> Employees:</strong>
     <br>
     ${clinicEmployees}
     <br>
+    <div class="stars">
+      ${displayedStarsString}
+    </div>
     ${ratingsString}
-    <br>
-    ${clinic.address}
     </p>
     <style>
     .header {

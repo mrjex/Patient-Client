@@ -86,3 +86,10 @@
     font-weight: 500;
     padding: 6px 12px;
   }
+
+  .stars {
+    color:#ff9c1a;
+    gap: 2px;
+    display: flex;
+    align-items: center;
+  }
