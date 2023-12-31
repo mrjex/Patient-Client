@@ -11,9 +11,6 @@ import { listenForMarkerClickNearbyMode, nearbyMap, userGlobalCoordinates, drawN
 import { listenForMarkerClickSearchMode, searchMap, drawSearchMap, markerCoordinates } from './map-modes/search-map'
 import { Api } from '../../src/Api.js'
 
-// import MapComponent from '../../src/components/MapComponent.vue'
-// import InfoWindowComponent from '../../src/components/InfoWindowComponent.vue'
-
 let currentMapMode = 'Nearby'
 
 // Two types of clinic quries:
@@ -95,14 +92,6 @@ function initializeMarker(referenceCoordinates) {
 function generateInfoWindowUtils(clinic, marker, map) {
   const clinicRatings = clinic.ratings ? clinic.ratings : '-1'
   clinicStatisticsMap.set('ratings', clinicRatings)
-
-  // console.log(MapComponent.$data)
-  // MapComponent.methods.forceRerender()
-  // Option 1: MapComponent.methods.forceRerender()
-  // Option 2: this.$myGlobalVariable += 1
-
-  // MapComponent.methods.setVariable()
-  // MapComponent.methods.forceRerender() // POTENTIAL SOLUTION: Add eventListener in MapComponent.vue and set a variable to true in this script, if true --> forceRerender()
 
   // If any infowindow is currently open, then close it before the newly clicked clinic's infowindow pops up
   if (selectedDentistInfowindow) {
