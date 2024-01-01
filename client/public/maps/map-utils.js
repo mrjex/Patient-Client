@@ -100,8 +100,9 @@ function generateInfoWindowUtils(clinic, marker, map) {
 
   // selectedDentistInfowindow = new google.maps.InfoWindow() // PREVIOUS: WORKS
 
-  // ----------------- CALCULATE ATTRIBUTES (Refactor later) -------------------
+  // ----------------- CALCULATE ATTRIBUTES (Refactor to utils.js) -------------------
 
+  // TODO: Refactor --> generateHTMLStarString()
   let clinicEmployees = ''
   clinic.employees.forEach((element) => clinicEmployees += element.dentist_name + '<br>')
 
@@ -112,6 +113,19 @@ function generateInfoWindowUtils(clinic, marker, map) {
       displayedStarsString += '<i class="fa-solid fa-star-half"></i>'
     } else if (i >= 1) { // Add full star
       displayedStarsString += '<i class="fa-solid fa-star"></i>'
+    }
+  }
+
+  // TODO: Refactor --> generateAddressString() --> COMMENT: Eliminate uneccesary long and detailed sequences of address
+  let addressString = clinic.address
+
+  if (addressString.length > 30) {
+    const stringSplit = addressString.split(',')
+
+    addressString = ''
+    let i = 0
+    while (addressString.length + stringSplit[i].length <= 30) {
+      addressString += stringSplit[i++]
     }
   }
 
@@ -126,7 +140,7 @@ function generateInfoWindowUtils(clinic, marker, map) {
 
   <p>
     <div class="clinic-address">
-      <i class="fa-solid fa-location-dot"></i> Adress: ${clinic.address}
+      <i class="fa-solid fa-location-dot"></i> Adress: ${addressString}
     </div>
 
     <div id="rating-string">
@@ -150,158 +164,13 @@ function generateInfoWindowUtils(clinic, marker, map) {
 
   // selectedDentistInfowindow.setContent(contentString)
 
+  // console.warn(clinic.address.length)
+
+  // maxWidth: 400
   selectedDentistInfowindow = new google.maps.InfoWindow({
     content: contentString,
-    maxWidth: false,
     ariaLabel: 'My title'
   })
-
-  // ----------------------  RATINGS TRY -----------------------------
-  /*
-  $(this.getcontent()).find('.stars').raty({
-    half: true,
-    score: function () {
-      return $(this).attr('data-score')
-    },
-    readonly: true,
-    path: 'https://raw.githubusercontent.com/wbotelhos/raty/master/demo/images/'
-  })
-  */
-
-  // Vanilla JS Version (V4+)
-  /*
-  const myRaty = new Raty(document.querySelector('.demo'), { // 'Raty' is not defined, try importing it?
-    // options
-    // shows a cancel button to cancel the rating.
-    cancelButton: false,
-    // CSS class for cancel button
-    cancelClass: 'raty-cancel',
-    // hint of cancel button
-    cancelHint: 'Cancel this rating!',
-    // icons for cancel button
-    cancelOff: 'cancel-off.png',
-    cancelOn: 'cancel-on.png',
-    // position of cancel button
-    cancelPlace: 'left',
-    // fired on rating click
-    click: function (score, element, evt) {
-      const objectInstance = this
-      console.log(objectInstance)
-    },
-    // enable half star selection
-    half: false,
-    // enable half star
-    halfShow: true,
-    // default hints of stars
-    hints: ['bad', 'poor', 'regular', 'good', 'gorgeous'],
-    // Object list with position and icon on and off to do a mixed icons.
-    iconRange: undefined,
-    iconRangeSame: false,
-    // fired on mouseout.
-    mouseout: function (score, element, evt) {
-      const objectInstance = this
-      console.log(objectInstance)
-    },
-    // fired on mouseover
-    mouseover: function (score, element, evt) {
-      const objectInstance = this
-      console.log(objectInstance)
-    },
-    // hint for no rated elements when it's readOnly.
-    noRatedMsg: 'Not rated yet!',
-    // number of stars
-    number: 5,
-    // max number of stars
-    numberMax: 5,
-    // a global locate where the icon will be looked.
-    path: undefined,
-    // enables the selection of a precision score.
-    precision: false,
-    // enables readonly mode
-    readOnly: false, // NOTE: Set to 'true' later -----------------------------
-    // included values attributes to do the score round math.
-    round: { down: 0.25, full: 0.6, up: 0.76 },
-    // initial rating
-    score: undefined,
-    // name of the hidden field that holds the score value.
-    scoreName: 'score',
-    // enables just a single star selection.
-    single: false,
-    // space between icons
-    space: true
-  })
-  */
-
-  // NOTE: IF THE ABOVE CODE DOESN'T WORK, Copy-paste options to the field below
-  // jQuery Version (V3)
-  /*
-  $('.demo').raty({
-    // options
-    // shows a cancel button to cancel the rating.
-    cancelButton: false,
-    // CSS class for cancel button
-    cancelClass: 'raty-cancel',
-    // hint of cancel button
-    cancelHint: 'Cancel this rating!',
-    // icons for cancel button
-    cancelOff: 'cancel-off.png',
-    cancelOn: 'cancel-on.png',
-    // position of cancel button
-    cancelPlace: 'left',
-    // fired on rating click
-    click: function (score, element, evt) {
-      const objectInstance = this
-      console.log(objectInstance)
-    },
-    // enable half star selection
-    half: false,
-    // enable half star
-    halfShow: true,
-    // default hints of stars
-    hints: ['bad', 'poor', 'regular', 'good', 'gorgeous'],
-    // Object list with position and icon on and off to do a mixed icons.
-    iconRange: undefined,
-    iconRangeSame: false,
-    // fired on mouseout.
-    mouseout: function (score, element, evt) {
-      const objectInstance = this
-      console.log(objectInstance)
-    },
-    // fired on mouseover
-    mouseover: function (score, element, evt) {
-      const objectInstance = this
-      console.log(objectInstance)
-    },
-    // hint for no rated elements when it's readOnly.
-    noRatedMsg: 'Not rated yet!',
-    // number of stars
-    number: 5,
-    // max number of stars
-    numberMax: 5,
-    // a global locate where the icon will be looked.
-    path: undefined,
-    // enables the selection of a precision score.
-    precision: false,
-    // enables readonly mode
-    readOnly: false, // NOTE: Set to 'true' later -----------------------------
-    // included values attributes to do the score round math.
-    round: { down: 0.25, full: 0.6, up: 0.76 },
-    // initial rating
-    score: undefined,
-    // name of the hidden field that holds the score value.
-    scoreName: 'score',
-    // enables just a single star selection.
-    single: false,
-    // space between icons
-    space: true
-  })
-
-  $('.demo').raty('score', 4)
-  console.log($('.demo').raty('score'))
-
-  console.log(myRaty)
-  */
-  // ------------------------------------------------------------------
 
   selectedDentistInfowindow.open(map, marker)
 }
@@ -323,7 +192,6 @@ function getReferencePosition() {
 
 // Create visual markers of every clinic that was sent in the payload from Clinic Service
 function drawClinicMarkers() {
-  console.warn(nearbyClinicsQueryData.clinics)
   // eslint-disable-next-line no-eval
   const clinicsDataResponse = eval(nearbyClinicsQueryData.clinics)
 
