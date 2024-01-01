@@ -9,6 +9,7 @@
 
 import { listenForMarkerClickNearbyMode, nearbyMap, userGlobalCoordinates, drawNearbyMap } from './map-modes/nearby-map'
 import { listenForMarkerClickSearchMode, searchMap, drawSearchMap, markerCoordinates } from './map-modes/search-map'
+import { getMeasurementInHalfQuantities, cutStringByMaxLengthAndDelimiter } from '../../src/utils'
 import { Api } from '../../src/Api.js'
 
 let currentMapMode = 'Nearby'
@@ -17,9 +18,12 @@ let currentMapMode = 'Nearby'
 let currentRadius = 10 // radius query
 let currentQueryNumber // fixed number query
 
-let nearbyClinicsQueryData // TODO: Rename to 'clinicsToDisplayData'
+let clinicsData
 let selectedQueryMode = 'radius' // Possible values: 'radius' and 'number'
+
 let selectedDentistInfowindow
+const infoWindowMaxCharacters = 30
+
 const clinicStatisticsMap = new Map()
 const defaultZoomLevel = 12
 
@@ -88,6 +92,18 @@ function initializeMarker(referenceCoordinates) {
   }
 }
 
+function getClinicEmployeesHtmlString(clinic) {
+  let clinicEmployees = '<br>'
+  clinic.employees.forEach((element) => clinicEmployees += element.dentist_name + '<br>')
+  return clinicEmployees
+}
+
+function getStarRatingHtmlString(clinic) {
+  const halfStarIcon = '<i class="fa-solid fa-star-half"></i>'
+  const fullStarIcon = '<i class="fa-solid fa-star"></i>'
+  return getMeasurementInHalfQuantities(clinic.ratings, fullStarIcon, halfStarIcon)
+}
+
 // Display the related information about the clicked dental clinic marker in a window positioned at the selected dental clinic marker
 function generateInfoWindowUtils(clinic, marker, map) {
   const clinicRatings = clinic.ratings ? clinic.ratings : '-1'
@@ -98,38 +114,9 @@ function generateInfoWindowUtils(clinic, marker, map) {
     selectedDentistInfowindow.close()
   }
 
-  // selectedDentistInfowindow = new google.maps.InfoWindow() // PREVIOUS: WORKS
-
-  // ----------------- CALCULATE ATTRIBUTES (Refactor to utils.js) -------------------
-
-  // TODO: Refactor --> generateHTMLStarString()
-  let clinicEmployees = ''
-  clinic.employees.forEach((element) => clinicEmployees += element.dentist_name + '<br>')
-
-  let displayedStarsString = ''
-
-  for (let i = parseFloat(clinic.ratings); i > 0; i--) {
-    if (i < 1 && i > 0.4) { // Add half star
-      displayedStarsString += '<i class="fa-solid fa-star-half"></i>'
-    } else if (i >= 1) { // Add full star
-      displayedStarsString += '<i class="fa-solid fa-star"></i>'
-    }
-  }
-
-  // TODO: Refactor --> generateAddressString() --> COMMENT: Eliminate uneccesary long and detailed sequences of address
-  let addressString = clinic.address
-
-  if (addressString.length > 30) {
-    const stringSplit = addressString.split(',')
-
-    addressString = ''
-    let i = 0
-    while (addressString.length + stringSplit[i].length <= 30) {
-      addressString += stringSplit[i++]
-    }
-  }
-
-  // ---------------------------------------------------------------------------
+  const clinicEmployees = getClinicEmployeesHtmlString(clinic)
+  const starRating = getStarRatingHtmlString(clinic)
+  const addressString = cutStringByMaxLengthAndDelimiter(clinic.address, infoWindowMaxCharacters, ',')
 
   const contentString = `<strong class="header"><i class="fa-solid fa-tooth"></i> ${clinic.clinic_name}</strong>
 
@@ -148,7 +135,7 @@ function generateInfoWindowUtils(clinic, marker, map) {
     </div>
 
     <div class="stars">
-      ${displayedStarsString}
+      ${starRating}
     </div>
     ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ
 
@@ -162,14 +149,8 @@ function generateInfoWindowUtils(clinic, marker, map) {
   }
   </style>`
 
-  // selectedDentistInfowindow.setContent(contentString)
-
-  // console.warn(clinic.address.length)
-
-  // maxWidth: 400
   selectedDentistInfowindow = new google.maps.InfoWindow({
-    content: contentString,
-    ariaLabel: 'My title'
+    content: contentString
   })
 
   selectedDentistInfowindow.open(map, marker)
@@ -193,7 +174,7 @@ function getReferencePosition() {
 // Create visual markers of every clinic that was sent in the payload from Clinic Service
 function drawClinicMarkers() {
   // eslint-disable-next-line no-eval
-  const clinicsDataResponse = eval(nearbyClinicsQueryData.clinics)
+  const clinicsDataResponse = eval(clinicsData.clinics)
 
   if (clinicsDataResponse) {
     for (let i = 0; i < clinicsDataResponse.length; i++) {
@@ -204,11 +185,6 @@ function drawClinicMarkers() {
       createMarker(referenceCoordinates, currentClinic)
     }
   }
-}
-
-// Store the data (clinics to display on map) retrieved in MapComponent.vue from Clinic Service
-function setNearbyClinicsQueryData(value) {
-  nearbyClinicsQueryData = value
 }
 
 // Potential values: 'radius' or 'number'
@@ -243,7 +219,7 @@ async function sendNearbyQueryRequest(queryMode, queryValue) { // Sends the quer
   const queryUrl = `/clinics/${queryMode}/positions?${queryMode}=${queryValue}&coordinates=${getReferencePosition()}`
   const { data } = await Api.get(queryUrl)
 
-  setNearbyClinicsQueryData(data)
+  clinicsData = data
   updateMapUI()
 }
 
@@ -259,7 +235,7 @@ integrateAPIKey()
 
 export {
   confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, getZoomLevel,
-  generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition, setNearbyClinicsQueryData,
+  generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition,
   selectedQueryMode, setSelectedQueryMode, manageNearbyQueryRequest, currentQueryNumber, setFixedQueryNumber,
   defaultZoomLevel, clinicStatisticsMap, sendNearbyQueryRequest
 }
