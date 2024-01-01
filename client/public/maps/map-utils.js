@@ -98,18 +98,12 @@ function generateInfoWindowUtils(clinic, marker, map) {
     selectedDentistInfowindow.close()
   }
 
-  selectedDentistInfowindow = new google.maps.InfoWindow()
+  // selectedDentistInfowindow = new google.maps.InfoWindow() // PREVIOUS: WORKS
 
   // ----------------- CALCULATE ATTRIBUTES (Refactor later) -------------------
 
   let clinicEmployees = ''
   clinic.employees.forEach((element) => clinicEmployees += element.dentist_name + '<br>')
-
-  let ratingsString = 'No ratings available'
-
-  if (clinic.ratings) {
-    ratingsString = '<br>Ratings: ' + clinic.ratings
-  }
 
   let displayedStarsString = ''
 
@@ -123,33 +117,44 @@ function generateInfoWindowUtils(clinic, marker, map) {
 
   // ---------------------------------------------------------------------------
 
-  selectedDentistInfowindow.setContent(
-    `<strong class="header"><i class="fa-solid fa-tooth"></i> ${clinic.clinic_name}</strong>
+  const contentString = `<strong class="header"><i class="fa-solid fa-tooth"></i> ${clinic.clinic_name}</strong>
 
-    <div style="float:right; width:20%;"><img src=${clinic.photoURL} width="120" height="80"/></div>
-    <div style="float:right; width:80%;margin-top: -19px;">
+  <div class="clinic-photo">
+  <div style="float:right; width:20%;"><img src=${clinic.photoURL} width="120" height="80"/></div>
+  <div style="float:right; width:80%;margin-top: -19px;">
+  </div>
 
-    <p>
-    <br>
-    <i class="fa-solid fa-location-dot"></i> Adress: ${clinic.address}
-    <br>
-    Ratings here <br>
+  <p>
+    <div class="clinic-address">
+      <i class="fa-solid fa-location-dot"></i> Adress: ${clinic.address}
+    </div>
 
-    <strong> <i class="fa-solid fa-users"></i> Employees:</strong>
-    <br>
-    ${clinicEmployees}
-    <br>
+    <div id="rating-string">
+      <i class="fa-solid fa-circle-check"></i> Rating:
+    </div>
+
     <div class="stars">
       ${displayedStarsString}
     </div>
-    ${ratingsString}
-    </p>
-    <style>
-    .header {
-      font-weight: 1000
-    }
-    </style>`
-  )
+    ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ
+
+    <div class="clinic-employees">
+      <i class="fa-solid fa-users"></i> Employees: ${clinicEmployees}
+    </div>
+  </p>
+  <style>
+  .header {
+    font-weight: 1000
+  }
+  </style>`
+
+  // selectedDentistInfowindow.setContent(contentString)
+
+  selectedDentistInfowindow = new google.maps.InfoWindow({
+    content: contentString,
+    maxWidth: false,
+    ariaLabel: 'My title'
+  })
 
   // ----------------------  RATINGS TRY -----------------------------
   /*
