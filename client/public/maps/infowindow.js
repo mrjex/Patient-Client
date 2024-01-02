@@ -14,37 +14,44 @@ let photoChunk
 let addressChunk
 let ratingsChunk
 let employeesChunk
-
 let employeesStyleChunk
 
 /*
-  The two different X-values in which the employee-list is positioned, depending on whether
+  The two different values in which the employee-list is positioned, depending on whether
   the clinic-photo was successfully fetched. If a photo is retrieved from the DB, space in the
   infowindow must be accommodated for it.
 */
 const employeeUIPositionsX = ['130', '10']
+const employeeUIPositionsY = ['42', '2']
 
+// Display the related information about the clicked dental clinic marker in a window positioned at the selected dental clinic marker
 function generateWindow(clinic, map, marker) {
-  if (selectedDentistInfowindow) { // If any infowindow is currently open, then close it before the newly clicked clinic's infowindow pops up
+  deselectPreviouslyActivatedWindow()
+  assignHtmlVariables(clinic)
+  displayWindowUI(map, marker, getWindowContent(clinic))
+}
+
+function deselectPreviouslyActivatedWindow() {
+  if (selectedDentistInfowindow) {
     selectedDentistInfowindow.close()
   }
+}
 
-  assignHtmlVariables(clinic)
-
-  const contentString =
-  `<strong class="clinic-title"><i class="fa-solid fa-tooth"></i> ${clinic.clinic_name}</strong>
+function getWindowContent(clinic) {
+  return `<strong class="clinic-title"><i class="fa-solid fa-tooth"></i> ${clinic.clinic_name}</strong>
   ${photoChunk}
   <p>
     ${addressChunk}
     ${ratingsChunk}
     ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ
-
     ${employeesChunk}
   </p>
   <style>
   ${employeesStyleChunk}
   </style>`
+}
 
+function displayWindowUI(map, marker, contentString) {
   selectedDentistInfowindow = new google.maps.InfoWindow({
     content: contentString
   })
@@ -58,7 +65,7 @@ function assignHtmlVariables(clinic) {
   ratingsChunk = getRatingsHtml(clinic)
   employeesChunk = getEmployeesHtml(clinic)
 
-  employeesStyleChunk = getEmployeesStyleChunk(photoChunk)
+  employeesStyleChunk = getEmployeesStyleChunk(clinic.photoURL)
 }
 
 /*
@@ -66,12 +73,11 @@ function assignHtmlVariables(clinic) {
     with preexisting data that Google API can fetch)
 */
 function getPhotoHtml(clinic) {
-  return clinic.photoURL
-    ? `<div class="clinic-photo">
-    <div style="float:right; width:20%;"><img src=${clinic.photoURL} width="120" height="80"/></div>
-    <div style="float:right; width:80%;margin-top: -19px;">
+  const src = clinic.photoURL ? clinic.photoURL : 'https://upload.wikimedia.org/wikipedia/commons/7/70/Solid_white.svg'
+  return `<div class="clinic-photo">
+  <div style="float:right; width:20%;"><img src=${src} width="120" height="80"/></div>
+  <div style="float:right; width:80%;margin-top: -19px;">
   </div>`
-    : ''
 }
 
 function getAddressHtml(clinic) {
@@ -112,15 +118,19 @@ function getClinicEmployees(clinic) {
   return clinicEmployees
 }
 
-function getEmployeesDisplayPosX(photoChunk) {
-  return photoChunk.length > 0 ? employeeUIPositionsX[0] : employeeUIPositionsX[1]
+function getEmployeesPosX(photoURL) {
+  return photoURL ? employeeUIPositionsX[0] : employeeUIPositionsX[1]
 }
 
-function getEmployeesStyleChunk(photoChunk) {
+function getEmployeesPosY(photoURL) {
+  return photoURL ? employeeUIPositionsY[0] : employeeUIPositionsY[1]
+}
+
+function getEmployeesStyleChunk(photoURL) {
   return `.clinic-employees {
     position: absolute;
-    left: ${getEmployeesDisplayPosX(photoChunk)}px;
-    top: 42px;
+    left: ${getEmployeesPosX(photoURL)}px;
+    top: ${getEmployeesPosY(photoURL)}px;
   }`
 }
 

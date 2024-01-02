@@ -115,13 +115,9 @@ export default {
       currentNumberQuery: '5',
 
       /*
-      'PREVIOUS' variables:
-       These variables are needed to make sure that the user's
-       interaction with the dropdowns are satisfying.
+        'UI' variables:
+        These variables are directly changed by the user through the UI interactions
       */
-      previousTravelMode: '',
-      previousRadius: 10,
-      previousNumberQuery: '5',
       options: [
         { value: 0.25, text: '0.25 KM' },
         { value: 0.5, text: '0.5 KM' },
@@ -164,7 +160,6 @@ export default {
     async changeSearchRange() { // Dropdown button is pressed to change radius of displayed clinics
       changeRadius(this.currentRadius)
       setSelectedQueryMode('radius')
-      this.previousRadius = this.currentRadius
       deselectClinicMarker()
       sendNearbyQueryRequest('radius', this.currentRadius)
     },
@@ -173,7 +168,6 @@ export default {
       calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
     },
     async sendClinicNumberQuery() {
-      this.previousNumberQuery = this.currentNumberQuery
       setSelectedQueryMode('number')
       setFixedQueryNumber(this.currentNumberQuery)
       sendNearbyQueryRequest('number', this.currentNumberQuery)
@@ -216,9 +210,9 @@ export default {
     },
     initializePlaceAPI() {
       createHTMLScriptElement('https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&libraries=places&callback=initMap', true)
-    },
-    sendTravelPathNotFoundNotification() {
-      console.warn('Issue Toast Notification: Google API could not generate route to desired destination')
+
+      // TODO:
+      // createHTMLScriptElement(`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`, true)
     },
     getPathToMapModeScript(mapScript) { // The path from this component to the desired map-mode script (nearby-map.js or searchmap.js)
       return `../../public/maps/map-modes/${mapScript}`

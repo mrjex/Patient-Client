@@ -1,5 +1,4 @@
 import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius, manageNearbyQueryRequest, getZoomLevel } from '../map-utils.js'
-import MapComponent from '../../../src/components/MapComponent.vue'
 
 /* eslint-disable no-undef */
 let nearbyMap = -1
@@ -50,7 +49,7 @@ function calcRoute(userGlobalCoordinates, dentistDestination, directionsService,
       if (status === 'OK') {
         directionsRenderer.setDirections(response)
       } else if (status === 'ZERO_RESULTS') {
-        MapComponent.methods.sendTravelPathNotFoundNotification()
+        alert('Google API could not generate route to desired destination')
       }
     })
   }

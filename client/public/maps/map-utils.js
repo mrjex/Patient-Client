@@ -21,7 +21,6 @@ let currentQueryNumber // fixed number query
 let clinicsData
 let selectedQueryMode = 'radius' // Possible values: 'radius' and 'number'
 
-const clinicStatisticsMap = new Map()
 const defaultZoomLevel = 12
 
 /*
@@ -49,6 +48,11 @@ function confirmExecutionConditions(mapMode) {
 function integrateAPIKey() {
   (g => { let h; let a; let k; const p = 'The Google Maps JavaScript API'; const c = 'google'; const l = 'importLibrary'; const q = '__ib__'; const m = document; let b = window; b = b[c] || (b[c] = {}); const d = b.maps || (b.maps = {}); const r = new Set(); const e = new URLSearchParams(); const u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement('script')); e.set('libraries', [...r] + ''); for (k in g)e.set(k.replace(/[A-Z]/g, t => '_' + t[0].toLowerCase()), g[k]); e.set('callback', c + '.maps.' + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + ' could not load.')); a.nonce = m.querySelector('script[nonce]')?.nonce || ''; m.head.append(a) })); d[l] ? console.warn(p + ' only loads once. Ignoring:', g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })
   ({ key: 'AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y', v: 'weekly' })
+  /*
+  // TODO:
+  (g => { let h; let a; let k; const p = 'The Google Maps JavaScript API'; const c = 'google'; const l = 'importLibrary'; const q = '__ib__'; const m = document; let b = window; b = b[c] || (b[c] = {}); const d = b.maps || (b.maps = {}); const r = new Set(); const e = new URLSearchParams(); const u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement('script')); e.set('libraries', [...r] + ''); for (k in g)e.set(k.replace(/[A-Z]/g, t => '_' + t[0].toLowerCase()), g[k]); e.set('callback', c + '.maps.' + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + ' could not load.')); a.nonce = m.querySelector('script[nonce]')?.nonce || ''; m.head.append(a) })); d[l] ? console.warn(p + ' only loads once. Ignoring:', g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })
+  ({ key: `${process.env.GOOGLE_MAPS_API_KEY}`, v: 'weekly' })
+  */
 }
 
 function changeMapMode(newMapMode) {
@@ -89,11 +93,11 @@ function initializeMarker(referenceCoordinates) {
   }
 }
 
-// Display the related information about the clicked dental clinic marker in a window positioned at the selected dental clinic marker
+/*
+  Forward functionality to infowindow.js with aggregation with respect to encapsulation:
+  The map-mode scripts only interacts with map.utils.js
+*/
 function generateInfoWindowUtils(clinic, marker, map) {
-  const clinicRatings = clinic.ratings ? clinic.ratings : '-1'
-  clinicStatisticsMap.set('ratings', clinicRatings)
-
   generateWindow(clinic, map, marker)
 }
 
@@ -178,5 +182,5 @@ export {
   confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, getZoomLevel,
   generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition,
   selectedQueryMode, setSelectedQueryMode, manageNearbyQueryRequest, currentQueryNumber, setFixedQueryNumber,
-  defaultZoomLevel, clinicStatisticsMap, sendNearbyQueryRequest
+  defaultZoomLevel, sendNearbyQueryRequest
 }
