@@ -9,7 +9,7 @@
 
 import { listenForMarkerClickNearbyMode, nearbyMap, userGlobalCoordinates, drawNearbyMap } from './map-modes/nearby-map'
 import { listenForMarkerClickSearchMode, searchMap, drawSearchMap, markerCoordinates } from './map-modes/search-map'
-import { getMeasurementInHalfQuantities, cutStringByMaxLengthAndDelimiter } from '../../src/utils'
+import { generateWindow } from './infowindow'
 import { Api } from '../../src/Api.js'
 
 let currentMapMode = 'Nearby'
@@ -20,9 +20,6 @@ let currentQueryNumber // fixed number query
 
 let clinicsData
 let selectedQueryMode = 'radius' // Possible values: 'radius' and 'number'
-
-let selectedDentistInfowindow
-const infoWindowMaxCharacters = 30
 
 const clinicStatisticsMap = new Map()
 const defaultZoomLevel = 12
@@ -92,68 +89,12 @@ function initializeMarker(referenceCoordinates) {
   }
 }
 
-function getClinicEmployeesHtmlString(clinic) {
-  let clinicEmployees = '<br>'
-  clinic.employees.forEach((element) => clinicEmployees += element.dentist_name + '<br>')
-  return clinicEmployees
-}
-
-function getStarRatingHtmlString(clinic) {
-  const halfStarIcon = '<i class="fa-solid fa-star-half"></i>'
-  const fullStarIcon = '<i class="fa-solid fa-star"></i>'
-  return getMeasurementInHalfQuantities(clinic.ratings, fullStarIcon, halfStarIcon)
-}
-
 // Display the related information about the clicked dental clinic marker in a window positioned at the selected dental clinic marker
 function generateInfoWindowUtils(clinic, marker, map) {
   const clinicRatings = clinic.ratings ? clinic.ratings : '-1'
   clinicStatisticsMap.set('ratings', clinicRatings)
 
-  // If any infowindow is currently open, then close it before the newly clicked clinic's infowindow pops up
-  if (selectedDentistInfowindow) {
-    selectedDentistInfowindow.close()
-  }
-
-  const clinicEmployees = getClinicEmployeesHtmlString(clinic)
-  const starRating = getStarRatingHtmlString(clinic)
-  const addressString = cutStringByMaxLengthAndDelimiter(clinic.address, infoWindowMaxCharacters, ',')
-
-  const contentString = `<strong class="header"><i class="fa-solid fa-tooth"></i> ${clinic.clinic_name}</strong>
-
-  <div class="clinic-photo">
-  <div style="float:right; width:20%;"><img src=${clinic.photoURL} width="120" height="80"/></div>
-  <div style="float:right; width:80%;margin-top: -19px;">
-  </div>
-
-  <p>
-    <div class="clinic-address">
-      <i class="fa-solid fa-location-dot"></i> Adress: ${addressString}
-    </div>
-
-    <div id="rating-string">
-      <i class="fa-solid fa-circle-check"></i> Rating:
-    </div>
-
-    <div class="stars">
-      ${starRating}
-    </div>
-    ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ ㅤ
-
-    <div class="clinic-employees">
-      <i class="fa-solid fa-users"></i> Employees: ${clinicEmployees}
-    </div>
-  </p>
-  <style>
-  .header {
-    font-weight: 1000
-  }
-  </style>`
-
-  selectedDentistInfowindow = new google.maps.InfoWindow({
-    content: contentString
-  })
-
-  selectedDentistInfowindow.open(map, marker)
+  generateWindow(clinic, map, marker)
 }
 
 // Update radius to query dental clinics in relative to a fixed position (user's pos or search-reference pos)
