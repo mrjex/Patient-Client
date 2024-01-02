@@ -9,10 +9,20 @@ import { getMeasurementInHalfQuantities, cutStringByMaxLengthAndDelimiter } from
 
 const infoWindowMaxCharacters = 30
 let selectedDentistInfowindow
+
 let photoChunk
 let addressChunk
 let ratingsChunk
 let employeesChunk
+
+let employeesStyleChunk
+
+/*
+  The two different X-values in which the employee-list is positioned, depending on whether
+  the clinic-photo was successfully fetched. If a photo is retrieved from the DB, space in the
+  infowindow must be accommodated for it.
+*/
+const employeeUIPositionsX = ['130', '10']
 
 function generateWindow(clinic, map, marker) {
   if (selectedDentistInfowindow) { // If any infowindow is currently open, then close it before the newly clicked clinic's infowindow pops up
@@ -22,7 +32,7 @@ function generateWindow(clinic, map, marker) {
   assignHtmlVariables(clinic)
 
   const contentString =
-  `<strong class="header"><i class="fa-solid fa-tooth"></i> ${clinic.clinic_name}</strong>
+  `<strong class="clinic-title"><i class="fa-solid fa-tooth"></i> ${clinic.clinic_name}</strong>
   ${photoChunk}
   <p>
     ${addressChunk}
@@ -32,9 +42,7 @@ function generateWindow(clinic, map, marker) {
     ${employeesChunk}
   </p>
   <style>
-  .header {
-    font-weight: 1000
-  }
+  ${employeesStyleChunk}
   </style>`
 
   selectedDentistInfowindow = new google.maps.InfoWindow({
@@ -49,6 +57,8 @@ function assignHtmlVariables(clinic) {
   addressChunk = getAddressHtml(clinic)
   ratingsChunk = getRatingsHtml(clinic)
   employeesChunk = getEmployeesHtml(clinic)
+
+  employeesStyleChunk = getEmployeesStyleChunk(photoChunk)
 }
 
 /*
@@ -100,6 +110,18 @@ function getClinicEmployees(clinic) {
   let clinicEmployees = '<br>'
   clinic.employees.forEach((element) => clinicEmployees += element.dentist_name + '<br>')
   return clinicEmployees
+}
+
+function getEmployeesDisplayPosX(photoChunk) {
+  return photoChunk.length > 0 ? employeeUIPositionsX[0] : employeeUIPositionsX[1]
+}
+
+function getEmployeesStyleChunk(photoChunk) {
+  return `.clinic-employees {
+    position: absolute;
+    left: ${getEmployeesDisplayPosX(photoChunk)}px;
+    top: 42px;
+  }`
 }
 
 export { generateWindow }

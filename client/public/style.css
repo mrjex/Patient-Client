@@ -105,15 +105,14 @@
     left: 130px;
   }
 
-  .clinic-employees {
-    position: absolute;
-    left: 130px;
-    top: 42px;
-  }
-
   #rating-string {
     float: left;
     position: absolute;
     left: 130px;
     top: 20px;
+  }
+
+  .clinic-title {
+    font-weight: 1000;
+    font-size: medium;
   }
