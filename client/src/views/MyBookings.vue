@@ -5,12 +5,16 @@
       <b-row>
         <!-- Use v-for to loop through appointments and create a b-card for each one -->
         <b-col v-for="(appointment, index) in appointments" :key="index">
-          <b-card>
-            <!-- Display the start time and end time as the card title -->
-            <b-card-title>{{ formatDateRange(appointment.start_time, appointment.end_time) }}</b-card-title>
-            <b-button variant="danger" @click="cancelAppointment(appointment._id)">
-        Cancel Appointment
-      </b-button>
+          <b-card class="my-3 custom-rounded-card shadow-lg">
+  <!-- Display the start time and end time as the card title -->
+            <b-card-title>{{ formatDateRange(appointment.start_time, appointment.end_time).title }}</b-card-title>
+              <b-card-sub-title>{{ formatDateRange(appointment.start_time, appointment.end_time).subtitle }}</b-card-sub-title>
+              <br/>
+              <b-card-sub-title>Click here to find clinic on map!</b-card-sub-title>
+
+                <b-button variant="danger" @click="cancelAppointment(appointment._id, index)">
+              Cancel Appointment
+              </b-button>
           </b-card>
         </b-col>
       </b-row>
@@ -49,26 +53,21 @@ export default {
       const endDate = new Date(end)
 
       // Format the dates as desired
-      const formattedStart = `${startDate.getDate()}/${startDate.getMonth() + 1} -${String(startDate.getFullYear()).slice(2)} ${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`
-      if (
-        startDate.getDate() === endDate.getDate() &&
-        startDate.getMonth() === endDate.getMonth() &&
-        startDate.getFullYear() === endDate.getFullYear()
-      ) {
-        // If same date, display only the time
-        return `${formattedStart} ${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`
-      } else {
-        // If different date, display both date and time
-        const formattedEnd = `${endDate.getDate()}/${endDate.getMonth() + 1} -${String(endDate.getFullYear()).slice(2)} ${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`
-        return `${formattedStart} ${formattedEnd}`
-      }
+      const formattedStartDate = `${String(startDate.getDate()).padStart(2, '0')}/${String(startDate.getMonth() + 1).padStart(2, '0')} -${String(startDate.getFullYear()).slice(2)}`
+      const formattedStartTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`
+
+      const formattedEndTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`
+
+      // Create the formatted title and subtitle
+      const title = `${formattedStartDate}`
+      const subtitle = `from: ${formattedStartTime} to: ${formattedEndTime}`
+
+      return { title, subtitle }
     },
-    async cancelAppointment(appointmentId) {
+    async cancelAppointment(appointmentId, index) {
       try {
-        const res = await cancelAppointment(appointmentId)
-        console.log('res')
-        if (res.status === 200) {
-          this.appointments = this.appointment.filter((appointment) => appointment._id === appointmentId)
+        if (await cancelAppointment(appointmentId)) {
+          this.appointments.splice(index, 1)
         }
       } catch (error) {
         console.log('Error')

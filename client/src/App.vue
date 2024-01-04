@@ -37,4 +37,10 @@ body {
   display: flex;
   flex-direction: column;
 }
+.custom-rounded-card {
+  border-radius: 7px !important;
+  border: blue;
+  overflow: hidden;
+}
+
 </style>
