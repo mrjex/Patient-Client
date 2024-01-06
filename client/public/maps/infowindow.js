@@ -73,6 +73,7 @@ function assignHtmlVariables(clinic) {
     with preexisting data that Google API can fetch)
 */
 function getPhotoHtml(clinic) {
+  console.log(clinic.photoURL)
   const src = clinic.photoURL ? clinic.photoURL : 'https://upload.wikimedia.org/wikipedia/commons/7/70/Solid_white.svg'
   return `<div class="clinic-photo">
   <div style="float:right; width:20%;"><img src=${src} width="120" height="80"/></div>

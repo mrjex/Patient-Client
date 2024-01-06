@@ -210,9 +210,6 @@ export default {
     },
     initializePlaceAPI() {
       createHTMLScriptElement('https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&libraries=places&callback=initMap', true)
-
-      // TODO:
-      // createHTMLScriptElement(`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`, true)
     },
     getPathToMapModeScript(mapScript) { // The path from this component to the desired map-mode script (nearby-map.js or searchmap.js)
       return `../../public/maps/map-modes/${mapScript}`
