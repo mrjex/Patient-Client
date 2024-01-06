@@ -2,7 +2,7 @@
   <div class="container text-center ">
 
     <b-card no-body v-for="clinic in clinics" :key="clinic._id.$oid">
-      <b-button variant="info" @click="$emit('clinicClick', clinic)">{{
+      <b-button variant="light" @click="$emit('clinicClick', clinic)">{{
         clinic.clinic_name }}</b-button>
     </b-card>
   </div>
@@ -37,5 +37,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

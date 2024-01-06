@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid" role="tablist">
         <b-card no-body class="mb-1">
-            <b-button block v-b-toggle="accordionID" variant="info">
+            <b-button block v-b-toggle="accordionID" variant="light">
                 {{ formatStartTime }} - {{ formatEndTime }}
             </b-button>
             <b-collapse :id="accordionID" :visible="false" accordion="timeslot-accordion" role="tabpanel">

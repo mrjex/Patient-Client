@@ -8,7 +8,7 @@
 
     </b-card-body>
     <b-card no-body>
-      <b-button variant="info" @click="$emit('showDentists')">
+      <b-button variant="light" @click="$emit('showDentists')">
         {{ resetText }}
       </b-button>
     </b-card>

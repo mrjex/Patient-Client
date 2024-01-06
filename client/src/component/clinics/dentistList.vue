@@ -1,12 +1,12 @@
 <template>
   <div class="container-fluid">
     <b-card no-body>
-      <b-button variant="info" @click="$emit('showClinics')">
+      <b-button variant="light" @click="$emit('showClinics')">
         {{ resetText }}
       </b-button>
     </b-card>
     <b-card no-body v-for="dentist in dentists" :key="dentist._id">
-      <b-button variant="info" @click="$emit('dentistClick', dentist)">{{
+      <b-button variant="light" @click="$emit('dentistClick', dentist)">{{
         dentist.username }}</b-button>
     </b-card>
     <div v-if="dentists.length === 0">This clinic has no employees</div>
