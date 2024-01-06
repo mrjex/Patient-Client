@@ -92,7 +92,7 @@
     gap: 7px;
     position: absolute;
     left: 188px;
-    top: 20px;
+    top: 30px;
   }
 
   .clinic-photo {
@@ -109,7 +109,7 @@
     float: left;
     position: absolute;
     left: 130px;
-    top: 20px;
+    top: 30px;
   }
 
   .clinic-title {
