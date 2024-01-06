@@ -9,29 +9,18 @@
 </template>
 
 <script>
-import { getAllClinics } from '@/utility/clinicUtils.js'
 export default {
+  props: {
+    clinics: {
+      type: Array,
+      required: true
+    }
+  },
   data() {
     return {
-      clinics: [],
       loaded: false,
       displayTimeslots: false
     }
-  },
-  components: {
-  },
-  methods: {
-    async getClinics() {
-      try {
-        const res = await getAllClinics()
-        this.clinics = res.data.clinics
-      } catch (err) {
-        console.error(err)
-      }
-    }
-  },
-  mounted() {
-    this.getClinics()
   }
 }
 </script>

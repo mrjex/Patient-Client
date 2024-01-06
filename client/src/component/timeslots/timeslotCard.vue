@@ -7,7 +7,7 @@
             <b-collapse :id="accordionID" :visible="false" accordion="timeslot-accordion" role="tabpanel">
                 <b-card-body>
 
-                    <b-card-text><strong>Dentist:</strong> {{ dentistName }}</b-card-text>
+                    <b-card-text><strong>Dentist:</strong> {{ this.dentist.username }}</b-card-text>
                     <div class="d-flex justify-content-center">
                         <b-button @click="createBooking">
                             Make appointment
@@ -23,16 +23,18 @@
 // eslint-disable-next-line no-unused-vars
 import dateFormat, { masks } from 'dateformat'
 import { bookAppointment } from '@/utility/timeslotUtils.js'
+import { getDentist } from '@/utility/dentistUtils.js'
 export default {
   name: 'timeslotCard',
   props: {
     availableTime: {
       type: Object,
       required: true
-    },
-    dentistName: {
-      type: String,
-      required: true
+    }
+  },
+  data() {
+    return {
+      dentist: ''
     }
   },
   computed: {
@@ -59,7 +61,18 @@ export default {
       } catch (err) {
         console.error(err)
       }
+    },
+    async getDentist() {
+      try {
+        const res = await getDentist(this.availableTime.dentist_id)
+        this.dentist = res.data.dentist
+      } catch (err) {
+        console.error(err)
+      }
     }
+  },
+  mounted() {
+    this.getDentist()
   }
 }
 </script>
