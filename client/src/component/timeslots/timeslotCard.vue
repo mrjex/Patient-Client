@@ -1,5 +1,5 @@
 <template>
-    <div class="accordion" role="tablist">
+    <div class="container-fluid" role="tablist">
         <b-card no-body class="mb-1">
             <b-button block v-b-toggle="accordionID" variant="info">
                 {{ formatStartTime }} - {{ formatEndTime }}
@@ -8,8 +8,6 @@
                 <b-card-body>
 
                     <b-card-text><strong>Dentist:</strong> {{ dentistName }}</b-card-text>
-                    <b-card-text><strong>Clinic:</strong> {{ clinicName }} </b-card-text>
-
                     <div class="d-flex justify-content-center">
                         <b-button @click="createBooking">
                             Make appointment
@@ -33,10 +31,6 @@ export default {
       required: true
     },
     dentistName: {
-      type: String,
-      required: true
-    },
-    clinicName: {
       type: String,
       required: true
     }
@@ -71,8 +65,5 @@ export default {
 </script>
 
 <style scoped>
-.accordion {
-    width: 30vw;
-    margin: auto;
-}
+
 </style>

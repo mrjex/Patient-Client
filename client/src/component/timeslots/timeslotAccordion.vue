@@ -1,25 +1,30 @@
 <template>
-    <div class="container-fluid text-center">
-        <b-spinner variant="success" v-if="!finishedLoading">
-        </b-spinner>
-        <b-card-body>
+  <div class="container-fluid">
+    <b-spinner variant="success" v-if="!finishedLoading">
+    </b-spinner>
+    <b-card-body>
 
-            <b-card-text v-if="!availableTimes"><strong>No available times found </strong></b-card-text>
+      <b-card-text v-if="!availableTimes"><strong>No available times found </strong></b-card-text>
 
-        </b-card-body>
-        <timeslotCard v-for="availableTime in availableTimes"
-        :key="availableTime._id"
-        :availableTime="availableTime"
-        :dentistName="dentistName"
-        :clinicName="clinicName"
-        @bookedAppointment="deleteAvailableTimes"
-        @bookingFailed="$bvModal.show('failedModal')">
-        </timeslotCard>
+    </b-card-body>
+    <b-card no-body>
+      <b-button variant="info" @click="$emit('showDentists')">
+        {{ resetText }}
+      </b-button>
+    </b-card>
+    <timeslotCard v-for="availableTime in availableTimes" :key="availableTime._id" :availableTime="availableTime"
+      :dentistName="dentist.username" @bookedAppointment="deleteAvailableTimes"
+      @bookingFailed="$bvModal.show('failedModal')">
+    </timeslotCard>
 
-        <!----booking outcome modal---->
-        <b-modal :id="'successModal'" ok-only title="Success"> <p>Appointment created</p>  </b-modal>
-        <b-modal :id="'failedModal'" ok-only title="Request failed"> <p>Unable to book appointment</p></b-modal>
-    </div>
+    <!----booking outcome modal---->
+    <b-modal :id="'successModal'" ok-only title="Success">
+      <p>Appointment created</p>
+    </b-modal>
+    <b-modal :id="'failedModal'" ok-only title="Request failed">
+      <p>Unable to book appointment</p>
+    </b-modal>
+  </div>
 </template>
 
 <script>
@@ -29,16 +34,8 @@ import { getFreeTimeslots } from '@/utility/timeslotUtils.js'
 export default {
   name: 'timeslotAccordion',
   props: {
-    dentist_id: {
-      type: String,
-      required: true
-    },
-    dentistName: {
-      type: String,
-      required: true
-    },
-    clinicName: {
-      type: String,
+    dentist: {
+      type: Object,
       required: true
     }
   },
@@ -48,7 +45,8 @@ export default {
   data() {
     return {
       availableTimes: [],
-      finishedLoading: false
+      finishedLoading: false,
+      resetText: 'Back to Dentists..'
     }
   },
   mounted() {
@@ -57,7 +55,7 @@ export default {
   methods: {
     async getDentistTimeslots() {
       try {
-        const res = await getFreeTimeslots(this.dentist_id)
+        const res = await getFreeTimeslots(this.dentist._id)
 
         this.availableTimes = res.data.availabletimes
         this.finishedLoading = true
@@ -77,6 +75,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.spinner-container {}
-</style>
+<style scoped></style>
