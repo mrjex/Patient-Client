@@ -9,6 +9,21 @@ Wireframes:
       <p v-if="errorMessage">{{errorMessage}}</p>
       <b-form @submit="onSubmit">
         <b-form-group
+          id="email-label"
+          label="Email:"
+          label-for="email"
+        >
+          <b-form-input
+            id="email"
+            v-model="form.email"
+            type="email"
+            placeholder="Enter Email"
+            required
+          >
+          </b-form-input>
+        </b-form-group>
+
+        <b-form-group
           id="username-label"
           label="Username:"
           label-for="username"
@@ -50,53 +65,34 @@ Wireframes:
 import { Api } from '@/Api'
 
 export default {
-  name: 'Authentication.vue',
+  name: 'SignUp.vue',
   data() {
     return {
       form: {
         username: '',
         password: '',
-        id: ''
+        email: ''
       },
       errorMessage: ''
     }
   },
   methods: {
-    onSubmit() {
+    onSubmit(event) {
       event.preventDefault()
-      this.errorMessage = ''
-
-      const body = {
-        username: this.form.username,
-        password: this.form.password
-      }
-
-      Api.post('/patients/login', body, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-        .then(response => {
-          if (response.status === 200) {
-            localStorage.setItem('token', response.data.JWTtoken)
-            Api.defaults.headers.common.authorization = localStorage.getItem('token')
-            window.location = '/'
-          }
+      Api.post('/patients', this.form)
+        .then((response) => {
+          this.$router.push('/authentication')
         })
-        .catch(err => {
-          if (err.response) {
-            if (err.response.status === 404) {
-              this.errorMessage = "User doesn't exist"
-            } else {
-              this.errorMessage = 'Server error'
+        .catch((error) => {
+          if (error.response) {
+            if (error.response.status === 409) {
+              this.errorMessage = 'Username taken'
             }
+          } else {
+            this.errorMessage = 'Server error'
           }
         })
     }
   }
 }
 </script>
-
-<style scoped>
-
-</style>
