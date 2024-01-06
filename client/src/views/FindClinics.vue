@@ -4,6 +4,8 @@
       <div class="m-2">
         <h1>Find a Clinic</h1>
       </div>
+      <timeSpanModal/>
+
       <div class="container-fluid">
         <!--clinic list component-->
         <clinicList v-if="displayClinics" @clinicClick="handleClinicClick"></clinicList>
@@ -30,13 +32,15 @@
 import clinicList from '../component/clinics/ClinicList.vue'
 import dentistList from '../component/clinics/dentistList.vue'
 import timeslotAccordion from '../component/timeslots/timeslotAccordion.vue'
+import timeSpanModal from '../component/timeslots/timeSpanModal.vue'
 
 export default {
   name: 'ClinicsView',
   components: {
     clinicList,
     dentistList,
-    timeslotAccordion
+    timeslotAccordion,
+    timeSpanModal
   },
   data() {
     return {
