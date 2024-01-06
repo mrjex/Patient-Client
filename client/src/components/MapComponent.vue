@@ -1,7 +1,7 @@
 <template>
-  <b-container class="fluid full-height">
-    <b-row class="full-height">
-      <b-col md="4">
+  <b-container class="fluid">
+    <b-row>
+      <b-col md="4" sm="12" class="my-2">
         <b-container id="map-options" class="p-4 rounded shadow">
           <b-row>
             <b-col>
@@ -75,8 +75,8 @@
           </div>
         </div>
       </b-col>
-      <b-col>
-        <div id="map"></div>
+      <b-col md="8" sm="12" class="my-2">
+        <div id="map" style="height: 300px;"></div>
       </b-col>
     </b-row>
   </b-container>
