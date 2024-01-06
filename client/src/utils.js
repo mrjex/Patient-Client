@@ -52,7 +52,7 @@ function cutStringByMaxLengthAndDelimiter(s, maxLength, delimiter) {
 
     s = ''
     let i = 0
-    while (s.length + stringSplit[i].length <= maxLength) { // Add the next substring as long as the string to return doesn't exceed 'maxLength'
+    while (s.length + stringSplit[i].length < maxLength) { // Add the next substring as long as the string to return doesn't exceed 'maxLength'
       s += stringSplit[i++]
     }
   }
