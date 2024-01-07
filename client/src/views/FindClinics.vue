@@ -77,6 +77,8 @@ export default {
       this.displayClinics = true
       this.displayTimeslots = false
     },
+    /* This method takes a timespan and gets all available times matching the timespan for all clinics present
+    in the clinic array */
     async getTimeSpanAppointments(timeSpan) {
       try {
         const clinicIds = []
@@ -96,6 +98,7 @@ export default {
         console.error(err)
       }
     },
+    /* This method handles the event emitted when the search filters have been selected */
     async handleSelectedTime(filter) {
       if (filter.filterOptions === 'closest') {
         await this.getClosestClinics()
@@ -135,6 +138,7 @@ export default {
         console.log('Geolocation failed.')
       }
     },
+    /* This method gets the 10 closest clinics, however only the ones with an available time will actually be displayed */
     async getClosestClinics() {
       try {
         const coordinates = this.userLocation.latitude + ',' + this.userLocation.longitude

@@ -9,17 +9,13 @@
 </template>
 
 <script>
+/* This component takes an array of clinics and displays all of them as a list
+  On click it emits and event with the clinic_id of the clinic that was clicked */
 export default {
   props: {
     clinics: {
       type: Array,
       required: true
-    }
-  },
-  data() {
-    return {
-      loaded: false,
-      displayTimeslots: false
     }
   }
 }

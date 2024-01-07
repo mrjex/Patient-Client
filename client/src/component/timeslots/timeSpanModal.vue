@@ -21,6 +21,7 @@
 
 <script>
 export default {
+  /* This component contains a modal which allows for selecting dates and clinics, this is emitted in an event on ok click */
   name: 'timeSpanModal',
   data() {
     return {

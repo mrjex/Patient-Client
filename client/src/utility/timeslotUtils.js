@@ -10,8 +10,7 @@ export async function getFreeTimeslots(dentistId) {
     console.error('Error when getting timeslots', err)
   }
 }
-/* This function currently uses a hardcoded token for testing purposes
-remove it once token is attached on every request by default */
+
 export async function bookAppointment(availableTimeId) {
   try {
     const messageBody = { availableTime_id: availableTimeId }
