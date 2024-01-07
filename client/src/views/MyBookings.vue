@@ -2,22 +2,29 @@
 <!--Wireframe - https://git.chalmers.se/courses/dit355/2023/student-teams/dit356-2023-20/group-20-distributed-systems/-/wikis/Patient-gui#my-bookings -->
   <body>
     <b-container>
-      <b-row>
+      <div v-if="!finishedLoading" class="loading-container">
+      <b-spinner class="loading-spinner" label="Loading..."></b-spinner>
+    </div>
+          <b-row v-if="finishedLoading">
         <!-- Use v-for to loop through appointments and create a b-card for each one -->
         <b-col v-for="(appointment, index) in appointments" :key="index">
           <b-card class="my-3 custom-rounded-card shadow-lg">
   <!-- Display the start time and end time as the card title -->
-            <b-card-title>{{ formatDateRange(appointment.start_time, appointment.end_time).title }}</b-card-title>
-              <b-card-sub-title>{{ formatDateRange(appointment.start_time, appointment.end_time).subtitle }}</b-card-sub-title>
+            <b-card-title>{{ appointment.clinicInfo.clinic_name }}</b-card-title>
+            <b-card-sub-title><b>Dentist:</b> {{ findDentist(appointment) }}</b-card-sub-title>
+            <br/>
+              <b-card-sub-title> <b>Time: </b>{{ formatDateRange(appointment.start_time, appointment.end_time).subtitle }} {{ formatDateRange(appointment.start_time, appointment.end_time).title }}</b-card-sub-title>
               <br/>
-              <b-card-sub-title>Click here to find clinic on map!</b-card-sub-title>
-
+              <b-card-sub-title><b>Location:</b> {{ appointment.clinicInfo.address }}</b-card-sub-title>
+              <br/>
                 <b-button variant="danger" @click="cancelAppointment(appointment._id, index)">
               Cancel Appointment
               </b-button>
           </b-card>
         </b-col>
       </b-row>
+      <div v-if="message">Error fetching data. Please try again.</div>
+
     </b-container>
   </body>
 </template>
@@ -30,7 +37,8 @@ export default {
   data() {
     return {
       appointments: [],
-      finishedLoading: false
+      finishedLoading: false,
+      message: ''
     }
   },
   mounted() {
@@ -44,7 +52,7 @@ export default {
         this.appointments = res.data.appointments
         this.finishedLoading = true
       } catch (error) {
-
+        this.message = 'Error fetching appointments!'
       }
     },
     formatDateRange(start, end) {
@@ -52,15 +60,15 @@ export default {
       const startDate = new Date(start)
       const endDate = new Date(end)
 
-      // Format the dates as desired
+      // Format the dates
       const formattedStartDate = `${String(startDate.getDate()).padStart(2, '0')}/${String(startDate.getMonth() + 1).padStart(2, '0')} -${String(startDate.getFullYear()).slice(2)}`
       const formattedStartTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`
 
       const formattedEndTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`
 
-      // Create the formatted title and subtitle
+      // Create the formatted title and subtitle, separating the date and time
       const title = `${formattedStartDate}`
-      const subtitle = `from: ${formattedStartTime} to: ${formattedEndTime}`
+      const subtitle = `${formattedStartTime} - ${formattedEndTime}`
 
       return { title, subtitle }
     },
@@ -72,6 +80,15 @@ export default {
       } catch (error) {
         console.log('Error')
       }
+    },
+    findDentist(appointment) {
+      const dentistId = appointment.dentist_id
+
+      // Find the employee in the clinicInfo.employees array with matching dentist_id
+      const dentist = appointment.clinicInfo.employees.find(employee => employee.dentist_id === dentistId)
+
+      // Return the dentist_name if found, or a default value if not found. Unknown dentist will only happen if dentist_id is unsynced between services
+      return dentist ? dentist.dentist_name : 'Unknown Dentist'
     }
   }
 }
