@@ -116,11 +116,6 @@ function drawClinicMarkers() {
   // eslint-disable-next-line no-eval
   const clinicsDataResponse = eval(clinicsData.clinics)
 
-  console.log(clinicsDataResponse)
-  console.warn(clinicsData.clinics)
-
-  console.log(clinicsDataResponse[0])
-
   if (clinicsDataResponse) {
     for (let i = 0; i < clinicsDataResponse.length; i++) {
       const currentClinic = clinicsDataResponse[i]
@@ -151,7 +146,6 @@ function setFixedQueryNumber(value) {
 */
 function manageNearbyQueryRequest() { // Accounts for both types of queries (radius and N-closest clinics) and looks at user's input to decide what methods to execute
   const queryValue = (selectedQueryMode === 'radius') ? currentRadius : currentQueryNumber
-  // MapComponent.methods.sendNearbyQueryRequest(selectedQueryMode, queryValue)
   sendNearbyQueryRequest(selectedQueryMode, queryValue)
 }
 

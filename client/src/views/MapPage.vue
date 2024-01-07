@@ -12,37 +12,39 @@
 <script>
 import MapComponent from '../components/MapComponent.vue'
 import ClinicList from '../component/clinics/ClinicList.vue'
-
 import { clinicsData } from '../../public/maps/map-utils.js'
 
 export default {
   name: 'MapPage',
   data() {
     return {
-      clinics: []
+      clinics: [],
+      updateInterval: 100,
+      previousClinicRequest: ''
     }
   },
   methods: {
-    callbackTest() {
-      return clinicsData || -1
+    checkClinicRequest() {
+      if (clinicsData) {
+        return clinicsData.clinics === this.previousClinicRequest ? 'false' : 'true'
+      }
+      return 'false'
+    },
+    initiateClinicMapRequestListener() {
+      setInterval(
+        () => {
+          const updateClinicListUI = this.checkClinicRequest()
+          if (updateClinicListUI === 'true') {
+            this.previousClinicRequest = clinicsData.clinics
+            this.clinics = clinicsData.clinics
+          }
+        },
+        this.updateInterval
+      )
     }
   },
   created() {
-  },
-  async mounted() {
-    const refreshId = setInterval(
-      () => {
-        const currentClinicsData = this.callbackTest()
-        if (currentClinicsData !== -1) {
-          console.log('clearInterval()')
-          clearInterval(refreshId)
-
-          console.log(currentClinicsData)
-          this.clinics = currentClinicsData
-        }
-      },
-      100
-    )
+    this.initiateClinicMapRequestListener()
   },
   components: {
     MapComponent,
