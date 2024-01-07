@@ -41,11 +41,7 @@ export default {
   },
   computed: {
     validInput() {
-      if (this.startDate && this.endDate && this.clinicFilter) {
-        return true
-      } else {
-        return false
-      }
+      return this.startDate && this.endDate && this.clinicFilter
     }
   }
 }
