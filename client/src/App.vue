@@ -43,4 +43,15 @@ body {
   overflow: hidden;
 }
 
+.loading-container {
+  display: flex;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 50vh;
+}
+
+.loading-spinner {
+  color: #535252; /* Set the color to grey or your desired color */
+}
+
 </style>
