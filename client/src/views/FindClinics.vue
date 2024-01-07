@@ -53,7 +53,6 @@ export default {
   },
   data() {
     return {
-      employees: [],
       clinics: [],
       displayClinics: false,
       displayTimeslots: false,
