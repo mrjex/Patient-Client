@@ -1,58 +1,79 @@
 <template>
-  <div class="sub-list text-center">
-    <b-list-group>
-      <b-list-group-item v-for="(clinic, index) in clinics" :key="index">
+  <div>
+    <div v-if="!responseMessage">
+      <div class="sub-list text-center">
+        <b-list-group>
+          <b-list-group-item v-for="(clinic, index) in clinics" :key="index">
 
-        <div class="clinic-select">
-          <h3>{{ clinic.name }}</h3>
-          <p style="font-size: 10px; color: gray">Clinic id: {{ clinic.clinicID}}</p>
-          <b-btn v-if="!subList.includes(clinic.clinicID)" pill variant="outline-success" @click="subslist(clinic)">Subscribe</b-btn>
-          <b-btn v-if="subList.includes(clinic.clinicID)" pill variant="outline-danger" @click="subslist(clinic)">Unsubscribe</b-btn>
+            <div class="clinic-select">
+              <h3>{{ clinic.clinic_name }}</h3>
+              <p>{{ clinic.address }}</p>
+              <p style="font-size: 10px; color: gray">Clinic id: {{ clinic._id.$oid }}</p>
+              <b-btn v-if="!subList.includes(clinic)" pill variant="outline-success" @click="subslist(clinic)">
+                Subscribe
+              </b-btn>
+              <b-btn v-if="subList.includes(clinic)" pill variant="outline-danger" @click="subslist(clinic)">
+                Unsubscribe
+              </b-btn>
+            </div>
+
+          </b-list-group-item>
+        </b-list-group>
+        <p>Subscribe to:</p>
+        <div v-for="(clinic, index) in subList" :key="index">
+          <p>{{ clinic.clinic_name }}</p>
         </div>
-
-      </b-list-group-item>
-    </b-list-group>
-    <p>Subscribe to: {{ subList }}</p>
-    <b-btn v-if="subList.length > 0" pill variant="outline-success" @click="notificationSubscribe()">Confirm</b-btn>
+        <b-btn v-if="subList.length > 0" pill variant="outline-success" @click="notificationSubscribe()">Confirm</b-btn>
+      </div>
+    </div>
+    <p v-if="responseMessage">{{ responseMessage }}</p>
   </div>
 </template>
 
 <script>
-import { Api } from '@/Api'
+import { postSubscriber } from '@/utility/emailSubscriberUtils'
 
 export default {
   name: 'emailSubscription.vue',
   data() {
     return {
-      subList: []
+      subList: [],
+      responseMessage: ''
     }
   },
   props: {
     clinics: {
       required: true
+    },
+    user: {
+      required: true
     }
   },
   methods: {
     subslist(clinic) {
-      if (!this.subList.includes(clinic.clinicID)) {
-        this.subList.push(clinic.clinicID)
+      if (!this.subList.includes(clinic)) {
+        this.subList.push(clinic)
       } else {
-        const clinicIndex = this.subList.indexOf(clinic.clinicID)
+        const clinicIndex = this.subList.indexOf(clinic)
         this.subList.splice(clinicIndex, 1)
       }
     },
-    notificationSubscribe() {
-      const subscriber = {
-        patient_ID: '123',
-        email: 'en@mail.com',
-        clinicID: this.subList
+    async notificationSubscribe() {
+      const clinicIDs = []
+      for (const clinic in this.subList) {
+        clinicIDs.push(this.subList[clinic]._id.$oid)
       }
-      console.log(subscriber)
-      Api.post('http://localhost:3000/subscriber/', subscriber).then(response => {
-        if (response.status === 201) { console.log('succes') }
-      }).catch(error => {
-        console.error(error)
-      })
+      const subscriber = {
+        patient_ID: this.user._id,
+        email: this.user.email,
+        clinic: JSON.stringify(clinicIDs)
+      }
+      const posted = await postSubscriber(subscriber)
+      if (posted) {
+        this.responseMessage = 'You are subscribed!'
+      } else {
+        this.responseMessage = 'There was a problem with your subscription please try again later!'
+      }
     }
   }
 }
@@ -63,6 +84,7 @@ export default {
   width: auto;
   height: auto;
 }
+
 .clinic-select {
   background-color: white;
   border-color: #007BFF;
@@ -86,7 +108,9 @@ export default {
   }
 }
 
-.clinic-select:hover { transform: scale(1.05); }
+.clinic-select:hover {
+  transform: scale(1.05);
+}
 
 * {
   /*border-style: dashed;*/
