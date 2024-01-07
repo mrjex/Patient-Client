@@ -86,3 +86,33 @@
     font-weight: 500;
     padding: 6px 12px;
   }
+
+  .stars {
+    color:#ff9c1a;
+    gap: 7px;
+    position: absolute;
+    left: 188px;
+    top: 30px;
+  }
+
+  .clinic-photo {
+    position: relative;
+    display: flex;
+  }
+
+  .clinic-address {
+    position: absolute;
+    left: 130px;
+  }
+
+  #rating-string {
+    float: left;
+    position: absolute;
+    left: 130px;
+    top: 30px;
+  }
+
+  .clinic-title {
+    font-weight: 1000;
+    font-size: medium;
+  }
