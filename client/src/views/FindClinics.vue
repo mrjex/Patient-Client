@@ -16,13 +16,13 @@
 
         <!--timeslot list component-->
         <div>
-          <timeslotAccordion v-if="displayTimeslots" :availableTimes="availableTimes" @showClinics="handleDisplayClinics"
+          <timeslotAccordion v-if="displayTimeslots" :availableTimes="filteredAvailableTimes" @showClinics="handleDisplayClinics"
             @deleteAvailableTime="handleDeleteAvailableTime">
           </timeslotAccordion>
         </div>
 
         <!--No clinics to show-->
-        <div v-if="clinics.length < 1" class="text-center">
+         <div v-if="clinics.length < 1" class="text-center">
           <b-card no-body>
             <b-card-text>
               <p>No clinics to show <br> try changing your search parameters</p>
@@ -59,18 +59,24 @@ export default {
       displayTimeslots: false,
       resetText: 'Show Clinics',
       availableTimes: [],
-      userLocation: null
+      userLocation: null,
+      selectedClinicId: null
+    }
+  },
+  computed: {
+    filteredAvailableTimes() {
+      return this.availableTimes.filter((availableTime) => availableTime.clinic_id === this.selectedClinicId)
     }
   },
   methods: {
-    handleClinicClick() {
+    handleClinicClick(clinicId) {
       this.displayClinics = false
       this.displayTimeslots = true
+      this.selectedClinicId = clinicId
     },
     handleDisplayClinics() {
       this.displayClinics = true
       this.displayTimeslots = false
-      this.availableTimes = []
     },
     async getTimeSpanAppointments(timeSpan) {
       try {
@@ -81,25 +87,23 @@ export default {
         const res = await getTimeWindowTimeSlots(clinicIds, timeSpan)
         if (res.data.availabletimes) {
           this.availableTimes = res.data.availabletimes
-          this.availableTimes.forEach((availableTime) => {
-            this.clinics = this.clinics.filter((clinic) => clinic._id.$oid === availableTime.clinic_id)
-          })
+          const availableClinicIds = new Set(this.availableTimes.map(at => at.clinic_id))
+          this.clinics = this.clinics.filter(clinic => availableClinicIds.has(clinic._id.$oid))
           this.displayClinics = true
         } else {
           this.clinics = []
-          this.$bvModal.show('noTimeslotsModal')
         }
       } catch (err) {
         console.error(err)
       }
     },
     async handleSelectedTime(filter) {
-      this.getTimeSpanAppointments(filter.timespan)
       if (filter.filterOptions === 'closest') {
-        this.getClosestClinics()
+        await this.getClosestClinics()
       } else {
-        this.getClinics()
+        await this.getClinics()
       }
+      this.getTimeSpanAppointments(filter.timespan)
     },
     async getClinics() {
       try {
