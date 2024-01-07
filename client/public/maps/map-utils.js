@@ -116,6 +116,11 @@ function drawClinicMarkers() {
   // eslint-disable-next-line no-eval
   const clinicsDataResponse = eval(clinicsData.clinics)
 
+  console.log(clinicsDataResponse)
+  console.warn(clinicsData.clinics)
+
+  console.log(clinicsDataResponse[0])
+
   if (clinicsDataResponse) {
     for (let i = 0; i < clinicsDataResponse.length; i++) {
       const currentClinic = clinicsDataResponse[i]
@@ -177,5 +182,5 @@ export {
   confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, getZoomLevel,
   generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition,
   selectedQueryMode, setSelectedQueryMode, manageNearbyQueryRequest, currentQueryNumber, setFixedQueryNumber,
-  defaultZoomLevel, sendNearbyQueryRequest
+  defaultZoomLevel, sendNearbyQueryRequest, clinicsData
 }
