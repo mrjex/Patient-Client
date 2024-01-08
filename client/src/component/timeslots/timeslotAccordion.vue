@@ -13,6 +13,15 @@
       @bookingFailed="$bvModal.show('failedModal')">
     </timeslotCard>
 
+    <div v-if="availableTimes.length < 1" class="text-center">
+      <b-card no-body>
+        <b-card-text>
+          <p>No available times to show <br> try updating the time filter</p>
+          <div class="image-container"><img src="@/assets/sad-face.svg" alt=""></div>
+        </b-card-text>
+      </b-card>
+    </div>
+
     <!----booking outcome modal---->
     <b-modal :id="'successModal'" ok-only title="Success">
       <p>Appointment created</p>
