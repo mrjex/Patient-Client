@@ -18,10 +18,20 @@
 <script>
 import MapComponent from '../components/MapComponent.vue'
 import ClinicList from '../component/clinics/ClinicList.vue'
-import { clinicsData } from '../../public/maps/map-utils.js'
+import { clinicsData, drawClinicMarkersWithFilter } from '../../public/maps/map-utils.js'
 import timeSpanModal from '../component/timeslots/timeSpanModal.vue'
 import { getTimeWindowTimeSlots } from '@/utility/timeslotUtils'
 import timeslotAccordion from '../component/timeslots/timeslotAccordion.vue'
+
+/*
+let clinicsIDsFilteredByAvailableTimes = -1
+let previousClinicsIDsFilteredByAvailableTimes = -1
+
+function updateTimeslotFiltering(v) {
+  clinicsIDsFilteredByAvailableTimes = v
+  previousClinicsIDsFilteredByAvailableTimes = v
+}
+*/
 
 export default {
   name: 'MapPage',
@@ -72,6 +82,15 @@ export default {
           this.availableTimes = res.data.availabletimes
           const availableClinicIds = new Set(this.availableTimes.map(at => at.clinic_id))
           this.clinics = this.clinics.filter(clinic => availableClinicIds.has(clinic._id.$oid))
+
+          const clinicIDsFilteredByTimeslot = [] // TODO: Replace this array with a Set()
+          res.data.availabletimes.forEach((clinic) => {
+            // console.log(clinic.clinic_id)
+            clinicIDsFilteredByTimeslot.push(clinic.clinic_id)
+          })
+
+          drawClinicMarkersWithFilter(clinicIDsFilteredByTimeslot)
+          // console.log(res.data.availabletimes)
         }
       } catch (err) {
         console.log(err)
@@ -97,6 +116,8 @@ export default {
     timeslotAccordion
   }
 }
+
+// export { clinicsIDsFilteredByAvailableTimes }
 </script>
 
 <style scoped>
