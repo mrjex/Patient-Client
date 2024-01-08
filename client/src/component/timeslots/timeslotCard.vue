@@ -45,7 +45,7 @@ export default {
       return dateFormat(this.availableTime.start_time, 'dddd, mmmm dS, yyyy, h:MM TT')
     },
     formatEndTime() {
-      return dateFormat(this.availableTime.start_time, 'dddd, mmmm dS, yyyy, h:MM TT')
+      return dateFormat(this.availableTime.end_time, 'dddd, mmmm dS, yyyy, h:MM TT')
     }
   },
   methods: {
