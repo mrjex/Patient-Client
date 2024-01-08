@@ -6,9 +6,16 @@
     <div class="d-flex justify-content-center align-items-center">
       <div class="flex-container">
         <timeSpanModal class="mb-3" @selectedTime="handleFilterTimes" />
-        <ClinicList :clinics="clinics" v-if="showClinicList" @clinicClick="handleClinicClick" class="clinicList"/>
+        <ClinicList :clinics="clinics" v-if="showClinicList" @clinicClick="handleClinicClick" class="clinicList" />
         <timeslotAccordion :availableTimes="filteredAvailableTimes" v-if="showTimeslots"
           @showClinics="handleDisplayClinics" />
+
+        <!--No matching timeslots modal-->
+        <b-modal id="noTimesFound" ok-only title="No matching times found">
+          <p>No available times for selected clinics found</p>
+          <br>
+          <p>Try updating search criteria</p>
+        </b-modal>
       </div>
     </div>
 
@@ -78,6 +85,8 @@ export default {
           })
 
           drawClinicMarkers(clinicIDsFilteredByTimeslot)
+        } else if (res.data.availabletimes === null || res.data.availabletimes.length === 0) {
+          this.$bvModal.show('noTimesFound')
         }
       } catch (err) {
         console.log(err)
@@ -114,6 +123,7 @@ export default {
   min-width: 40vw;
   max-height: fit-content;
 }
+
 .clinicList {
   max-height: 50vh;
   overflow: auto;
