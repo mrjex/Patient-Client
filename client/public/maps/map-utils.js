@@ -9,7 +9,6 @@
 
 import { listenForMarkerClickNearbyMode, nearbyMap, userGlobalCoordinates, drawNearbyMap } from './map-modes/nearby-map'
 import { listenForMarkerClickSearchMode, searchMap, drawSearchMap, markerCoordinates } from './map-modes/search-map'
-// import { clinicsIDsFilteredByAvailableTimes } from '../../src/views/MapPage.vue'
 import { generateWindow } from './infowindow'
 import { Api } from '../../src/Api.js'
 
