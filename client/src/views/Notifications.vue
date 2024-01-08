@@ -1,24 +1,88 @@
 <template>
   <!-- Wireframe - https://git.chalmers.se/courses/dit355/2023/student-teams/dit356-2023-20/group-20-distributed-systems/-/wikis/Patient-gui#notifications -->
   <body>
-  <div class="container text-center list">
-    <email-subscription :clinics="clinics" :user="user"/>
+  <!------------------------------------------- Navbar --------------------------------------------------- -->
+  <b-nav tabs>
+    <b-nav-item pill :disabled="subscriptionExists" @click="showEmailSubscription">Subscribe</b-nav-item>
+    <b-nav-item pill :disabled="!subscriptionExists" @click="showUpdateSubscription">Update subscription</b-nav-item>
+    <b-nav-item pill :disabled="!subscriptionExists" @click="showUnubscription">Unsubscribe</b-nav-item>
+  </b-nav>
+  <!-------------------------------------------xxxxxxxxxxxxxxxxxxxxxxx------------------------------------- -->
+  <div class="row">
+    <!----------------------------------------- Left column text --------------------------------------------->
+    <div class="col-lg-3 col-12">
+      <div v-if="!subscriptionExists">
+        <p>Welcome to our subscription service!</p>
+        <p>Click "subscribe" in the menubar to select the clinics you wish to subscribe to.</p>
+        <p>Once you have subscribed you will receive a email every time your clinics has a new available slot! We are
+          not kidding about the every part.</p>
+      </div>
+      <div v-if="subscriptionExists && showUpdateSubscriptionComp">
+        <p>Welcome back!</p>
+        <p>You can update your subscription here.</p>
+        <p>Select the clinics you wish to subscribe to and confirm, we will make sure to let you know when your clinics
+          are ready for you!</p>
+      </div>
+    </div>
+    <!------------------------------------------ xxxxxxxxxxxxxxxxxxxxxxx ------------------------------- -->
+    <div class="col-lg-6 col-12">
+      <!-- -------------------------------------- Current subscription card ------------------------------->
+      <div class="text-center" v-if="subscriptionExists && showUpdateSubscriptionComp || showUnsubscriptionBtn">
+        <SubscriptionCard :card-height="'auto'" :card-width="'auto'" :subscription="subscription"
+                          :subbed-to-clinics="subbedToClinics"/>
+      </div>
+      <!-- -------------------------------------- xxxxxxxxxxxxxxxxxxxxxxx --------------------------------->
+      <!-----------------------------------------Unsubscribe button and text ------------------------------>
+      <div class="text-center m-2" v-if="showUnsubscriptionBtn">
+        <p>We are very sad to see that you wish to unsubscribe but as soon as you want notifcations again you know where
+          to find us!</p>
+        <b-button pill variant="outline-danger" @click="unsubscribeFromEmails">Unsubscribe</b-button>
+      </div>
+      <!-----------------------------------------xxxxxxxxxxxxxxxxxxxxxxx----------------------------------->
+      <!------------------------------------------Create new subscription list  -->
+      <div class="text-center list" v-if="showEmailSubscriptionComp && !showUpdateSubscriptionComp">
+        <email-subscription :clinics="clinics" :user="user" :operation-type="'post'"/>
+      </div>
+      <!-----------------------------------------xxxxxxxxxxxxxxxxxxxxxxx----------------------------------->
+      <!--------------------------------------Update subscription ----------------------------------------->
+      <div class="container text-center overflow-scroll p-3 bg-light"
+           v-if="showUpdateSubscriptionComp && !showEmailSubscriptionComp">
+        <email-subscription :clinics="clinics" :user="user" :operation-type="'update'"/>
+      </div>
+      <!-----------------------------------------xxxxxxxxxxxxxxxxxxxxxxx----------------------------------->
+    </div>
+    <!-- --------------------------------------Right column ----------------------------------------------->
+    <div class="col-lg-3 col-12"></div>
+    <!-----------------------------------------xxxxxxxxxxxxxxxxxxxxxxx------------------------------------->
   </div>
   </body>
 </template>
 
 <script>
-import EmailSubscription from '@/component/EmailSubscription.vue'
+import EmailSubscription from '@/component/notifications/EmailSubscription.vue'
 import { getAllClinics } from '@/utility/clinicUtils'
 import { getPatient } from '@/utility/patientUtils'
+import { deleteSubscription, getSubscription } from '@/utility/emailSubscriberUtils'
+import SubscriptionCard from '@/component/notifications/SubscriptionCard.vue'
+import router from '@/router'
 
 export default {
   name: 'Notifications.vue',
-  components: {EmailSubscription},
+  components: { SubscriptionCard, EmailSubscription },
   data() {
     return {
       clinics: [],
-      user: ''
+      user: '',
+      subscription: '',
+      subbedToClinics: '',
+      showEmailSubscriptionComp: false,
+      showUpdateSubscriptionComp: false,
+      showUnsubscriptionBtn: false
+    }
+  },
+  computed: {
+    subscriptionExists() {
+      return !!this.subscription
     }
   },
   methods: {
@@ -30,18 +94,31 @@ export default {
       } catch (err) {
         console.error(err)
       }
+    },
+    showEmailSubscription() {
+      this.showEmailSubscriptionComp = !this.showEmailSubscriptionComp
+    },
+    showUpdateSubscription() {
+      this.showUpdateSubscriptionComp = !this.showUpdateSubscriptionComp
+    },
+    showUnubscription() {
+      this.showUnsubscriptionBtn = !this.showUnsubscriptionBtn
+    },
+    async unsubscribeFromEmails() {
+      const deleted = await deleteSubscription()
+      await router.go(0)
+      console.log(deleted)
     }
   },
-  async mounted() {
+  async created() {
     await this.getClinics()
     this.user = await getPatient()
-    console.log(this.user)
+    this.subscription = await getSubscription()
+    this.subbedToClinics = this.clinics.filter(obj => this.subscription.clinic.includes(obj._id.$oid))
   }
 }
 </script>
 
 <style scoped>
-.list {
-  width: fit-content;
-}
+
 </style>
