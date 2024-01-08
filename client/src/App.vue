@@ -37,4 +37,21 @@ body {
   display: flex;
   flex-direction: column;
 }
+.custom-rounded-card {
+  border-radius: 7px !important;
+  border: blue;
+  overflow: hidden;
+}
+
+.loading-container {
+  display: flex;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 50vh;
+}
+
+.loading-spinner {
+  color: #535252; /* Set the color to grey or your desired color */
+}
+
 </style>
