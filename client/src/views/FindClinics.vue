@@ -7,7 +7,7 @@
       </div>
 
       <div class="d-flex mb-3">
-        <timeSpanModal @selectedTime="handleSelectedTime" v-if="!displayTimeslots" />
+        <timeSpanModal @selectedTime="handleSelectedTime" v-if="!displayTimeslots" :findClinicsPage="findClinicsPage" />
       </div>
 
       <div class="container-fluid">
@@ -54,12 +54,13 @@ export default {
   data() {
     return {
       clinics: [],
-      displayClinics: false,
+      displayClinics: true,
       displayTimeslots: false,
       resetText: 'Show Clinics',
       availableTimes: [],
       userLocation: null,
-      selectedClinicId: null
+      selectedClinicId: null,
+      findClinicsPage: true
     }
   },
   computed: {
@@ -90,7 +91,6 @@ export default {
           this.availableTimes = res.data.availabletimes
           const availableClinicIds = new Set(this.availableTimes.map(at => at.clinic_id))
           this.clinics = this.clinics.filter(clinic => availableClinicIds.has(clinic._id.$oid))
-          this.displayClinics = true
         } else {
           this.clinics = []
         }
