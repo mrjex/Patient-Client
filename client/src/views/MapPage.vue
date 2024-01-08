@@ -105,7 +105,8 @@ export default {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  max-height: fit-content;
   min-width: 40vw;
+  max-height: 50vh;
+  overflow: auto;
 }
 </style>
