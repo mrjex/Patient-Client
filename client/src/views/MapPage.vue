@@ -8,7 +8,7 @@
         <timeSpanModal class="mb-3" @selectedTime="handleFilterTimes" />
         <ClinicList :clinics="clinics" v-if="showClinicList" @clinicClick="handleClinicClick" class="clinicList" />
         <timeslotAccordion :availableTimes="filteredAvailableTimes" v-if="showTimeslots"
-          @showClinics="handleDisplayClinics" />
+          @showClinics="handleDisplayClinics" @deleteAvailableTime="handleDeleteAvailableTime"/>
 
         <!--No matching timeslots modal-->
         <b-modal id="noTimesFound" ok-only title="No matching times found">
@@ -54,6 +54,9 @@ export default {
         return clinicsData.clinics === this.previousClinicRequest ? 'false' : 'true'
       }
       return 'false'
+    },
+    handleDeleteAvailableTime(availableTimeId) {
+      this.availableTimes = this.availableTimes.filter((availableTime) => availableTime._id !== availableTimeId)
     },
     initiateClinicMapRequestListener() {
       setInterval(
