@@ -3,7 +3,7 @@
 
     <b-card no-body v-for="clinic in clinics" :key="clinic._id.$oid">
       <b-button variant="light" @click="$emit('clinicClick', clinic._id.$oid)">{{
-        clinic.clinic_name }}</b-button>
+        clinic.clinic_name }} <br> <b>Address:</b> {{ clinic.address }}</b-button>
     </b-card>
   </div>
 </template>

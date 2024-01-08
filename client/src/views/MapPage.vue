@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-center align-items-center">
       <div class="flex-container">
         <timeSpanModal class="mb-3" @selectedTime="handleFilterTimes" />
-        <ClinicList :clinics="clinics" v-if="showClinicList" @clinicClick="handleClinicClick" />
+        <ClinicList :clinics="clinics" v-if="showClinicList" @clinicClick="handleClinicClick" class="clinicList"/>
         <timeslotAccordion :availableTimes="filteredAvailableTimes" v-if="showTimeslots"
           @showClinics="handleDisplayClinics" />
       </div>
@@ -107,6 +107,9 @@ export default {
   flex-direction: column;
   min-width: 40vw;
   max-height: fit-content;
+}
+.clinicList {
+  max-height: 50vh;
   overflow: auto;
 }
 </style>
