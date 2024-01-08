@@ -1,4 +1,7 @@
-import { confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius, manageNearbyQueryRequest } from '../map-utils'
+import {
+  confirmExecutionConditions, currentRadius, generateInfoWindowUtils, updateRadius,
+  manageNearbyQueryRequest, getZoomLevel, defaultZoomLevel
+} from '../map-utils'
 
 /* eslint-disable no-undef */
 let service
@@ -6,7 +9,6 @@ let directionsServiceSearch
 let directionsRendererSearch
 
 let selectedDentalClinicMarkerSearch
-
 let userMarker
 
 let infowindowSearchReference
@@ -20,17 +22,15 @@ The variable below is used only for the purpose of sending 'lat,lng' payload in 
 'markerCoordinates = searchedPlace.geometry.location' invokes Google's
 internal functions and ceases to storing the location as a simple string
 */
-let referenceMarkerCoordinates = { lat: 40.749933, lng: -73.98633 }
+// let referenceMarkerCoordinates = { lat: 40.749933, lng: -73.98633 }
 
-let searchMap
+let searchMap = -1
 let searchedPlace
 let autocomplete
 
 let input
 let biasInputElement
 let strictBoundsInputElement
-
-const defaultZoomLevel = 17
 
 function initSearchMap() {
   if (confirmExecutionConditions('Search')) {
@@ -166,8 +166,7 @@ function instantiateSearchAutoComplete() {
 function manageSearchResult() {
   // Place found
   if (searchIsValid()) {
-    markerCoordinates = searchedPlace.geometry.location
-    referenceMarkerCoordinates = { lat: searchedPlace.geometry.viewport.eb.lo, lng: searchedPlace.geometry.viewport.La.lo }
+    markerCoordinates = { lat: searchedPlace.geometry.viewport.eb.lo, lng: searchedPlace.geometry.viewport.La.lo }
 
     manageNearbyQueryRequest()
     directionsRendererSearch.setMap(searchMap)
@@ -196,7 +195,7 @@ function centerSearchedMarker() {
 }
 
 // Checks if user clicks on dental clinic marker
-function listenForMarkerClickSearchMode(marker, clinic) { // PREVIOUS: (marker, place)
+function listenForMarkerClickSearchMode(marker, clinic) {
   google.maps.event.addListener(marker, 'click', function () {
     selectedDentalClinicMarkerSearch = marker.position
     generateInfoWindowUtils(clinic, marker, searchMap)
@@ -229,7 +228,7 @@ function generateReferenceMarker(svgMarkerIcon) {
 function drawSearchMap() {
   searchMap = new google.maps.Map(document.getElementById('map'), {
     center: markerCoordinates,
-    zoom: 13,
+    zoom: getZoomLevel(),
     mapTypeControl: false
   })
 
@@ -249,5 +248,5 @@ function changeRadiusSearch(newRadius) {
 window.initMap = initSearchMap
 export {
   initSearchMap, searchedPlace, selectedDentalClinicMarkerSearch, directionsServiceSearch, directionsRendererSearch,
-  markerCoordinates, changeRadiusSearch, listenForMarkerClickSearchMode, searchMap, drawSearchMap, referenceMarkerCoordinates
+  markerCoordinates, changeRadiusSearch, listenForMarkerClickSearchMode, searchMap, drawSearchMap
 }

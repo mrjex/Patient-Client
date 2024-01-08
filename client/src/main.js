@@ -9,6 +9,18 @@ Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 Vue.config.productionTip = false
 
+Vue.prototype.$myGlobalVariable = 0
+
+/*
+const myGlobalVariable = {
+  data() {
+    return {
+      testV: 'my global variable'
+    }
+  }
+}
+*/
+
 new Vue({
   router,
   render: function (h) { return h(App) }

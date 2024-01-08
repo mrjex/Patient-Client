@@ -1,7 +1,7 @@
 <template>
-  <b-container class="fluid full-height">
-    <b-row class="full-height">
-      <b-col md="4">
+  <b-container class="fluid">
+    <b-row>
+      <b-col md="4" sm="12" class="my-2">
         <b-container id="map-options" class="p-4 rounded shadow">
           <b-row>
             <b-col>
@@ -75,29 +75,32 @@
           </div>
         </div>
       </b-col>
-      <b-col>
-        <div id="map"></div>
+      <b-col md="8" sm="12" class="my-2">
+        <div id="map" style="height: 300px;"></div>
       </b-col>
     </b-row>
   </b-container>
 </template>
 
 <script>
-
 // Import necessary data from the map scripts (map-utils.js, nearby-map.js and search-map.js)
-import { calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer, drawNearbyMap, initMap, changeTravelMode, deselectClinicMarker } from '../../public/maps/map-modes/nearby-map.js'
-import { initSearchMap } from '../../public/maps/map-modes/search-map.js'
 import {
-  changeMapMode, currentMapMode, changeRadius, updateRadius, getReferencePosition, setNearbyClinicsQueryData,
+  calcRoute, userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer,
+  initMap, changeTravelMode, deselectClinicMarker
+} from '../../public/maps/map-modes/nearby-map.js'
+
+import { initSearchMap } from '../../public/maps/map-modes/search-map.js'
+
+import {
+  changeMapMode, changeRadius, sendNearbyQueryRequest,
   setSelectedQueryMode, manageNearbyQueryRequest, setFixedQueryNumber
 } from '../../public/maps/map-utils.js'
 
 // Import necessary data from other scripts that are not related to the map functionalities
 import { createHTMLScriptElement } from '../utils.js'
-import { Api } from '../Api.js'
 
 export default {
-  name: 'MapPage',
+  name: 'MapComponent',
   data() {
     return {
       /*
@@ -106,19 +109,15 @@ export default {
        Many of these are synchronized with variables in map-utils.js.
       */
       currentTravelMode: 'Driving',
-      currentRadius: 10000,
+      currentRadius: 10,
       selectedMode: 'Nearby', // This varible is needed to register current mode in thr HTML above, when 'currentMapMode' from map-utils.js cannot be read at instantiation of app
       selectedNearbyQuery: 'radius',
       currentNumberQuery: '5',
 
       /*
-      'PREVIOUS' variables:
-       These variables are needed to make sure that the user's
-       interaction with the dropdowns are satisfying.
+        'UI' variables:
+        These variables are directly changed by the user through the UI interactions
       */
-      previousTravelMode: '',
-      previousRadius: 10000,
-      previousNumberQuery: '5',
       options: [
         { value: 0.25, text: '0.25 KM' },
         { value: 0.5, text: '0.5 KM' },
@@ -150,49 +149,27 @@ export default {
     }
   },
   created() {
-    this.initializePlaceAPI()
     this.initializeNearbyMap()
   },
   methods: {
-    async changeSearchRange() {
-      // Dropdown button is pressed to change radius of displayed clinics
+    /*
+     The methods 5 methods below represent on-click events
+     directly connected to the interaction with a front-end element.
+    */
+    async changeSearchRange() { // Dropdown button is pressed to change radius of displayed clinics
       changeRadius(this.currentRadius)
       setSelectedQueryMode('radius')
-      this.previousRadius = this.currentRadius
       deselectClinicMarker()
-      this.sendNearbyQueryRequest('radius', this.currentRadius)
+      sendNearbyQueryRequest('radius', this.currentRadius)
     },
-    toggleTravelMode() {
-      // Dropdown button is pressed to change the display of travel-route types in 'NEARBY' mode
+    toggleTravelMode() { // Dropdown button is pressed to change the display of travel-route types available in 'NEARBY' mode
       changeTravelMode(this.currentTravelMode)
       calcRoute(userGlobalCoordinates, selectedDentalClinicMarker, directionsService, directionsRenderer)
     },
     async sendClinicNumberQuery() {
-      this.previousNumberQuery = this.currentNumberQuery
       setSelectedQueryMode('number')
       setFixedQueryNumber(this.currentNumberQuery)
-      this.sendNearbyQueryRequest('number', this.currentNumberQuery)
-    },
-
-    /*
-     Note for developers:
-     queryMode = 'radius' OR 'number'
-     queryValue = { value with corresponding unit of measure of the specified queryMode ('radius' --> kilometers, 'number' --> N closest clinics) }
-    */
-    async sendNearbyQueryRequest(queryMode, queryValue) { // Sends the query-request to Patient API
-      const queryUrl = `/maps/${queryMode}/${queryValue}/positions/${getReferencePosition()}`
-      const { data } = await Api.get(queryUrl)
-
-      setNearbyClinicsQueryData(data)
-      this.updateMapUI()
-    },
-
-    updateMapUI() {
-      if (currentMapMode === 'Nearby') {
-        drawNearbyMap()
-      } else {
-        updateRadius()
-      }
+      sendNearbyQueryRequest('number', this.currentNumberQuery)
     },
     nearbyMode() {
       this.connectMap('Nearby')
@@ -200,6 +177,10 @@ export default {
     searchMode() {
       this.connectMap('Search')
     },
+    /*
+     The methods below are indirectly connected to the interactions of
+     front-end elements, meaning that they are invoked by the methods above.
+    */
     updateMode(newMode) {
       this.selectedMode = newMode
       changeMapMode(newMode)
@@ -225,12 +206,6 @@ export default {
     */
     initializeSearchMap() { // Run 'search-map.js'
       createHTMLScriptElement(this.getPathToMapModeScript('search-map.js'), false)
-    },
-    initializePlaceAPI() {
-      createHTMLScriptElement('https://maps.googleapis.com/maps/api/js?key=AIzaSyBezKgTO8Fu1ymaIoAoToNn0g5ZMjgSR4Y&libraries=places&callback=initMap', true)
-    },
-    sendTravelPathNotFoundNotification() {
-      console.warn('Issue Toast Notification: Google API could not generate route to desired destination')
     },
     getPathToMapModeScript(mapScript) { // The path from this component to the desired map-mode script (nearby-map.js or searchmap.js)
       return `../../public/maps/map-modes/${mapScript}`

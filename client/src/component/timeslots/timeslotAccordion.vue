@@ -1,12 +1,7 @@
 <template>
   <div class="container-fluid">
-    <!----loading spinner
-    <b-spinner variant="success" v-if="!finishedLoading">
-    </b-spinner> ---->
     <b-card-body>
-
       <b-card-text v-if="!availableTimes"><strong>No available times found </strong></b-card-text>
-
     </b-card-body>
     <b-card no-body>
       <b-button variant="light" @click="$emit('showClinics')">
@@ -29,7 +24,7 @@
 </template>
 
 <script>
-/* This component expects a dentist_id passed to it as a prop, it will then display all available times for that dentist */
+/* This component expects an array of available times passed to it as a prop, it will then display all available times and the dentist username */
 import timeslotCard from './timeslotCard.vue'
 export default {
   name: 'timeslotAccordion',
@@ -45,15 +40,6 @@ export default {
   data() {
     return {
       resetText: 'Back to Clinics'
-    }
-  },
-  computed: {
-    finishedLoading() {
-      if (this.availableTimes.length > 0) {
-        return true
-      } else {
-        return false
-      }
     }
   },
   mounted() {

@@ -21,6 +21,7 @@
 
 <script>
 export default {
+  /* This component contains a modal which allows for selecting dates and clinics, this is emitted in an event on ok click */
   name: 'timeSpanModal',
   data() {
     return {
@@ -40,11 +41,7 @@ export default {
   },
   computed: {
     validInput() {
-      if (this.startDate && this.endDate && this.clinicFilter) {
-        return true
-      } else {
-        return false
-      }
+      return this.startDate && this.endDate && this.clinicFilter
     }
   }
 }
