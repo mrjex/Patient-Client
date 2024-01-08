@@ -1,29 +1,28 @@
+<!--This component is used to create new and update old email subscriptions -->
 <template>
   <div>
     <div v-if="!responseMessage">
       <div class="sub-list text-center">
+
         <b-list-group>
           <b-list-group-item v-for="(clinic, index) in clinics" :key="index">
-
             <div class="clinic-select">
               <h3>{{ clinic.clinic_name }}</h3>
               <p>{{ clinic.address }}</p>
               <p style="font-size: 10px; color: gray">Clinic id: {{ clinic._id.$oid }}</p>
-              <b-btn v-if="!subList.includes(clinic)" pill variant="outline-success" @click="subslist(clinic)">
-                Subscribe
-              </b-btn>
-              <b-btn v-if="subList.includes(clinic)" pill variant="outline-danger" @click="subslist(clinic)">
-                Unsubscribe
-              </b-btn>
+              <b-btn v-if="!subList.includes(clinic)" pill variant="outline-success" @click="subslist(clinic)">Subscribe</b-btn>
+              <b-btn v-if="subList.includes(clinic)" pill variant="outline-danger" @click="subslist(clinic)">Unsubscribe</b-btn>
             </div>
-
           </b-list-group-item>
         </b-list-group>
+
         <p>Subscribe to:</p>
         <div v-for="(clinic, index) in subList" :key="index">
           <p>{{ clinic.clinic_name }}</p>
         </div>
-        <b-btn v-if="subList.length > 0" pill variant="outline-success" @click="notificationSubscribe()">Confirm</b-btn>
+
+        <b-btn v-if="subList.length > 0" pill variant="outline-success" @click="subscribeToEmails()">Confirm</b-btn>
+
       </div>
     </div>
     <p v-if="responseMessage">{{ responseMessage }}</p>
@@ -31,7 +30,8 @@
 </template>
 
 <script>
-import { postSubscriber } from '@/utility/emailSubscriberUtils'
+import { postSubscriber, updateSubscription } from '@/utility/emailSubscriberUtils'
+import router from '@/router'
 
 export default {
   name: 'emailSubscription.vue',
@@ -47,6 +47,9 @@ export default {
     },
     user: {
       required: true
+    },
+    operationType: {
+      required: true
     }
   },
   methods: {
@@ -58,7 +61,7 @@ export default {
         this.subList.splice(clinicIndex, 1)
       }
     },
-    async notificationSubscribe() {
+    async subscribeToEmails() {
       const clinicIDs = []
       for (const clinic in this.subList) {
         clinicIDs.push(this.subList[clinic]._id.$oid)
@@ -68,11 +71,23 @@ export default {
         email: this.user.email,
         clinic: JSON.stringify(clinicIDs)
       }
-      const posted = await postSubscriber(subscriber)
-      if (posted) {
-        this.responseMessage = 'You are subscribed!'
-      } else {
-        this.responseMessage = 'There was a problem with your subscription please try again later!'
+      if (this.operationType === 'post') {
+        const posted = await postSubscriber(subscriber)
+        if (posted) {
+          this.responseMessage = 'You are subscribed!'
+          await router.go(0)
+        } else {
+          this.responseMessage = 'There was a problem with your subscription please try again later!'
+        }
+      } else if (this.operationType === 'update') {
+        const updated = await updateSubscription(subscriber)
+        console.log('updating baby')
+        if (updated) {
+          this.responseMessage = 'You are updated!'
+          await router.go(0)
+        } else {
+          this.responseMessage = 'There was a problem with your subscription please try again later!'
+        }
       }
     }
   }
@@ -113,10 +128,7 @@ export default {
 }
 
 * {
-  /*border-style: dashed;*/
-  /*border-color: green;*/
-  /*border-radius: 5vw;*/
-  padding: 3px;
-  font-family: Verdana;
+  padding: 0.5vh;
+  font-family: Verdana, serif;
 }
 </style>
