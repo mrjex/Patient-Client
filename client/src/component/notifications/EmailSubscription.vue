@@ -122,7 +122,11 @@ export default {
     opacity: 1;
   }
 }
-
+.clinic-select{
+  min-width: fit-content;
+  word-break: break-word;
+  white-space: normal;
+}
 .clinic-select:hover {
   transform: scale(1.05);
 }

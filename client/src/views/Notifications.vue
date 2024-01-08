@@ -120,5 +120,8 @@ export default {
 </script>
 
 <style scoped>
-
+.row {
+  height: 100vh;
+  overflow: auto;
+}
 </style>
