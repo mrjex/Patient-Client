@@ -74,15 +74,16 @@ export default {
         const posted = await postSubscriber(subscriber)
         if (posted) {
           this.responseMessage = 'You are subscribed!'
+          window.scroll(0, 0)
           await router.go(0)
         } else {
           this.responseMessage = 'There was a problem with your subscription please try again later!'
         }
       } else if (this.operationType === 'update') {
         const updated = await updateSubscription(subscriber)
-        console.log('updating baby')
         if (updated) {
-          this.responseMessage = 'You are updated!'
+          this.responseMessage = 'Your subscription is updated!'
+          window.scroll(0, 0)
           await router.go(0)
         } else {
           this.responseMessage = 'There was a problem with your subscription please try again later!'

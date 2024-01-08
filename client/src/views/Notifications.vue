@@ -89,8 +89,9 @@ export default {
     async getClinics() {
       try {
         const res = await getAllClinics()
-        console.log(res)
-        this.clinics = res.data.clinics
+        if (res) {
+          this.clinics = res.data.clinics
+        }
       } catch (err) {
         console.error(err)
       }
@@ -106,15 +107,25 @@ export default {
     },
     async unsubscribeFromEmails() {
       const deleted = await deleteSubscription()
-      await router.go(0)
-      console.log(deleted)
+      if (deleted) {
+        window.scroll(0, 0)
+        await router.go(0)
+      } else {
+        window.alert('Something went wrong and we regret to inform you we were not able to unsubscribe you at this time. Please try again later!')
+      }
     }
   },
   async created() {
-    await this.getClinics()
-    this.user = await getPatient()
-    this.subscription = await getSubscription()
-    this.subbedToClinics = this.clinics.filter(obj => this.subscription.clinic.includes(obj._id.$oid))
+    try {
+      await this.getClinics()
+      this.user = await getPatient()
+      this.subscription = await getSubscription()
+      if (this.subscription !== undefined) {
+        this.subbedToClinics = this.clinics.filter(obj => this.subscription.clinic.includes(obj._id.$oid))
+      }
+    } catch (err) {
+      console.warn(err)
+    }
   }
 }
 </script>

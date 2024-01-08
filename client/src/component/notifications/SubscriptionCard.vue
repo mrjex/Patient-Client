@@ -45,27 +45,23 @@ export default {
       const num = Math.floor(Math.random() * 7)
       let bgColor = null
       switch (num) {
-        case 0: bgColor = '#F3EEEA'
+        case 0: bgColor = '#F0F0F0'
           break
-        case 1: bgColor = '#DBDFEA'
+        case 1: bgColor = '#DADADA'
           break
-        case 2: bgColor = '#D1D1D1'
+        case 2: bgColor = '#C4C4C4'
           break
-        case 3: bgColor = '#C8C2BC'
+        case 3: bgColor = '#AEAEAE'
           break
-        case 4: bgColor = '#BBBBBB'
+        case 4: bgColor = '#999999'
           break
         case 5: bgColor = '#CDD0CB'
           break
-        case 6: bgColor = '#AAAAAA'
+        case 6: bgColor = '#8C8C8C'
           break
       }
       return bgColor
     }
-  },
-  mounted() {
-    console.log('This is card component sub prop is ')
-    console.log(this.subscription)
   }
 }
 </script>
