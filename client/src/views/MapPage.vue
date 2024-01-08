@@ -106,7 +106,7 @@ export default {
   justify-content: center;
   flex-direction: column;
   min-width: 40vw;
-  max-height: 50vh;
+  max-height: fit-content;
   overflow: auto;
 }
 </style>
