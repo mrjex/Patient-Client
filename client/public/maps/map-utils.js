@@ -9,10 +9,12 @@
 
 import { listenForMarkerClickNearbyMode, nearbyMap, userGlobalCoordinates, drawNearbyMap } from './map-modes/nearby-map'
 import { listenForMarkerClickSearchMode, searchMap, drawSearchMap, markerCoordinates } from './map-modes/search-map'
+// import { clinicsIDsFilteredByAvailableTimes } from '../../src/views/MapPage.vue'
 import { generateWindow } from './infowindow'
 import { Api } from '../../src/Api.js'
 
 let currentMapMode = 'Nearby'
+let markers = []
 
 // Two types of clinic quries:
 let currentRadius = 10 // radius query
@@ -66,6 +68,7 @@ function getZoomLevel() {
 
 function createMarker(referenceCoordinates, clinic) {
   const marker = initializeMarker(referenceCoordinates)
+  markers.push(marker)
 
   if (currentMapMode === 'Nearby') {
     listenForMarkerClickNearbyMode(marker, clinic)
@@ -74,18 +77,24 @@ function createMarker(referenceCoordinates, clinic) {
   }
 }
 
-function initializeMarker(referenceCoordinates) {
-  if (currentMapMode === 'Nearby') {
-    return new google.maps.Marker({
-      map: nearbyMap,
-      position: referenceCoordinates
-    })
-  } else {
-    return new google.maps.Marker({
-      map: searchMap,
-      position: referenceCoordinates
-    })
+function setMapOnAllMarkers(map) {
+  for (let i = 0; i < markers.length; i++) {
+    markers[i].setMap(map)
   }
+}
+
+function deleteMarkers() {
+  setMapOnAllMarkers(null)
+  markers = []
+}
+
+function initializeMarker(referenceCoordinates) {
+  const currentMap = currentMapMode === 'Nearby' ? nearbyMap : searchMap
+
+  return new google.maps.Marker({
+    map: currentMap,
+    position: referenceCoordinates
+  })
 }
 
 /*
@@ -106,20 +115,36 @@ function updateRadius() {
 }
 
 function getReferencePosition() {
-  // const stringifiedCoordinates = (currentMapMode === 'Nearby') ? userGlobalCoordinates : referenceMarkerCoordinates
   const stringifiedCoordinates = (currentMapMode === 'Nearby') ? userGlobalCoordinates : markerCoordinates
   return stringifiedCoordinates.lat + ',' + stringifiedCoordinates.lng
 }
 
 // Create visual markers of every clinic that was sent in the payload from Clinic Service
 function drawClinicMarkers() {
-  // eslint-disable-next-line no-eval
-  const clinicsDataResponse = eval(clinicsData.clinics)
+  const clinicArray = clinicsData.clinics
 
-  if (clinicsDataResponse) {
-    for (let i = 0; i < clinicsDataResponse.length; i++) {
-      const currentClinic = clinicsDataResponse[i]
+  if (clinicArray) {
+    for (let i = 0; i < clinicArray.length; i++) {
+      const currentClinic = clinicArray[i]
 
+      const positionArray = currentClinic.position.split(',')
+      const referenceCoordinates = { lat: parseFloat(positionArray[0]), lng: parseFloat(positionArray[1]) }
+      createMarker(referenceCoordinates, currentClinic)
+    }
+  }
+}
+
+function drawClinicMarkersWithFilter(clinicFilter) {
+  const clinicArray = clinicsData.clinics
+
+  deleteMarkers()
+
+  for (let i = 0; i < clinicArray.length; i++) {
+    const currentClinic = clinicArray[i]
+
+    // Check if current clinic's clinic_id is contained within clinicFilter, if not, don't add it to the final response
+    if (clinicFilter.includes(currentClinic._id.$oid)) {
+      console.log('Display ' + currentClinic)
       const positionArray = currentClinic.position.split(',')
       const referenceCoordinates = { lat: parseFloat(positionArray[0]), lng: parseFloat(positionArray[1]) }
       createMarker(referenceCoordinates, currentClinic)
@@ -176,5 +201,5 @@ export {
   confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, getZoomLevel,
   generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition,
   selectedQueryMode, setSelectedQueryMode, manageNearbyQueryRequest, currentQueryNumber, setFixedQueryNumber,
-  defaultZoomLevel, sendNearbyQueryRequest, clinicsData
+  defaultZoomLevel, sendNearbyQueryRequest, clinicsData, drawClinicMarkersWithFilter
 }
