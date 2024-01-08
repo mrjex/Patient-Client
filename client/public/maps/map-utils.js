@@ -120,36 +120,31 @@ function getReferencePosition() {
 }
 
 // Create visual markers of every clinic that was sent in the payload from Clinic Service
-function drawClinicMarkers() {
+function drawClinicMarkers(clinicFilter) {
   const clinicArray = clinicsData.clinics
+
+  if (clinicFilter) {
+    deleteMarkers()
+  }
 
   if (clinicArray) {
     for (let i = 0; i < clinicArray.length; i++) {
       const currentClinic = clinicArray[i]
 
-      const positionArray = currentClinic.position.split(',')
-      const referenceCoordinates = { lat: parseFloat(positionArray[0]), lng: parseFloat(positionArray[1]) }
-      createMarker(referenceCoordinates, currentClinic)
+      if (filterClinic(clinicFilter, currentClinic) === 'true') {
+        const positionArray = currentClinic.position.split(',')
+        const referenceCoordinates = { lat: parseFloat(positionArray[0]), lng: parseFloat(positionArray[1]) }
+        createMarker(referenceCoordinates, currentClinic)
+      }
     }
   }
 }
 
-function drawClinicMarkersWithFilter(clinicFilter) {
-  const clinicArray = clinicsData.clinics
-
-  deleteMarkers()
-
-  for (let i = 0; i < clinicArray.length; i++) {
-    const currentClinic = clinicArray[i]
-
-    // Check if current clinic's clinic_id is contained within clinicFilter, if not, don't add it to the final response
-    if (clinicFilter.includes(currentClinic._id.$oid)) {
-      console.log('Display ' + currentClinic)
-      const positionArray = currentClinic.position.split(',')
-      const referenceCoordinates = { lat: parseFloat(positionArray[0]), lng: parseFloat(positionArray[1]) }
-      createMarker(referenceCoordinates, currentClinic)
-    }
+function filterClinic(clinicFilter, currentClinic) {
+  if (clinicFilter) {
+    return clinicFilter.has(currentClinic._id.$oid).toString()
   }
+  return 'true'
 }
 
 // Potential values: 'radius' or 'number'
@@ -201,5 +196,5 @@ export {
   confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, getZoomLevel,
   generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition,
   selectedQueryMode, setSelectedQueryMode, manageNearbyQueryRequest, currentQueryNumber, setFixedQueryNumber,
-  defaultZoomLevel, sendNearbyQueryRequest, clinicsData, drawClinicMarkersWithFilter
+  defaultZoomLevel, sendNearbyQueryRequest, clinicsData
 }
