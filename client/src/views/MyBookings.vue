@@ -11,7 +11,6 @@
           <b-card class="my-3 custom-rounded-card shadow-lg">
   <!-- Display the start time and end time as the card title -->
             <b-card-title>{{ appointment.clinicInfo.clinic_name }}</b-card-title>
-            <b-card-sub-title><b>Dentist:</b> {{ findDentist(appointment) }}</b-card-sub-title>
             <br/>
               <b-card-sub-title> <b>Time: </b>{{ formatDateRange(appointment.start_time, appointment.end_time).subtitle }} {{ formatDateRange(appointment.start_time, appointment.end_time).title }}</b-card-sub-title>
               <br/>
@@ -80,15 +79,6 @@ export default {
       } catch (error) {
         console.log('Error')
       }
-    },
-    findDentist(appointment) {
-      const dentistId = appointment.dentist_id
-
-      // Find the employee in the clinicInfo.employees array with matching dentist_id
-      const dentist = appointment.clinicInfo.employees.find(employee => employee.dentist_id === dentistId)
-
-      // Return the dentist_name if found, or a default value if not found. Unknown dentist will only happen if dentist_id is unsynced between services
-      return dentist ? dentist.dentist_name : 'Unknown Dentist'
     }
   }
 }
