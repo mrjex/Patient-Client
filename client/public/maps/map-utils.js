@@ -175,11 +175,15 @@ function manageNearbyQueryRequest() { // Accounts for both types of queries (rad
   queryValue = { value with corresponding unit of measure of the specified queryMode ('radius' --> kilometers, 'number' --> N closest clinics) }
 */
 async function sendNearbyQueryRequest(queryMode, queryValue) { // Sends the query-request to Patient API
-  const queryUrl = `/clinics/${queryMode}/positions?${queryMode}=${queryValue}&coordinates=${getReferencePosition()}`
-  const { data } = await Api.get(queryUrl)
+  try {
+    const queryUrl = `/clinics/${queryMode}/positions?${queryMode}=${queryValue}&coordinates=${getReferencePosition()}`
+    const { data } = await Api.get(queryUrl)
 
-  clinicsData = data
-  updateMapUI()
+    clinicsData = data
+    updateMapUI()
+  } catch (err) {
+    console.error('Error when getting clinics', err)
+  }
 }
 
 function updateMapUI() {
