@@ -9,7 +9,6 @@
             <div class="clinic-select">
               <h3>{{ clinic.clinic_name }}</h3>
               <p>{{ clinic.address }}</p>
-              <p style="font-size: 10px; color: gray">Clinic id: {{ clinic._id.$oid }}</p>
               <b-btn v-if="!subList.includes(clinic)" pill variant="outline-success" @click="subslist(clinic)">Subscribe</b-btn>
               <b-btn v-if="subList.includes(clinic)" pill variant="outline-danger" @click="subslist(clinic)">Unsubscribe</b-btn>
             </div>
