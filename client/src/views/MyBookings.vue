@@ -1,31 +1,36 @@
 <template>
-<!--Wireframe - https://git.chalmers.se/courses/dit355/2023/student-teams/dit356-2023-20/group-20-distributed-systems/-/wikis/Patient-gui#my-bookings -->
   <body>
-    <b-container>
-      <div v-if="!finishedLoading" class="loading-container">
+  <b-container>
+    <div v-if="!finishedLoading" class="loading-container">
       <b-spinner class="loading-spinner" label="Loading..."></b-spinner>
     </div>
-          <b-row v-if="finishedLoading">
-        <!-- Use v-for to loop through appointments and create a b-card for each one -->
+    <b-row v-else>
+      <div v-if="appointments.length > 0">
         <b-col v-for="(appointment, index) in appointments" :key="index">
           <b-card class="my-3 custom-rounded-card shadow-lg">
-  <!-- Display the start time and end time as the card title -->
             <b-card-title>{{ appointment.clinicInfo.clinic_name }}</b-card-title>
-            <b-card-sub-title><b>Dentist:</b> {{ findDentist(appointment) }}</b-card-sub-title>
             <br/>
-              <b-card-sub-title> <b>Time: </b>{{ formatDateRange(appointment.start_time, appointment.end_time).subtitle }} {{ formatDateRange(appointment.start_time, appointment.end_time).title }}</b-card-sub-title>
-              <br/>
-              <b-card-sub-title><b>Location:</b> {{ appointment.clinicInfo.address }}</b-card-sub-title>
-              <br/>
-                <b-button variant="danger" @click="cancelAppointment(appointment._id, index)">
+            <b-card-sub-title> <b>Time: </b>{{ formatDateRange(appointment.start_time, appointment.end_time).subtitle }} {{ formatDateRange(appointment.start_time, appointment.end_time).title }}</b-card-sub-title>
+            <br/>
+            <b-card-sub-title><b>Location:</b> {{ appointment.clinicInfo.address }}</b-card-sub-title>
+            <br/>
+            <b-button variant="danger" @click="cancelAppointment(appointment._id, index)">
               Cancel Appointment
-              </b-button>
+            </b-button>
           </b-card>
         </b-col>
-      </b-row>
-      <div v-if="message">Error fetching data. Please try again.</div>
-
-    </b-container>
+      </div>
+      <div v-else>
+        <b-card no-body class="my-3 custom-rounded-card shadow-lg">
+          <b-card-text>
+            <p>You have no appointments <br> Try booking one! </p>
+            <div class="image-container"><img src="../assets/sad-face.svg" alt=""></div>
+          </b-card-text>
+        </b-card>
+      </div>
+    </b-row>
+    <div v-if="message">Error fetching data. Please try again.</div>
+  </b-container>
   </body>
 </template>
 
@@ -80,15 +85,6 @@ export default {
       } catch (error) {
         console.log('Error')
       }
-    },
-    findDentist(appointment) {
-      const dentistId = appointment.dentist_id
-
-      // Find the employee in the clinicInfo.employees array with matching dentist_id
-      const dentist = appointment.clinicInfo.employees.find(employee => employee.dentist_id === dentistId)
-
-      // Return the dentist_name if found, or a default value if not found. Unknown dentist will only happen if dentist_id is unsynced between services
-      return dentist ? dentist.dentist_name : 'Unknown Dentist'
     }
   }
 }
