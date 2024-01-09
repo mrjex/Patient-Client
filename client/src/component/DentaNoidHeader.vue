@@ -10,8 +10,8 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item @click="$router.push('/clinics')">Clinics</b-nav-item>
-          <b-nav-item @click="$router.push('/map')">Clinic Map</b-nav-item>
+          <b-nav-item @click="$router.push('/clinics')">Find Clinics</b-nav-item>
+          <b-nav-item @click="$router.push('/map')">Find Clinics Map</b-nav-item>
           <b-nav-item @click="$router.push('/aboutus')">About us</b-nav-item>
           <b-nav-item v-if="isLoggedIn" @click="$router.push('/mybookings')">My bookings</b-nav-item>
           <b-nav-item v-if="isLoggedIn" @click="$router.push('/notifications')">Notifications</b-nav-item>
