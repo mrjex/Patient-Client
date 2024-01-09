@@ -8,7 +8,7 @@
         <timeSpanModal class="mb-3" @selectedTime="handleFilterTimes" />
         <ClinicList :clinics="clinics" v-if="showClinicList" @clinicClick="handleClinicClick" class="clinicList" />
         <timeslotAccordion :availableTimes="filteredAvailableTimes" v-if="showTimeslots"
-          @showClinics="handleDisplayClinics" @deleteAvailableTime="handleDeleteAvailableTime"/>
+          @showClinics="handleDisplayClinics" @deleteAvailableTime="handleDeleteAvailableTime" />
 
         <!--No matching timeslots modal-->
         <b-modal id="noTimesFound" ok-only title="No matching times found">
@@ -109,20 +109,32 @@ export default {
       this.selectedClinicId = clinicId
     },
     removeBooked(topic, message) {
-      const deleteTime = JSON.parse(message)
-      this.availableTimes = this.availableTimes.filter((availabletime) => availabletime._id !== deleteTime.appointment._id)
+      try {
+        const deleteTime = JSON.parse(message)
+        this.availableTimes = this.availableTimes.filter((availabletime) => availabletime._id !== deleteTime.appointment._id)
+      } catch (err) {
+        console.log(err)
+      }
     },
     addNewTime(topic, message) {
-      const newTime = JSON.parse(message)
-      if (newTime.availabletime.start_time >= this.timespan.startDate && newTime.availabletime.end_time <= this.timespan.endDate) {
-        this.availableTimes.push(newTime.availabletime)
+      try {
+        const newTime = JSON.parse(message)
+        if (newTime.availabletime.start_time >= this.timespan.startDate && newTime.availabletime.end_time <= this.timespan.endDate) {
+          this.availableTimes.push(newTime.availabletime)
+        }
+      } catch (err) {
+        console.log(err)
       }
     },
     subscribeToClinics() {
-      this.client.unsubscribe('#')
-      for (const clinic of this.clinics) {
-        this.client.subscribe('grp20/req/booking/confirmation/' + clinic._id.$oid)
-        this.client.subscribe('grp20/availabletimes/live/' + clinic._id.$oid)
+      try {
+        this.client.unsubscribe('#')
+        for (const clinic of this.clinics) {
+          this.client.subscribe('grp20/req/booking/confirmation/' + clinic._id.$oid)
+          this.client.subscribe('grp20/availabletimes/live/' + clinic._id.$oid)
+        }
+      } catch (err) {
+        console.log(err)
       }
     }
   },
@@ -130,18 +142,22 @@ export default {
     this.initiateClinicMapRequestListener()
   },
   mounted() {
-    this.client = getClient()
-    this.client.on('connect', () => {
-      console.log('Connected to MQTT broker')
-    })
+    try {
+      this.client = getClient()
+      this.client.on('connect', () => {
+        console.log('Connected to MQTT broker')
+      })
 
-    this.client.on('message', (topic, message) => {
-      if (topic.includes('grp20/req/booking/confirmation/')) {
-        this.removeBooked(topic, message.toString())
-      } else if (topic.includes('grp20/availabletimes/live/')) {
-        this.addNewTime(topic, message)
-      }
-    })
+      this.client.on('message', (topic, message) => {
+        if (topic.includes('grp20/req/booking/confirmation/')) {
+          this.removeBooked(topic, message.toString())
+        } else if (topic.includes('grp20/availabletimes/live/')) {
+          this.addNewTime(topic, message)
+        }
+      })
+    } catch (err) {
+      console.log(err)
+    }
   },
   components: {
     MapComponent,
