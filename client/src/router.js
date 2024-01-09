@@ -1,9 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import LandingPage from '@/views/LandingPage.vue'
-import aboutUs from '@/views/AboutUs.vue'
 import authentication from '@/views/Authentication.vue'
-import clinicSignUp from '@/views/ClinicSignUp.vue'
 import myBookings from '@/views/MyBookings.vue'
 import Notifications from '@/views/Notifications.vue'
 import FindClinics from '@/views/FindClinics.vue'
@@ -23,11 +21,6 @@ export default new Router({
       component: LandingPage
     },
     {
-      path: '/aboutus',
-      name: 'aboutUsView',
-      component: aboutUs
-    },
-    {
       path: '/clinics',
       name: 'FindClinics',
       component: FindClinics
@@ -36,11 +29,6 @@ export default new Router({
       path: '/authentication',
       name: 'authenticationView',
       component: authentication
-    },
-    {
-      path: '/clinicsignup',
-      name: 'clinicSignUpView',
-      component: clinicSignUp
     },
     {
       path: '/mybookings',
