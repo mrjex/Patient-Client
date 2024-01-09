@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div class="d-flex">
     <b-card-body>
       <b-card-text v-if="!availableTimes"><strong>No available times found </strong></b-card-text>
     </b-card-body>
@@ -62,4 +62,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.d-flex {
+  flex-direction: column;
+}
+</style>
