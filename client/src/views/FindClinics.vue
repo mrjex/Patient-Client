@@ -12,12 +12,12 @@
 
       <div class="container-fluid">
         <!--clinic list component-->
-        <clinicList v-if="displayClinics" @clinicClick="handleClinicClick" :clinics="clinics"></clinicList>
+        <clinicList v-if="displayClinics" @deleteAvailableTime="handleDeleteAvailableTime" @addTime="addTime" @clinicClick="handleClinicClick" :clinics="clinics"></clinicList>
 
         <!--timeslot list component-->
         <div>
-          <timeslotAccordion v-if="displayTimeslots" :availableTimes="filteredAvailableTimes" @showClinics="handleDisplayClinics"
-            @deleteAvailableTime="handleDeleteAvailableTime">
+          <timeslotAccordion :clinicID="selectedClinicId" v-if="displayTimeslots" :availableTimes="filteredAvailableTimes" @showClinics="handleDisplayClinics"
+            @deleteAvailableTime="handleDeleteAvailableTime" @addTime="addTime">
           </timeslotAccordion>
         </div>
 
@@ -43,6 +43,7 @@ import timeslotAccordion from '../component/timeslots/timeslotAccordion.vue'
 import timeSpanModal from '../component/timeslots/timeSpanModal.vue'
 import { getAllClinics, getClinic, getNclosestClinics } from '@/utility/clinicUtils'
 import { getTimeWindowTimeSlots } from '@/utility/timeslotUtils'
+import getClient from '../utility/mqttClient.js'
 
 export default {
   name: 'ClinicsView',
@@ -59,7 +60,9 @@ export default {
       resetText: 'Show Clinics',
       availableTimes: [],
       userLocation: null,
-      selectedClinicId: null
+      selectedClinicId: null,
+      client: null,
+      timespan: null
     }
   },
   computed: {
@@ -80,6 +83,7 @@ export default {
     /* This method takes a timespan and gets all available times matching the timespan for all clinics present
     in the clinic array */
     async getTimeSpanAppointments(timeSpan) {
+      this.timespan = timeSpan
       try {
         const clinicIds = []
         this.clinics.forEach((clinic) => {
@@ -94,6 +98,7 @@ export default {
         } else {
           this.clinics = []
         }
+        this.subscribeToClinics()
       } catch (err) {
         console.error(err)
       }
@@ -147,10 +152,46 @@ export default {
       } catch (err) {
         console.error(err)
       }
+    },
+    removeBooked(topic, message) {
+      const deleteTime = JSON.parse(message)
+      console.log(deleteTime)
+      this.availableTimes = this.availableTimes.filter((availabletime) => availabletime._id !== deleteTime.appointment._id)
+    },
+    addNewTime(topic, message) {
+      const newTime = JSON.parse(message)
+      if (newTime.availabletime.start_time >= this.timespan.startDate && newTime.availabletime.end_time <= this.timespan.endDate) {
+        this.availableTimes.push(newTime.availabletime)
+      }
+    },
+    subscribeToClinics() {
+      this.client.unsubscribe('#')
+      console.log('hit')
+      for (const clinic of this.clinics) {
+        this.client.subscribe('grp20/req/booking/confirmation/' + clinic._id.$oid)
+        console.log(clinic._id.$oid)
+        this.client.subscribe('grp20/availabletimes/live/' + clinic._id.$oid)
+      }
     }
   },
   mounted() {
     this.getUserLocation()
+    this.client = getClient()
+    this.client.on('connect', () => {
+      console.log('Connected to MQTT broker')
+    })
+
+    this.client.on('message', (topic, message) => {
+      console.log(topic + ': ' + message)
+      if (topic.includes('grp20/req/booking/confirmation/')) {
+        this.removeBooked(topic, message.toString())
+      } else if (topic.includes('grp20/availabletimes/live/')) {
+        this.addNewTime(topic, message)
+      }
+    })
+  },
+  destroyed() {
+    this.client.end()
   }
 }
 </script>
