@@ -5,7 +5,7 @@
       <b-spinner class="loading-spinner" label="Loading..."></b-spinner>
     </div>
     <b-row v-else>
-      <div v-if="appointments.length > 0">
+      <b-row v-if="appointments.length > 0">
         <b-col v-for="(appointment, index) in appointments" :key="index">
           <b-card class="my-3 custom-rounded-card shadow-lg">
             <b-card-title>{{ appointment.clinicInfo.clinic_name }}</b-card-title>
@@ -19,7 +19,7 @@
             </b-button>
           </b-card>
         </b-col>
-      </div>
+      </b-row>
       <div v-else>
         <b-card no-body class="my-3 custom-rounded-card shadow-lg">
           <b-card-text>
