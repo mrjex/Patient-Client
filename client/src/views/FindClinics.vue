@@ -12,12 +12,12 @@
 
       <div class="container-fluid">
         <!--clinic list component-->
-        <clinicList v-if="displayClinics" @deleteAvailableTime="handleDeleteAvailableTime" @addTime="addTime" @clinicClick="handleClinicClick" :clinics="clinics"></clinicList>
+        <clinicList v-if="displayClinics" @clinicClick="handleClinicClick" :clinics="clinics"></clinicList>
 
         <!--timeslot list component-->
         <div>
           <timeslotAccordion :clinicID="selectedClinicId" v-if="displayTimeslots" :availableTimes="filteredAvailableTimes" @showClinics="handleDisplayClinics"
-            @deleteAvailableTime="handleDeleteAvailableTime" @addTime="addTime">
+            @deleteAvailableTime="handleDeleteAvailableTime">
           </timeslotAccordion>
         </div>
 
@@ -155,7 +155,6 @@ export default {
     },
     removeBooked(topic, message) {
       const deleteTime = JSON.parse(message)
-      console.log(deleteTime)
       this.availableTimes = this.availableTimes.filter((availabletime) => availabletime._id !== deleteTime.appointment._id)
     },
     addNewTime(topic, message) {
@@ -166,10 +165,8 @@ export default {
     },
     subscribeToClinics() {
       this.client.unsubscribe('#')
-      console.log('hit')
       for (const clinic of this.clinics) {
         this.client.subscribe('grp20/req/booking/confirmation/' + clinic._id.$oid)
-        console.log(clinic._id.$oid)
         this.client.subscribe('grp20/availabletimes/live/' + clinic._id.$oid)
       }
     }
@@ -182,7 +179,6 @@ export default {
     })
 
     this.client.on('message', (topic, message) => {
-      console.log(topic + ': ' + message)
       if (topic.includes('grp20/req/booking/confirmation/')) {
         this.removeBooked(topic, message.toString())
       } else if (topic.includes('grp20/availabletimes/live/')) {
