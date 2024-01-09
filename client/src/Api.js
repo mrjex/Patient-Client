@@ -19,6 +19,8 @@ Api.interceptors.response.use(async function (response) {
     delete Api.defaults.headers.common.authorization
     localStorage.removeItem('token')
     window.location = '/authentication'
+  } else if (error.response && (error.response.status === 504 || error.response.status === 500)) {
+    alert('Unfortunately, something went wrong on our end. Try again in a moment.')
   }
   return Promise.reject(error)
 })

@@ -2,8 +2,11 @@
   <div class="container text-center ">
 
     <b-card no-body v-for="clinic in clinics" :key="clinic._id.$oid">
-      <b-button variant="light" @click="$emit('clinicClick', clinic._id.$oid)">{{
-        clinic.clinic_name }}</b-button>
+      <b-button variant="light" @click="$emit('clinicClick', clinic._id.$oid)">
+         <p class="clinicInfoText">
+         {{ clinic.clinic_name }} <br> <b>Address:</b> {{ clinic.address }}
+        </p>
+      </b-button>
     </b-card>
   </div>
 </template>
@@ -22,4 +25,10 @@ export default {
 </script>
 
 <style scoped>
+
+.clinicInfoText {
+  min-width: fit-content;
+  word-break: break-word;
+  white-space: normal;
+}
 </style>

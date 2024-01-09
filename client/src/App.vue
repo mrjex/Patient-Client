@@ -4,7 +4,7 @@
       <DentaNoidHeader/>
     </div>
     <!-- Your application content -->
-    <router-view/>
+    <router-view class="container"/>
     <DentanoidFooter/>
   </div>
 </template>
@@ -33,7 +33,7 @@ export default {
 body {
   margin: 0;
   padding: 0;
-  min-height: 100vh;
+  min-height: 80vh;
   display: flex;
   flex-direction: column;
 }

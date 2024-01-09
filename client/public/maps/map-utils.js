@@ -13,6 +13,7 @@ import { generateWindow } from './infowindow'
 import { Api } from '../../src/Api.js'
 
 let currentMapMode = 'Nearby'
+let markers = []
 
 // Two types of clinic quries:
 let currentRadius = 10 // radius query
@@ -66,6 +67,7 @@ function getZoomLevel() {
 
 function createMarker(referenceCoordinates, clinic) {
   const marker = initializeMarker(referenceCoordinates)
+  markers.push(marker)
 
   if (currentMapMode === 'Nearby') {
     listenForMarkerClickNearbyMode(marker, clinic)
@@ -74,18 +76,24 @@ function createMarker(referenceCoordinates, clinic) {
   }
 }
 
-function initializeMarker(referenceCoordinates) {
-  if (currentMapMode === 'Nearby') {
-    return new google.maps.Marker({
-      map: nearbyMap,
-      position: referenceCoordinates
-    })
-  } else {
-    return new google.maps.Marker({
-      map: searchMap,
-      position: referenceCoordinates
-    })
+function setMapOnAllMarkers(map) {
+  for (let i = 0; i < markers.length; i++) {
+    markers[i].setMap(map)
   }
+}
+
+function deleteMarkers() {
+  setMapOnAllMarkers(null)
+  markers = []
+}
+
+function initializeMarker(referenceCoordinates) {
+  const currentMap = currentMapMode === 'Nearby' ? nearbyMap : searchMap
+
+  return new google.maps.Marker({
+    map: currentMap,
+    position: referenceCoordinates
+  })
 }
 
 /*
@@ -106,25 +114,36 @@ function updateRadius() {
 }
 
 function getReferencePosition() {
-  // const stringifiedCoordinates = (currentMapMode === 'Nearby') ? userGlobalCoordinates : referenceMarkerCoordinates
   const stringifiedCoordinates = (currentMapMode === 'Nearby') ? userGlobalCoordinates : markerCoordinates
   return stringifiedCoordinates.lat + ',' + stringifiedCoordinates.lng
 }
 
 // Create visual markers of every clinic that was sent in the payload from Clinic Service
-function drawClinicMarkers() {
-  // eslint-disable-next-line no-eval
-  const clinicsDataResponse = eval(clinicsData.clinics)
+function drawClinicMarkers(clinicFilter) {
+  const clinicArray = clinicsData.clinics
 
-  if (clinicsDataResponse) {
-    for (let i = 0; i < clinicsDataResponse.length; i++) {
-      const currentClinic = clinicsDataResponse[i]
+  if (clinicFilter) {
+    deleteMarkers()
+  }
 
-      const positionArray = currentClinic.position.split(',')
-      const referenceCoordinates = { lat: parseFloat(positionArray[0]), lng: parseFloat(positionArray[1]) }
-      createMarker(referenceCoordinates, currentClinic)
+  if (clinicArray) {
+    for (let i = 0; i < clinicArray.length; i++) {
+      const currentClinic = clinicArray[i]
+
+      if (filterClinic(clinicFilter, currentClinic) === 'true') {
+        const positionArray = currentClinic.position.split(',')
+        const referenceCoordinates = { lat: parseFloat(positionArray[0]), lng: parseFloat(positionArray[1]) }
+        createMarker(referenceCoordinates, currentClinic)
+      }
     }
   }
+}
+
+function filterClinic(clinicFilter, currentClinic) {
+  if (clinicFilter) {
+    return clinicFilter.has(currentClinic._id.$oid).toString()
+  }
+  return 'true'
 }
 
 // Potential values: 'radius' or 'number'
@@ -146,7 +165,6 @@ function setFixedQueryNumber(value) {
 */
 function manageNearbyQueryRequest() { // Accounts for both types of queries (radius and N-closest clinics) and looks at user's input to decide what methods to execute
   const queryValue = (selectedQueryMode === 'radius') ? currentRadius : currentQueryNumber
-  // MapComponent.methods.sendNearbyQueryRequest(selectedQueryMode, queryValue)
   sendNearbyQueryRequest(selectedQueryMode, queryValue)
 }
 
@@ -156,11 +174,15 @@ function manageNearbyQueryRequest() { // Accounts for both types of queries (rad
   queryValue = { value with corresponding unit of measure of the specified queryMode ('radius' --> kilometers, 'number' --> N closest clinics) }
 */
 async function sendNearbyQueryRequest(queryMode, queryValue) { // Sends the query-request to Patient API
-  const queryUrl = `/clinics/${queryMode}/positions?${queryMode}=${queryValue}&coordinates=${getReferencePosition()}`
-  const { data } = await Api.get(queryUrl)
+  try {
+    const queryUrl = `/clinics/${queryMode}/positions?${queryMode}=${queryValue}&coordinates=${getReferencePosition()}`
+    const { data } = await Api.get(queryUrl)
 
-  clinicsData = data
-  updateMapUI()
+    clinicsData = data
+    updateMapUI()
+  } catch (err) {
+    console.error('Error when getting clinics', err)
+  }
 }
 
 function updateMapUI() {
@@ -177,5 +199,5 @@ export {
   confirmExecutionConditions, changeMapMode, currentMapMode, changeRadius, currentRadius, getZoomLevel,
   generateInfoWindowUtils, drawClinicMarkers, updateRadius, getReferencePosition,
   selectedQueryMode, setSelectedQueryMode, manageNearbyQueryRequest, currentQueryNumber, setFixedQueryNumber,
-  defaultZoomLevel, sendNearbyQueryRequest
+  defaultZoomLevel, sendNearbyQueryRequest, clinicsData
 }
