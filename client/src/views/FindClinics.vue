@@ -11,6 +11,7 @@
       </div>
 
       <div class="container-fluid">
+        <b-col cols="12" md="10" sm="12" lg="8">
         <!--clinic list component-->
         <clinicList v-if="displayClinics" @clinicClick="handleClinicClick" :clinics="clinics"></clinicList>
 
@@ -31,6 +32,7 @@
           </b-card>
         </div>
 
+        </b-col>
       </div>
 
     </div>
@@ -218,9 +220,12 @@ export default {
 }
 
 .container-fluid {
-  max-width: 100%;
-  width: 70vb;
-  min-width: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .image-container {

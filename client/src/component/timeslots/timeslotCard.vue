@@ -1,12 +1,13 @@
 <template>
-    <div class="container-fluid" role="tablist">
+    <div class="d-flex" role="tablist">
         <b-card no-body class="mb-1">
             <b-button block v-b-toggle="accordionID" variant="light">
+              <p class="timeText">
                 {{ formatStartTime }} - {{ formatEndTime }}
+              </p>
             </b-button>
             <b-collapse :id="accordionID" :visible="false" accordion="timeslot-accordion" role="tabpanel">
                 <b-card-body>
-
                     <b-card-text><strong>Dentist:</strong> {{ this.dentist.username }}</b-card-text>
                     <div class="d-flex justify-content-center">
                         <b-button @click="createBooking">
@@ -78,5 +79,9 @@ export default {
 </script>
 
 <style scoped>
-
+.timeText {
+  min-width: fit-content;
+  word-break: break-word;
+  white-space: normal;
+}
 </style>

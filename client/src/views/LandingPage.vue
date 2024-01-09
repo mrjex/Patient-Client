@@ -13,6 +13,7 @@
         style='text-shadow: 1px 1px 2px #333;'
         @sliding-start='onSlideStart'
         @sliding-end='onSlideEnd'
+        class="mt-3"
       >
         <b-carousel-slide img-src='https://targetjobs.co.uk/static/01e55a23e7aaab33f877f4b0260a5986/e3554/dentist_1140x350.webp'> <!--Select dental img -->
           <h2>Need to consult a specialist?</h2>
@@ -66,7 +67,7 @@
       <div class='col-lg-8 text-center'>
         <h1>Start your dental adventure today!</h1>
         <div class='row'>
-          <div class='col-lg-4 col-sm-12 text-center lp-nav-btn'>
+          <div class='col-lg-4 col-sm-8 col- text-center lp-nav-btn'>
             <b-btn size='lg' pill variant='success' href='/authentication'>Sign up</b-btn>
           </div>
           <div class='col-lg-4 col-sm-12 text-center lp-nav-btn'>
@@ -107,12 +108,35 @@ export default {
 </script>
 
 <style scoped>
+.lp-nav-btn {
+  margin-bottom: 1vh;
+}
+
 .carousel {
   margin-bottom: 2vh;
 }
 
-.lp-nav-btn {
-  margin-bottom: 1vh;
+.container {
+  margin: 0 auto !important; /* Center the container */
+
+}
+
+/* Default font size */
+.carousel h2 {
+  font-size: 24px;
+}
+
+/* Default button style */
+.carousel button {
+  display: inline-block;
+}
+
+@media (max-width: 767px) {
+  /* Hide the text and button for screens smaller than 767px */
+  .carousel h2,
+  .carousel button {
+    display: none;
+  }
 }
 
 </style>
