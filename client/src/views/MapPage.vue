@@ -8,7 +8,7 @@
         <timeSpanModal class="mb-3" @selectedTime="handleFilterTimes" />
         <ClinicList :clinics="clinics" v-if="showClinicList" @clinicClick="handleClinicClick" class="clinicList" />
         <timeslotAccordion :availableTimes="filteredAvailableTimes" v-if="showTimeslots"
-          @showClinics="handleDisplayClinics" @deleteAvailableTime="handleDeleteAvailableTime"/>
+          @showClinics="handleDisplayClinics" @deleteAvailableTime="handleDeleteAvailableTime" />
 
         <!--No matching timeslots modal-->
         <b-modal id="noTimesFound" ok-only title="No matching times found">
@@ -29,6 +29,7 @@ import { clinicsData, drawClinicMarkers } from '../../public/maps/map-utils.js'
 import timeSpanModal from '../component/timeslots/timeSpanModal.vue'
 import { getTimeWindowTimeSlots } from '@/utility/timeslotUtils'
 import timeslotAccordion from '../component/timeslots/timeslotAccordion.vue'
+import getClient from '../utility/mqttClient.js'
 
 export default {
   name: 'MapPage',
@@ -40,7 +41,8 @@ export default {
       availableTimes: [],
       showClinicList: true,
       showTimeslots: false,
-      selectedClinicId: null
+      selectedClinicId: null,
+      client: null
     }
   },
   computed: {
@@ -71,6 +73,7 @@ export default {
       )
     },
     async handleFilterTimes(filter) {
+      this.timespan = filter.timespan
       try {
         const clinicIds = []
         this.clinics.forEach((clinic) => {
@@ -91,6 +94,7 @@ export default {
         } else if (res.data.availabletimes === null || res.data.availabletimes.length === 0) {
           this.$bvModal.show('noTimesFound')
         }
+        this.subscribeToClinics()
       } catch (err) {
         console.log(err)
       }
@@ -103,10 +107,57 @@ export default {
       this.showClinicList = false
       this.showTimeslots = true
       this.selectedClinicId = clinicId
+    },
+    removeBooked(topic, message) {
+      try {
+        const deleteTime = JSON.parse(message)
+        this.availableTimes = this.availableTimes.filter((availabletime) => availabletime._id !== deleteTime.appointment._id)
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    addNewTime(topic, message) {
+      try {
+        const newTime = JSON.parse(message)
+        if (newTime.availabletime.start_time >= this.timespan.startDate && newTime.availabletime.end_time <= this.timespan.endDate) {
+          this.availableTimes.push(newTime.availabletime)
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    subscribeToClinics() {
+      try {
+        this.client.unsubscribe('#')
+        for (const clinic of this.clinics) {
+          this.client.subscribe('grp20/req/booking/confirmation/' + clinic._id.$oid)
+          this.client.subscribe('grp20/availabletimes/live/' + clinic._id.$oid)
+        }
+      } catch (err) {
+        console.log(err)
+      }
     }
   },
   created() {
     this.initiateClinicMapRequestListener()
+  },
+  mounted() {
+    try {
+      this.client = getClient()
+      this.client.on('connect', () => {
+        console.log('Connected to MQTT broker')
+      })
+
+      this.client.on('message', (topic, message) => {
+        if (topic.includes('grp20/req/booking/confirmation/')) {
+          this.removeBooked(topic, message.toString())
+        } else if (topic.includes('grp20/availabletimes/live/')) {
+          this.addNewTime(topic, message)
+        }
+      })
+    } catch (err) {
+      console.log(err)
+    }
   },
   components: {
     MapComponent,
