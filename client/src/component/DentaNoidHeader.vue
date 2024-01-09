@@ -11,7 +11,7 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
           <b-nav-item @click="$router.push('/clinics')">Find Clinics</b-nav-item>
-          <b-nav-item @click="$router.push('/map')">Find Clinics Map</b-nav-item>
+          <b-nav-item @click="$router.push('/map')">Clinics Map</b-nav-item>
           <b-nav-item @click="$router.push('/aboutus')">About us</b-nav-item>
           <b-nav-item v-if="isLoggedIn" @click="$router.push('/mybookings')">My bookings</b-nav-item>
           <b-nav-item v-if="isLoggedIn" @click="$router.push('/notifications')">Notifications</b-nav-item>
@@ -39,19 +39,9 @@ export default {
   },
   methods: {
     signOut() {
-      // if (!this.isLoggedIn) {
-      //   this.isLoggedIn = true
-      //   localStorage.setItem('isLoggedIn', true)
-      // } else {
-      //   this.isLoggedIn = false
-      //   localStorage.setItem('isLoggedIn', false)
-      // }
       delete Api.defaults.headers.common.authorization
       localStorage.removeItem('token')
       window.location = '/authentication'
-    },
-    navLogin() {
-      this.$router.push('/authentication')
     },
     updateLoginStatus() {
       this.isLoggedIn = localStorage.getItem('token') != null
