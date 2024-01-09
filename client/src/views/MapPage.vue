@@ -5,11 +5,12 @@
     </div>
     <div class="d-flex justify-content-center align-items-center">
       <div class="flex-container">
+        <b-col cols="12" md="10" sm="12" lg="8">
         <timeSpanModal class="mb-3" @selectedTime="handleFilterTimes" />
         <ClinicList :clinics="clinics" v-if="showClinicList" @clinicClick="handleClinicClick" class="clinicList" />
         <timeslotAccordion :availableTimes="filteredAvailableTimes" v-if="showTimeslots"
           @showClinics="handleDisplayClinics" @deleteAvailableTime="handleDeleteAvailableTime" />
-
+        </b-col>
         <!--No matching timeslots modal-->
         <b-modal id="noTimesFound" ok-only title="No matching times found">
           <p>No available times for selected clinics found</p>
