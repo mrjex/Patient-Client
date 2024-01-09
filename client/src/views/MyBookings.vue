@@ -95,9 +95,6 @@ export default {
 
       // Return the dentist_name if found, or a default value if not found. Unknown dentist will only happen if dentist_id is unsynced between services
       return dentist ? dentist.dentist_name : 'Unknown Dentist'
-    },
-    alterUser() {
-      alert('You have no appointments!')
     }
   }
 }
