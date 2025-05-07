@@ -1,8 +1,8 @@
 # Patient Client – Your Gateway to Hassle-Free Dental Appointments
 
-Welcome to the Patient Client! This modern web app empowers patients to easily search, book, and manage dental appointments across multiple clinics in Gothenburg.
+> ⚠️ **Disclaimer**: This is a **fork** of [Patient Client](https://github.com/Dentanoid/Patient-Client), originally created and maintained by the [Dentanoid Organization](https://github.com/Dentanoid)
 
-> **Seamless. Smart. Secure.**
+Welcome to the Patient Client! This modern web app empowers patients to easily search, book, and manage dental appointments across multiple clinics in Gothenburg.
 
 ---
 
@@ -36,8 +36,6 @@ Welcome to the Patient Client! This modern web app empowers patients to easily s
   - Works beautifully on desktop, tablet, and mobile.
 - **Tech Stack:**
   - Built with Vue.js, BootstrapVue, Node.js, and integrates with a distributed backend.
-
-
 
 ## Getting Started
 
